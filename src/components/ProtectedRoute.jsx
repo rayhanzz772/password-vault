@@ -7,6 +7,11 @@ const ProtectedRoute = ({ children }) => {
 
   useEffect(() => {
     console.log('🔒 ProtectedRoute check:', { isAuthenticated, isLoading });
+    const token = localStorage.getItem('jwt_token');
+    console.log('🔒 Token in localStorage:', token ? 'exists' : 'missing');
+    if (token) {
+      console.log('🔒 Token preview:', token.substring(0, 50) + '...');
+    }
   }, [isAuthenticated, isLoading]);
 
   // Show loading state while checking authentication

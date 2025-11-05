@@ -1,0 +1,398 @@
+import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  X, 
+  Eye, 
+  EyeOff, 
+  Copy, 
+  Lock,
+  Unlock,
+  Clock,
+  AlertCircle
+} from 'lucide-react';
+import toast from 'react-hot-toast';
+import { useAuth } from '../contexts/AuthContext';
+import { vaultAPI } from '../utils/api';
+
+const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
+  const { masterPassword } = useAuth();
+  
+  const [decryptedPassword, setDecryptedPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isRateLimited, setIsRateLimited] = useState(false);
+  const [countdown, setCountdown] = useState(0);
+  const [timeRemaining, setTimeRemaining] = useState(30);
+  const [inputMasterPassword, setInputMasterPassword] = useState('');
+  const [showMasterPasswordInput, setShowMasterPasswordInput] = useState(false);
+  
+  const countdownRef = useRef(null);
+  const clearTimerRef = useRef(null);
+
+  // Check if master password is available
+  useEffect(() => {
+    if (isOpen && !masterPassword) {
+      setShowMasterPasswordInput(true);
+    } else {
+      setShowMasterPasswordInput(false);
+      setInputMasterPassword('');
+    }
+  }, [isOpen, masterPassword]);
+
+  // Auto-decrypt on open if master password is available
+  useEffect(() => {
+    if (isOpen && vaultItem && masterPassword) {
+      handleDecrypt(masterPassword);
+    }
+  }, [isOpen, vaultItem?.id]);
+
+  // Auto-clear after 30 seconds
+  useEffect(() => {
+    if (decryptedPassword && !clearTimerRef.current) {
+      setTimeRemaining(30);
+      clearTimerRef.current = setInterval(() => {
+        setTimeRemaining((prev) => {
+          if (prev <= 1) {
+            handleClearPassword();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+
+    return () => {
+      if (clearTimerRef.current) {
+        clearInterval(clearTimerRef.current);
+        clearTimerRef.current = null;
+      }
+    };
+  }, [decryptedPassword]);
+
+  // Rate limit countdown
+  useEffect(() => {
+    if (isRateLimited && countdown > 0) {
+      countdownRef.current = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            setIsRateLimited(false);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+
+    return () => {
+      if (countdownRef.current) {
+        clearInterval(countdownRef.current);
+      }
+    };
+  }, [isRateLimited, countdown]);
+
+  const handleDecrypt = async (password) => {
+    if (!vaultItem) return;
+
+    setIsLoading(true);
+
+    try {
+      const result = await vaultAPI.decrypt(vaultItem.id, password);
+      console.log('🔓 Decrypt API response:', result);
+      console.log('🔍 Response structure:', JSON.stringify(result, null, 2));
+      
+      // Handle different response structures
+      let decrypted = null;
+      
+      if (result.decrypted_password) {
+        decrypted = result.decrypted_password;
+      } else if (result.password) {
+        decrypted = result.password;
+      } else if (result.data?.decrypted_password) {
+        decrypted = result.data.decrypted_password;
+      } else if (result.data?.password) {
+        decrypted = result.data.password;
+      } else if (result.data?.data?.decrypted_password) {
+        decrypted = result.data.data.decrypted_password;
+      } else if (result.data?.data?.password) {
+        decrypted = result.data.data.password;
+      }
+      
+      console.log('🔑 Extracted decrypted password:', decrypted ? '***' : 'NOT FOUND');
+      
+      if (!decrypted) {
+        console.error('❌ No decrypted password in response!');
+        console.error('Available fields:', Object.keys(result));
+        if (result.data) {
+          console.error('Data fields:', Object.keys(result.data));
+        }
+        toast.error('Failed to extract decrypted password from response');
+        return;
+      }
+      
+      setDecryptedPassword(decrypted);
+      toast.success('Password decrypted!');
+    } catch (error) {
+      console.error('Failed to decrypt:', error);
+      
+      // Handle 429 Too Many Requests
+      if (error.response?.status === 429) {
+        const retryAfter = error.response?.data?.retry_after || 60;
+        setIsRateLimited(true);
+        setCountdown(retryAfter);
+        toast.error(`Too many requests. Please wait ${retryAfter} seconds.`);
+      } else {
+        const errorMsg = error.response?.data?.message || 'Failed to decrypt password';
+        toast.error(errorMsg);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSubmitMasterPassword = (e) => {
+    e.preventDefault();
+    if (inputMasterPassword) {
+      handleDecrypt(inputMasterPassword);
+      setShowMasterPasswordInput(false);
+    }
+  };
+
+  const handleCopy = () => {
+    if (decryptedPassword) {
+      navigator.clipboard.writeText(decryptedPassword);
+      toast.success('Password copied to clipboard!');
+    }
+  };
+
+  const handleClearPassword = () => {
+    setDecryptedPassword('');
+    setTimeRemaining(30);
+    if (clearTimerRef.current) {
+      clearInterval(clearTimerRef.current);
+      clearTimerRef.current = null;
+    }
+  };
+
+  const handleClose = () => {
+    handleClearPassword();
+    setShowPassword(false);
+    setIsRateLimited(false);
+    setCountdown(0);
+    setInputMasterPassword('');
+    setShowMasterPasswordInput(false);
+    onClose();
+  };
+
+  if (!isOpen || !vaultItem) return null;
+
+  return (
+    <AnimatePresence>
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg"
+        >
+          {/* Header */}
+          <div className="border-b border-slate-200 dark:border-slate-700 p-6 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-purple-600 rounded-xl flex items-center justify-center">
+                {decryptedPassword ? (
+                  <Unlock className="w-5 h-5 text-white" />
+                ) : (
+                  <Lock className="w-5 h-5 text-white" />
+                )}
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-slate-800 dark:text-white">
+                  {vaultItem.name}
+                </h2>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  {decryptedPassword ? 'Password Decrypted' : 'Decrypt Password'}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={handleClose}
+              className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+            >
+              <X className="w-5 h-5 text-slate-500" />
+            </button>
+          </div>
+
+          <div className="p-6 space-y-4">
+            {/* Username/Email */}
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                Username / Email
+              </label>
+              <div className="px-4 py-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
+                <p className="text-slate-900 dark:text-white">{vaultItem.username}</p>
+              </div>
+            </div>
+
+            {/* Master Password Input (if not in memory) */}
+            {showMasterPasswordInput && !decryptedPassword && (
+              <motion.form
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                onSubmit={handleSubmitMasterPassword}
+                className="space-y-4"
+              >
+                <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
+                  <p className="text-sm text-yellow-800 dark:text-yellow-300">
+                    Master password is not in memory. Please re-enter it to decrypt.
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                    Master Password
+                  </label>
+                  <input
+                    type="password"
+                    value={inputMasterPassword}
+                    onChange={(e) => setInputMasterPassword(e.target.value)}
+                    placeholder="Enter your master password"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none"
+                    autoFocus
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={!inputMasterPassword || isLoading}
+                  className="w-full px-4 py-3 bg-gradient-to-r from-primary-500 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isLoading ? 'Decrypting...' : 'Decrypt Password'}
+                </button>
+              </motion.form>
+            )}
+
+            {/* Decrypted Password Display */}
+            {decryptedPassword && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-4"
+              >
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                    Password
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      value={decryptedPassword}
+                      readOnly
+                      className="w-full px-4 py-3 pr-24 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white font-mono focus:outline-none"
+                    />
+                    <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                      >
+                        {showPassword ? (
+                          <EyeOff className="w-4 h-4 text-slate-500" />
+                        ) : (
+                          <Eye className="w-4 h-4 text-slate-500" />
+                        )}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleCopy}
+                        className="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                      >
+                        <Copy className="w-4 h-4 text-slate-500" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Auto-clear Timer */}
+                <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                    <span className="text-sm text-blue-800 dark:text-blue-300">
+                      Auto-clear in {timeRemaining}s
+                    </span>
+                  </div>
+                  <button
+                    onClick={handleClearPassword}
+                    className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
+                  >
+                    Clear Now
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Rate Limit Warning */}
+            {isRateLimited && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-start gap-3"
+              >
+                <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <h4 className="font-semibold text-red-800 dark:text-red-300 mb-1">
+                    Too Many Requests
+                  </h4>
+                  <p className="text-sm text-red-700 dark:text-red-400">
+                    Please wait {countdown} seconds before trying again.
+                  </p>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Note */}
+            {vaultItem.note && (
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  Note
+                </label>
+                <div className="px-4 py-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
+                  <p className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap">
+                    {vaultItem.note}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Metadata */}
+            <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <p className="text-slate-500 dark:text-slate-400">Category</p>
+                  <p className="font-medium text-slate-800 dark:text-white">
+                    {vaultItem.category_name || 'Uncategorized'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-slate-500 dark:text-slate-400">Last Updated</p>
+                  <p className="font-medium text-slate-800 dark:text-white">
+                    {vaultItem.lastUpdated || 'N/A'}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Close Button */}
+            <button
+              onClick={handleClose}
+              className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-semibold hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        </motion.div>
+      </div>
+    </AnimatePresence>
+  );
+};
+
+export default DecryptModal;

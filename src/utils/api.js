@@ -11,6 +11,17 @@ const api = axios.create({
 
 console.log('🌐 API Base URL:', api.defaults.baseURL);
 
+// Helper to clear auth and redirect
+const clearAuthAndRedirect = () => {
+  localStorage.removeItem('jwt_token');
+  // Only redirect if not already on auth pages
+  if (!window.location.pathname.includes('/login') && 
+      !window.location.pathname.includes('/register')) {
+    console.log('🔄 Redirecting to login...');
+    window.location.href = '/login';
+  }
+};
+
 // Request interceptor to add auth token
 api.interceptors.request.use(
   (config) => {
@@ -35,20 +46,27 @@ api.interceptors.response.use(
   },
   (error) => {
     console.error('❌ API Error:', error.message);
+    console.error('❌ Error details:', error.response?.data);
+    
     if (error.code === 'ECONNABORTED') {
       console.error('⏱️ Request timeout');
     } else if (error.code === 'ERR_NETWORK') {
       console.error('🚫 Network error - Is the backend running?');
     }
     
+    // Handle JWT errors (malformed, expired, invalid)
+    if (error.response?.data?.message?.includes('JWT') || 
+        error.response?.data?.message?.includes('jwt') ||
+        error.response?.data?.error?.includes('JWT') ||
+        error.response?.data?.error?.includes('jwt')) {
+      console.log('🔐 JWT error detected - Clearing invalid token');
+      clearAuthAndRedirect();
+    }
+    
     if (error.response?.status === 401) {
       // Token expired or invalid
       console.log('🔐 401 Unauthorized - Clearing token');
-      localStorage.removeItem('jwt_token');
-      // Only redirect if not already on login page
-      if (!window.location.pathname.includes('/login')) {
-        window.location.href = '/login';
-      }
+      clearAuthAndRedirect();
     }
     return Promise.reject(error);
   }
@@ -57,47 +75,69 @@ api.interceptors.response.use(
 // Auth API endpoints
 export const authAPI = {
   register: async (email, masterPassword) => {
-    try {
-      const response = await api.post('/auth/register', {
-        email,
-        password: masterPassword, // Changed from master_password to password
-      });
-      return response.data;
-    } catch (error) {
-      // Demo mode: If backend is not available, simulate success
-      if (error.code === 'ERR_NETWORK' || error.code === 'ECONNABORTED') {
-        console.warn('⚠️ Backend not available, using demo mode');
-        return {
-          token: 'demo-token-' + Date.now(),
-          user: { email }
-        };
-      }
-      throw error;
-    }
+    const response = await api.post('/auth/register', {
+      email,
+      password: masterPassword,
+    });
+    return response.data;
   },
 
   login: async (email, masterPassword) => {
-    try {
-      const response = await api.post('/auth/login', {
-        email,
-        password: masterPassword, // Changed from master_password to password
-      });
-      return response.data;
-    } catch (error) {
-      // Demo mode: If backend is not available, simulate success
-      if (error.code === 'ERR_NETWORK' || error.code === 'ECONNABORTED') {
-        console.warn('⚠️ Backend not available, using demo mode');
-        return {
-          token: 'demo-token-' + Date.now(),
-          user: { email }
-        };
-      }
-      throw error;
-    }
+    const response = await api.post('/auth/login', {
+      email,
+      password: masterPassword,
+    });
+    return response.data;
   },
 
   logout: () => {
     localStorage.removeItem('jwt_token');
+  },
+};
+
+// Categories API endpoints
+export const categoriesAPI = {
+  getAll: async () => {
+    const response = await api.get('/api/categories');
+    return response.data;
+  },
+};
+
+// Vault API endpoints
+export const vaultAPI = {
+  getAll: async () => {
+    const response = await api.get('/api/vault');
+    return response.data;
+  },
+
+  create: async (vaultData, masterPassword) => {
+    const response = await api.post('/api/vault', {
+      ...vaultData,
+      master_password: masterPassword,
+    });
+    return response.data;
+  },
+
+  decrypt: async (id, masterPassword) => {
+    const response = await api.post(`/api/vault/${id}/decrypt`, {
+      master_password: masterPassword,
+    });
+    return response.data;
+  },
+
+  update: async (id, vaultData, masterPassword) => {
+    const response = await api.put(`/api/vault/${id}`, {
+      ...vaultData,
+      master_password: masterPassword,
+    });
+    return response.data;
+  },
+
+  delete: async (id, masterPassword) => {
+    const response = await api.delete(`/api/vault/${id}`, {
+      data: { master_password: masterPassword },
+    });
+    return response.data;
   },
 };
 

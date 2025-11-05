@@ -5,14 +5,16 @@ import {
   Wallet, 
   Users, 
   Activity,
-  Plus 
+  Plus,
+  Gamepad2
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-const Sidebar = () => {
+const Sidebar = ({ onNewPassword }) => {
   const categories = [
     { name: 'All', icon: LayoutGrid, path: '/app', count: 0 },
     { name: 'Work', icon: Briefcase, path: '/app/work', count: 0 },
+    { name: 'Game', icon: Gamepad2, path: '/app/game', count: 0 },
     { name: 'Finance', icon: Wallet, path: '/app/finance', count: 0 },
     { name: 'Social', icon: Users, path: '/app/social', count: 0 },
   ];
@@ -28,6 +30,7 @@ const Sidebar = () => {
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
+          onClick={onNewPassword}
           className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-primary-500 to-purple-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
         >
           <Plus className="w-5 h-5" />

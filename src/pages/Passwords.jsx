@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   Plus, 
@@ -12,12 +13,60 @@ import {
   Edit
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { vaultAPI } from '../utils/api';
+import CreateVaultModal from '../components/CreateVaultModal';
+import DecryptModal from '../components/DecryptModal';
 
 const Passwords = () => {
-  const [passwords, setPasswords] = useState([
-    // Mock data - replace with actual API data
-    // Empty for now to show empty state
-  ]);
+  const { refreshTrigger, openCreateModal } = useOutletContext();
+  const [passwords, setPasswords] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isDecryptModalOpen, setIsDecryptModalOpen] = useState(false);
+  const [selectedVault, setSelectedVault] = useState(null);
+
+  // Fetch passwords on mount and when refresh trigger changes
+  useEffect(() => {
+    fetchPasswords();
+  }, [refreshTrigger]);
+
+  const fetchPasswords = async () => {
+    try {
+      setIsLoading(true);
+      const data = await vaultAPI.getAll();
+      console.log('📦 Vault API response:', data);
+      
+      // Handle different response structures
+      let vaultList = [];
+      if (Array.isArray(data)) {
+        vaultList = data;
+      } else if (data.vaults && Array.isArray(data.vaults)) {
+        vaultList = data.vaults;
+      } else if (data.data && Array.isArray(data.data)) {
+        vaultList = data.data;
+      } else if (data.data && data.data.vaults && Array.isArray(data.data.vaults)) {
+        vaultList = data.data.vaults;
+      }
+      
+      console.log('📋 Processed vault list:', vaultList);
+      setPasswords(vaultList);
+    } catch (error) {
+      console.error('Failed to fetch passwords:', error);
+      toast.error('Failed to load passwords');
+      setPasswords([]); // Set empty array on error
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCreateSuccess = () => {
+    fetchPasswords(); // Refresh list
+  };
+
+  const handleDecrypt = (vault) => {
+    setSelectedVault(vault);
+    setIsDecryptModalOpen(true);
+  };
 
   const handleCopy = (text) => {
     navigator.clipboard.writeText(text);
@@ -25,6 +74,17 @@ const Passwords = () => {
   };
 
   // Empty State
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-600 dark:text-slate-400">Loading passwords...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (passwords.length === 0) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -48,6 +108,7 @@ const Passwords = () => {
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
+            onClick={openCreateModal}
             className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-500 to-purple-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
           >
             <Plus className="w-5 h-5" />
@@ -91,6 +152,7 @@ const Passwords = () => {
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
+          onClick={openCreateModal}
           className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-primary-500 to-purple-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
         >
           <Plus className="w-5 h-5" />
@@ -101,15 +163,27 @@ const Passwords = () => {
       {/* Password Grid */}
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {passwords.map((password, index) => (
-          <PasswordCard key={index} password={password} onCopy={handleCopy} />
+          <PasswordCard 
+            key={password.id || index} 
+            password={password} 
+            onCopy={handleCopy}
+            onDecrypt={handleDecrypt}
+          />
         ))}
       </div>
+
+      {/* Decrypt Modal (local to this page) */}
+      <DecryptModal
+        isOpen={isDecryptModalOpen}
+        onClose={() => setIsDecryptModalOpen(false)}
+        vaultItem={selectedVault}
+      />
     </div>
   );
 };
 
 // Password Card Component
-const PasswordCard = ({ password, onCopy }) => {
+const PasswordCard = ({ password, onCopy, onDecrypt }) => {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
@@ -127,7 +201,7 @@ const PasswordCard = ({ password, onCopy }) => {
           </div>
           <div>
             <h3 className="font-semibold text-slate-800 dark:text-white">
-              {password.title}
+              {password.name || password.title}
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400">
               {password.username}
@@ -145,34 +219,30 @@ const PasswordCard = ({ password, onCopy }) => {
         </div>
       </div>
 
-      {/* Password Field */}
+      {/* Password Field - Encrypted */}
       <div className="bg-slate-50 dark:bg-slate-900 rounded-lg p-3 mb-3">
         <div className="flex items-center justify-between">
           <span className="font-mono text-sm text-slate-700 dark:text-slate-300">
-            {showPassword ? password.password : '••••••••••••'}
+            ••••••••••••
           </span>
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => setShowPassword(!showPassword)}
-              className="p-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
-            >
-              <Eye className="w-4 h-4 text-slate-500" />
-            </button>
-            <button
-              onClick={() => onCopy(password.password)}
-              className="p-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
-            >
-              <Copy className="w-4 h-4 text-slate-500" />
-            </button>
-          </div>
+          <button
+            onClick={() => onDecrypt(password)}
+            className="p-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+            title="Decrypt password"
+          >
+            <Eye className="w-4 h-4 text-slate-500" />
+          </button>
         </div>
       </div>
 
       {/* Actions */}
       <div className="flex items-center gap-2">
-        <button className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
-          <Edit className="w-4 h-4" />
-          Edit
+        <button 
+          onClick={() => onDecrypt(password)}
+          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+        >
+          <Eye className="w-4 h-4" />
+          View
         </button>
         <button className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors">
           <Trash2 className="w-4 h-4" />
@@ -183,8 +253,8 @@ const PasswordCard = ({ password, onCopy }) => {
       {/* Metadata */}
       <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700">
         <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-          <span>{password.category}</span>
-          <span>Updated {password.lastUpdated}</span>
+          <span>{password.category_name || 'Uncategorized'}</span>
+          <span>Updated {password.lastUpdated || password.updated_at || 'recently'}</span>
         </div>
       </div>
     </motion.div>
