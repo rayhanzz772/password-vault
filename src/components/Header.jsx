@@ -42,7 +42,7 @@ const Header = () => {
             whileHover={{ scale: 1.05 }}
             className="flex items-center gap-2 cursor-pointer"
           >
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center shadow-lg">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center shadow-lg">
               <Lock className="w-6 h-6 text-white" strokeWidth={2.5} />
             </div>
             <span className="text-xl font-bold text-gray-900 dark:text-white">

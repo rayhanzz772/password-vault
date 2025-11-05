@@ -21,6 +21,14 @@ A beautiful, modern landing page for **Vault Password** - an advanced open-sourc
 
 ## ✨ Features
 
+### 🔐 **Authentication System**
+- Secure user registration and login
+- JWT token management
+- Master password stored only in React state (never localStorage!)
+- Form validation with helpful error messages
+- Toast notifications for user feedback
+- Protected routes with authentication guards
+
 ### 🎨 **Modern Design**
 - Glassmorphism effects with beautiful gradients
 - Smooth animations powered by Framer Motion
@@ -62,6 +70,9 @@ A beautiful, modern landing page for **Vault Password** - an advanced open-sourc
 | **[Tailwind CSS 3](https://tailwindcss.com)** | Utility-first CSS framework |
 | **[Framer Motion](https://www.framer.com/motion/)** | Production-ready animation library |
 | **[Lucide React](https://lucide.dev)** | Beautiful, consistent icon set |
+| **[React Router](https://reactrouter.com)** | Client-side routing |
+| **[Axios](https://axios-http.com)** | HTTP client for API requests |
+| **[React Hot Toast](https://react-hot-toast.com)** | Toast notifications |
 
 ---
 
@@ -131,6 +142,19 @@ vault-password-frontend/
 ├── package.json           # Dependencies & scripts
 └── README.md             # You are here!
 ```
+
+---
+
+## 🔐 Authentication
+
+The app includes a complete authentication system with:
+- User registration with email and master password
+- Secure login with JWT token management
+- Master password stored only in React state (never persisted)
+- Protected routes with authentication guards
+- Toast notifications for user feedback
+
+**[📖 Full Authentication Documentation →](./AUTHENTICATION.md)**
 
 ---
 
