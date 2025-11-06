@@ -14,12 +14,12 @@ const Login = () => {
       navigate('/app', { replace: true });
     }
   }, [isAuthenticated, authLoading, navigate]);
-  
+
   const [formData, setFormData] = useState({
     email: '',
     master_password: '',
   });
-  
+
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
@@ -76,7 +76,7 @@ const Login = () => {
     if (result.success) {
       toast.success('Welcome back!');
       console.log('🚀 Navigating to /app...');
-      
+
       // Small delay to ensure state is updated
       setTimeout(() => {
         navigate('/app');
@@ -103,17 +103,28 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4 py-12">
-      {/* Background decoration - Static */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary-300 dark:bg-primary-900 rounded-full mix-blend-multiply dark:mix-blend-lighten filter blur-3xl opacity-20"></div>
-        <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-purple-300 dark:bg-purple-900 rounded-full mix-blend-multiply dark:mix-blend-lighten filter blur-3xl opacity-20"></div>
-      </div>
-
-      <div className="relative w-full max-w-md">
-        {/* Card */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-12 border border-gray-200 dark:border-gray-700">
+      {/* Card */}
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-12 border border-gray-200 dark:border-gray-700">
+        <div className="relative w-full max-w-md">
+          {/* Back to Home - Top of Card */}
+          <div className="mb-4">
+            <Link
+              to="/"
+              className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors group"
+            >
+              <svg
+                className="w-4 h-4 group-hover:-translate-x-1 transition-transform"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              Back to Home
+            </Link>
+          </div>
           {/* Logo & Title */}
-          <div className="text-center mb-8">            
+          <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
               Welcome Back
             </h1>
@@ -137,11 +148,10 @@ const Login = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
-                    errors.email
+                  className={`w-full pl-10 pr-4 py-3 rounded-xl border ${errors.email
                       ? 'border-red-500 focus:ring-red-500'
                       : 'border-gray-300 dark:border-gray-600 focus:ring-primary-500'
-                  } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:border-transparent transition-all outline-none`}
+                    } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:border-transparent transition-all outline-none`}
                   placeholder="you@example.com"
                   autoComplete="email"
                 />
@@ -164,11 +174,10 @@ const Login = () => {
                   name="master_password"
                   value={formData.master_password}
                   onChange={handleChange}
-                  className={`w-full pl-10 pr-12 py-3 rounded-xl border ${
-                    errors.master_password
+                  className={`w-full pl-10 pr-12 py-3 rounded-xl border ${errors.master_password
                       ? 'border-red-500 focus:ring-red-500'
                       : 'border-gray-300 dark:border-gray-600 focus:ring-primary-500'
-                  } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:border-transparent transition-all outline-none`}
+                    } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:border-transparent transition-all outline-none`}
                   placeholder="••••••••"
                   autoComplete="current-password"
                 />
@@ -241,16 +250,6 @@ const Login = () => {
               Create one
             </Link>
           </p>
-        </div>
-
-        {/* Back to Home */}
-        <div className="mt-6 text-center">
-          <Link
-            to="/"
-            className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
-          >
-            ← Back to Home
-          </Link>
         </div>
       </div>
     </div>

@@ -34,7 +34,7 @@ const Hero = () => {
               </Link>
               
               <a
-                href="https://github.com"
+                href="https://github.com/rayhanzz772/password-vault-backend"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group px-8 py-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center gap-2 border border-gray-200 dark:border-gray-700"
