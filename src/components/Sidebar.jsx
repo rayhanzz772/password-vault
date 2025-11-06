@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { 
   LayoutGrid, 
   Briefcase, 
@@ -13,9 +13,20 @@ import {
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 
-const Sidebar = ({ onNewPassword, selectedCategory, onCategoryChange }) => {
-  const { masterPassword } = useAuth();
+const Sidebar = ({ onNewPassword, selectedCategory, onCategoryChange, onUnlock }) => {
+  const { masterPassword, lockVault } = useAuth();
+  const location = useLocation();
   const isVaultUnlocked = !!masterPassword;
+  const isLogsPage = location.pathname.includes('/logs');
+  
+  const handleLockVault = async () => {
+    try {
+      await lockVault();
+    } catch (error) {
+      console.error('Failed to lock vault:', error);
+      // Vault is still locked locally even if logging fails
+    }
+  };
   
   const categories = [
     { name: 'All', icon: LayoutGrid, value: '', count: 0 },
@@ -58,10 +69,11 @@ const Sidebar = ({ onNewPassword, selectedCategory, onCategoryChange }) => {
           </p>
           {categories.map((category) => {
             const Icon = category.icon;
-            const isActive = selectedCategory === category.value;
+            const isActive = selectedCategory === category.value && !isLogsPage;
             return (
-              <button
+              <NavLink
                 key={category.value}
+                to="/app"
                 onClick={() => handleCategoryClick(category.value)}
                 className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-all group ${
                   isActive
@@ -90,7 +102,7 @@ const Sidebar = ({ onNewPassword, selectedCategory, onCategoryChange }) => {
                     {category.count}
                   </span>
                 )}
-              </button>
+              </NavLink>
             );
           })}
         </nav>
@@ -137,10 +149,11 @@ const Sidebar = ({ onNewPassword, selectedCategory, onCategoryChange }) => {
         </nav>
       </div>
 
-      {/* Footer Info */}
-      <div className="p-4 border-t border-slate-200 dark:border-slate-800">
-        <motion.div 
-          animate={{ 
+      {/* Footer Info - Hidden on Logs Page */}
+      {!isLogsPage && (
+        <div className="p-4 border-t border-slate-200 dark:border-slate-800">
+          <motion.div 
+            animate={{ 
             scale: isVaultUnlocked ? 1 : [1, 1.02, 1],
           }}
           transition={{ 
@@ -190,8 +203,33 @@ const Sidebar = ({ onNewPassword, selectedCategory, onCategoryChange }) => {
               : 'Master password required'
             }
           </p>
+          
+          {/* Lock/Unlock Button */}
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={isVaultUnlocked ? handleLockVault : onUnlock}
+            className={`w-full mt-3 flex items-center justify-center gap-2 px-3 py-2 rounded-lg font-medium text-sm transition-all ${
+              isVaultUnlocked
+                ? 'bg-red-500 hover:bg-red-600 text-white'
+                : 'bg-primary-500 hover:bg-primary-600 text-white'
+            }`}
+          >
+            {isVaultUnlocked ? (
+              <>
+                <Lock className="w-4 h-4" />
+                Lock Vault
+              </>
+            ) : (
+              <>
+                <LockOpen className="w-4 h-4" />
+                Unlock Vault
+              </>
+            )}
+          </motion.button>
         </motion.div>
       </div>
+      )}
     </aside>
   );
 };

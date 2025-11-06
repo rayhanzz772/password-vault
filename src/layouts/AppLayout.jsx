@@ -3,10 +3,12 @@ import { Outlet, useLocation } from 'react-router-dom';
 import Topbar from '../components/Topbar';
 import Sidebar from '../components/Sidebar';
 import CreateVaultModal from '../components/CreateVaultModal';
+import UnlockVaultModal from '../components/UnlockVaultModal';
 
 const AppLayout = () => {
   const location = useLocation();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isUnlockModalOpen, setIsUnlockModalOpen] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -23,6 +25,10 @@ const AppLayout = () => {
     setSelectedCategory(category);
   };
 
+  const handleUnlock = () => {
+    setIsUnlockModalOpen(true);
+  };
+
   return (
     <div className="flex h-screen bg-slate-50 dark:bg-slate-900 overflow-hidden">
       {/* Sidebar */}
@@ -31,6 +37,7 @@ const AppLayout = () => {
           onNewPassword={() => setIsCreateModalOpen(true)}
           selectedCategory={selectedCategory}
           onCategoryChange={handleCategoryChange}
+          onUnlock={handleUnlock}
         />
       </div>
 
@@ -65,6 +72,12 @@ const AppLayout = () => {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onSuccess={handleCreateSuccess}
+      />
+
+      {/* Unlock Vault Modal */}
+      <UnlockVaultModal
+        isOpen={isUnlockModalOpen}
+        onClose={() => setIsUnlockModalOpen(false)}
       />
     </div>
   );

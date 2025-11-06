@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { authAPI } from '../utils/api';
+import { authAPI, logsAPI } from '../utils/api';
 
 const AuthContext = createContext();
 
@@ -118,11 +118,35 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('jwt_token'); // Ensure token is removed
   };
 
-  const lockVault = () => {
+  const lockVault = async () => {
     // Lock vault by clearing master password from memory
     // Keep user logged in (JWT token remains)
     setMasterPassword(null);
     console.log('🔒 Vault locked - Master password cleared from memory');
+    
+    // Log the action to the backend
+    try {
+      await logsAPI.create('Locked Vault');
+      console.log('📝 Lock action logged successfully');
+    } catch (error) {
+      console.error('❌ Failed to log lock action:', error);
+      // Don't throw error, locking should still work even if logging fails
+    }
+  };
+
+  const unlockVault = async (password) => {
+    // Unlock vault by setting master password in memory
+    setMasterPassword(password);
+    console.log('🔓 Vault unlocked - Master password set in memory');
+    
+    // Log the action to the backend
+    try {
+      await logsAPI.create('Unlocked Vault');
+      console.log('📝 Unlock action logged successfully');
+    } catch (error) {
+      console.error('❌ Failed to log unlock action:', error);
+      // Don't throw error, unlocking should still work even if logging fails
+    }
   };
 
   const value = {
@@ -134,6 +158,7 @@ export const AuthProvider = ({ children }) => {
     register,
     logout,
     lockVault,
+    unlockVault,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

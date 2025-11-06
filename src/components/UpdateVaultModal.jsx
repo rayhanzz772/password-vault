@@ -1,0 +1,320 @@
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, Eye, EyeOff, RefreshCw, Lock, User, KeyRound, FileText, Tag } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { vaultAPI } from '../utils/api';
+import { useAuth } from '../contexts/AuthContext';
+import PasswordStrengthIndicator from './PasswordStrengthIndicator';
+
+const UpdateVaultModal = ({ isOpen, onClose, vaultItem, onSuccess }) => {
+  const { masterPassword } = useAuth();
+  const [formData, setFormData] = useState({
+    name: '',
+    username: '',
+    password: '',
+    note: '',
+    category: 'Work',
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Populate form when vaultItem changes
+  useEffect(() => {
+    if (vaultItem) {
+      setFormData({
+        name: vaultItem.name || '',
+        username: vaultItem.username || '',
+        password: '', // Don't pre-fill password for security
+        note: vaultItem.note || '',
+        category: vaultItem.category || 'Work',
+      });
+    }
+  }, [vaultItem]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const generatePassword = () => {
+    const length = 16;
+    const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?';
+    let password = '';
+    
+    // Ensure at least one of each type
+    password += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[Math.floor(Math.random() * 26)];
+    password += 'abcdefghijklmnopqrstuvwxyz'[Math.floor(Math.random() * 26)];
+    password += '0123456789'[Math.floor(Math.random() * 10)];
+    password += '!@#$%^&*()_+-='[Math.floor(Math.random() * 14)];
+    
+    // Fill the rest
+    for (let i = password.length; i < length; i++) {
+      password += charset[Math.floor(Math.random() * charset.length)];
+    }
+    
+    // Shuffle
+    password = password.split('').sort(() => Math.random() - 0.5).join('');
+    
+    setFormData(prev => ({ ...prev, password }));
+    toast.success('Strong password generated!');
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!masterPassword) {
+      toast.error('Master password is required. Please unlock your vault first.');
+      return;
+    }
+
+    if (!formData.name.trim()) {
+      toast.error('Name is required');
+      return;
+    }
+
+    if (!formData.username.trim()) {
+      toast.error('Username is required');
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+
+      const updateData = {
+        name: formData.name.trim(),
+        username: formData.username.trim(),
+        note: formData.note.trim(),
+        category_id: formData.category,
+        master_password: masterPassword,
+      };
+
+      // Only include password if it was changed
+      if (formData.password.trim()) {
+        updateData.password = formData.password.trim();
+      }
+
+      console.log('🔄 Updating vault with data:', { ...updateData, password: '***', master_password: '***' });
+      
+      await vaultAPI.update(vaultItem.id, updateData, masterPassword);
+      
+      toast.success('Password updated successfully!');
+      
+      // Reset form
+      setFormData({
+        name: '',
+        username: '',
+        password: '',
+        note: '',
+        category: 'Work',
+      });
+      
+      if (onSuccess) {
+        onSuccess();
+      }
+      
+      onClose();
+    } catch (error) {
+      console.error('❌ Update vault error:', error);
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to update password';
+      toast.error(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <AnimatePresence>
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        {/* Backdrop */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={onClose}
+          className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        />
+
+        {/* Modal */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 20 }}
+          className="relative w-full max-w-md bg-white dark:bg-slate-800 rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
+        >
+          {/* Header */}
+          <div className="bg-gradient-to-r from-primary-500 to-purple-600 px-6 py-4 flex-shrink-0">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-bold text-white">Update Password</h2>
+              <button
+                onClick={onClose}
+                className="text-white/80 hover:text-white transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+          </div>
+
+          {/* Form - Scrollable */}
+          <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent">
+            {/* Name */}
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                <div className="flex items-center gap-2">
+                  <Tag className="w-4 h-4" />
+                  Name *
+                </div>
+              </label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="e.g., Gmail Account"
+                className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-slate-800 dark:text-white"
+                required
+              />
+            </div>
+
+            {/* Username */}
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                <div className="flex items-center gap-2">
+                  <User className="w-4 h-4" />
+                  Username / Email *
+                </div>
+              </label>
+              <input
+                type="text"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                placeholder="e.g., user@example.com"
+                className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-slate-800 dark:text-white"
+                required
+              />
+            </div>
+
+            {/* Password */}
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                <div className="flex items-center gap-2">
+                  <KeyRound className="w-4 h-4" />
+                  Password (leave empty to keep current)
+                </div>
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Leave empty to keep current password"
+                  className="w-full px-4 py-2.5 pr-24 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-slate-800 dark:text-white"
+                />
+                <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="p-1.5 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+                    ) : (
+                      <Eye className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={generatePassword}
+                    className="p-1.5 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                    title="Generate password"
+                  >
+                    <RefreshCw className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+                  </button>
+                </div>
+              </div>
+              {formData.password && <PasswordStrengthIndicator password={formData.password} />}
+            </div>
+
+            {/* Category */}
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                <div className="flex items-center gap-2">
+                  <Tag className="w-4 h-4" />
+                  Category
+                </div>
+              </label>
+              <select
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-slate-800 dark:text-white"
+              >
+                <option value="Work">Work</option>
+                <option value="Game">Game</option>
+                <option value="Finance">Finance</option>
+                <option value="Social">Social</option>
+              </select>
+            </div>
+
+            {/* Note */}
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                <div className="flex items-center gap-2">
+                  <FileText className="w-4 h-4" />
+                  Note (Optional)
+                </div>
+              </label>
+              <textarea
+                name="note"
+                value={formData.note}
+                onChange={handleChange}
+                placeholder="Add any additional notes..."
+                rows={3}
+                className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-slate-800 dark:text-white resize-none"
+              />
+            </div>
+
+            {/* Master Password Warning */}
+            <div className="flex items-start gap-3 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl">
+              <Lock className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+              <div className="text-sm text-amber-800 dark:text-amber-200">
+                <p className="font-semibold mb-1">Master Password Required</p>
+                <p className="text-amber-700 dark:text-amber-300">
+                  Your master password will be used to re-encrypt this password entry.
+                </p>
+              </div>
+            </div>
+          </form>
+
+          {/* Buttons - Fixed at bottom */}
+          <div className="flex gap-3 p-6 pt-4 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 flex-shrink-0">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={isLoading}
+              className="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-semibold hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors disabled:opacity-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              onClick={handleSubmit}
+              disabled={isLoading}
+              className="flex-1 px-4 py-2.5 bg-gradient-to-r from-primary-500 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoading ? 'Updating...' : 'Update Password'}
+            </button>
+          </div>
+        </motion.div>
+      </div>
+    </AnimatePresence>
+  );
+};
+
+export default UpdateVaultModal;

@@ -143,7 +143,7 @@ export const vaultAPI = {
   },
 
   update: async (id, vaultData, masterPassword) => {
-    const response = await api.put(`/api/vault/${id}`, {
+    const response = await api.put(`/api/vault/${id}/update`, {
       ...vaultData,
       master_password: masterPassword,
     });
@@ -154,6 +154,26 @@ export const vaultAPI = {
     const response = await api.delete(`/api/vault/${id}/delete`, {
       data: { master_password: masterPassword },
     });
+    return response.data;
+  },
+};
+
+// Logs API endpoints
+export const logsAPI = {
+  create: async (action) => {
+    const response = await api.post('/api/vault/logs', {
+      action: action,
+    });
+    return response.data;
+  },
+
+  getAll: async () => {
+    const response = await api.get('/api/vault/logs');
+    return response.data;
+  },
+
+  getSummary: async () => {
+    const response = await api.get('/api/vault/recent-activity');
     return response.data;
   },
 };

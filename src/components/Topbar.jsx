@@ -18,13 +18,22 @@ const Topbar = ({ searchQuery = '', onSearchChange }) => {
     navigate('/login');
   };
 
-  const handleLock = () => {
+  const handleLock = async () => {
     // Lock the vault (clear master password from memory but keep token)
-    lockVault();
-    toast.success('🔒 Vault locked - Master password cleared from memory', {
-      icon: '🔒',
-      duration: 3000,
-    });
+    try {
+      await lockVault();
+      toast.success('Vault locked', {
+        icon: '🔒',
+        duration: 3000,
+      });
+    } catch (error) {
+      console.error('Failed to lock vault:', error);
+      // Still show success as the vault was locked locally
+      toast.success('Vault locked', {
+        icon: '🔒',
+        duration: 3000,
+      });
+    }
   };
 
   const handleSearchChange = (e) => {

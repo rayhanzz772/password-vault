@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
@@ -18,6 +18,7 @@ import { vaultAPI } from '../utils/api';
 import CreateVaultModal from '../components/CreateVaultModal';
 import DecryptModal from '../components/DecryptModal';
 import DeleteVaultModal from '../components/DeleteVaultModal';
+import UpdateVaultModal from '../components/UpdateVaultModal';
 
 const Passwords = () => {
   const { 
@@ -29,20 +30,28 @@ const Passwords = () => {
   const { masterPassword } = useAuth();
   const [passwords, setPasswords] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isFiltering, setIsFiltering] = useState(false); // Separate state for filter operations
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isDecryptModalOpen, setIsDecryptModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [selectedVault, setSelectedVault] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
 
   // Fetch passwords on mount and when refresh trigger, search, or category changes
   useEffect(() => {
-    fetchPasswords();
+    const isInitialLoad = passwords.length === 0 && isLoading;
+    fetchPasswords(isInitialLoad);
   }, [refreshTrigger, searchQuery, selectedCategory]);
 
-  const fetchPasswords = async () => {
+  const fetchPasswords = async (isInitialLoad = false) => {
     try {
-      setIsLoading(true);
+      // Only show full loading on initial load, use filtering state for filter changes
+      if (isInitialLoad) {
+        setIsLoading(true);
+      } else {
+        setIsFiltering(true);
+      }
       
       // Build filters object
       const filters = {};
@@ -77,6 +86,7 @@ const Passwords = () => {
       setPasswords([]); // Set empty array on error
     } finally {
       setIsLoading(false);
+      setIsFiltering(false);
     }
   };
 
@@ -87,6 +97,15 @@ const Passwords = () => {
   const handleDecrypt = (vault) => {
     setSelectedVault(vault);
     setIsDecryptModalOpen(true);
+  };
+
+  const handleUpdateClick = (vault) => {
+    setSelectedVault(vault);
+    setIsUpdateModalOpen(true);
+  };
+
+  const handleUpdateSuccess = () => {
+    fetchPasswords(); // Refresh list after update
   };
 
   const handleCopy = (text) => {
@@ -117,6 +136,34 @@ const Passwords = () => {
       setDeletingId(null);
     }
   };
+
+  // Locked Vault State
+  if (!masterPassword) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center max-w-md"
+        >
+          <div className="w-20 h-20 bg-gradient-to-br from-red-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl">
+            <Lock className="w-10 h-10 text-white" />
+          </div>
+          <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-3">
+            Vault is Locked
+          </h2>
+          <p className="text-slate-600 dark:text-slate-400 mb-6">
+            Your vault is currently locked. Please unlock it with your master password to access your encrypted passwords.
+          </p>
+          <div className="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl">
+            <p className="text-sm text-amber-800 dark:text-amber-200">
+              💡 Tip: Click the "Unlock Vault" button in the sidebar to enter your master password.
+            </p>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
 
   // Empty State
   if (isLoading) {
@@ -186,8 +233,17 @@ const Passwords = () => {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800 dark:text-white mb-1">
+          <h1 className="text-2xl font-bold text-slate-800 dark:text-white mb-1 flex items-center gap-3">
             All Passwords
+            {isFiltering && (
+              <span className="inline-flex items-center gap-2 text-sm font-normal text-primary-600 dark:text-primary-400">
+                <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Filtering...
+              </span>
+            )}
           </h1>
           <p className="text-slate-600 dark:text-slate-400">
             {passwords.length} {passwords.length === 1 ? 'password' : 'passwords'} stored securely
@@ -209,10 +265,11 @@ const Passwords = () => {
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {passwords.map((password, index) => (
           <PasswordCard 
-            key={password.id || index} 
+            key={password.id || `password-${index}`} 
             password={password} 
             onCopy={handleCopy}
             onDecrypt={handleDecrypt}
+            onUpdate={handleUpdateClick}
             onDelete={handleDeleteClick}
             isDeleting={deletingId === password.id}
           />
@@ -224,6 +281,17 @@ const Passwords = () => {
         isOpen={isDecryptModalOpen}
         onClose={() => setIsDecryptModalOpen(false)}
         vaultItem={selectedVault}
+      />
+
+      {/* Update Modal */}
+      <UpdateVaultModal
+        isOpen={isUpdateModalOpen}
+        onClose={() => {
+          setIsUpdateModalOpen(false);
+          setSelectedVault(null);
+        }}
+        vaultItem={selectedVault}
+        onSuccess={handleUpdateSuccess}
       />
 
       {/* Delete Modal */}
@@ -242,15 +310,33 @@ const Passwords = () => {
 };
 
 // Password Card Component
-const PasswordCard = ({ password, onCopy, onDecrypt, onDelete, isDeleting }) => {
+const PasswordCard = ({ password, onCopy, onDecrypt, onUpdate, onDelete, isDeleting }) => {
   const [showPassword, setShowPassword] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const menuRef = useRef(null);
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setShowMenu(false);
+      }
+    };
+
+    if (showMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showMenu]);
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -4 }}
-      className="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all group"
+      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      className="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all group relative"
     >
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
@@ -272,9 +358,41 @@ const PasswordCard = ({ password, onCopy, onDecrypt, onDelete, isDeleting }) => 
           {password.isFavorite && (
             <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
           )}
-          <button className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition-all">
-            <MoreVertical className="w-4 h-4 text-slate-500" />
-          </button>
+          <div className="relative" ref={menuRef}>
+            <button 
+              onClick={() => setShowMenu(!showMenu)}
+              className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition-all"
+            >
+              <MoreVertical className="w-4 h-4 text-slate-500" />
+            </button>
+            
+            {/* Dropdown Menu */}
+            {showMenu && (
+              <div className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 py-1 z-10">
+                <button
+                  onClick={() => {
+                    onUpdate(password);
+                    setShowMenu(false);
+                  }}
+                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                >
+                  <Edit className="w-4 h-4" />
+                  Edit
+                </button>
+                <button
+                  onClick={() => {
+                    onDelete(password);
+                    setShowMenu(false);
+                  }}
+                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                  disabled={isDeleting}
+                >
+                  <Trash2 className="w-4 h-4" />
+                  {isDeleting ? 'Deleting...' : 'Delete'}
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -302,23 +420,6 @@ const PasswordCard = ({ password, onCopy, onDecrypt, onDelete, isDeleting }) => 
         >
           <Eye className="w-4 h-4" />
           View
-        </button>
-        <button 
-          onClick={() => onDelete(password)}
-          disabled={isDeleting}
-          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isDeleting ? (
-            <>
-              <div className="w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></div>
-              Deleting...
-            </>
-          ) : (
-            <>
-              <Trash2 className="w-4 h-4" />
-              Delete
-            </>
-          )}
         </button>
       </div>
 
