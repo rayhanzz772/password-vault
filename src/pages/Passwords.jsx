@@ -15,6 +15,7 @@ import {
 import toast from 'react-hot-toast';
 import { useAuth } from '../contexts/AuthContext';
 import { vaultAPI } from '../utils/api';
+import { getCategoryIcon, getCategoryGradient } from '../utils/categoryIcons';
 import CreateVaultModal from '../components/CreateVaultModal';
 import DecryptModal from '../components/DecryptModal';
 import DeleteVaultModal from '../components/DeleteVaultModal';
@@ -254,7 +255,7 @@ const Passwords = () => {
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={openCreateModal}
-          className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-primary-500 to-purple-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
+          className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
         >
           <Plus className="w-5 h-5" />
           <span className="hidden sm:inline">Add Password</span>
@@ -315,6 +316,10 @@ const PasswordCard = ({ password, onCopy, onDecrypt, onUpdate, onDelete, isDelet
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef(null);
 
+  // Get category icon and gradient for this password
+  const CategoryIcon = getCategoryIcon(password.category || password.category_name);
+  const categoryGradient = getCategoryGradient(password.category || password.category_name);
+
   // Close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -341,8 +346,9 @@ const PasswordCard = ({ password, onCopy, onDecrypt, onUpdate, onDelete, isDelet
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
-            <Globe className="w-5 h-5 text-white" />
+          {/* Icon */}
+          <div className={`w-10 h-10 bg-gradient-to-br ${categoryGradient} rounded-xl flex items-center justify-center shadow-md`}>
+            <CategoryIcon className="w-5 h-5 text-white" />
           </div>
           <div>
             <h3 className="font-semibold text-slate-800 dark:text-white">

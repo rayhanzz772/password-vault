@@ -30,7 +30,22 @@
   .text-gradient {
     @apply bg-clip-text text-transparent bg-gradient-to-br from-orange-500 to-orange-600;
   }
-  
+
+  .animated-text {
+    background: linear-gradient(270deg,
+        #3B82F6,
+        #2563EB,
+        #F97316,
+        #EA580C,
+        #3B82F6);
+    background-size: 600% 600%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientShift 5s ease infinite;
+  }
+
+
+
   .glass-effect {
     @apply bg-white/10 dark:bg-gray-800/30 backdrop-blur-lg border border-white/20 dark:border-gray-700/50;
   }
@@ -77,3 +92,16 @@
   }
 }
 
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}

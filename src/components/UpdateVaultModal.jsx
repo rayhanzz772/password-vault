@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { X, Eye, EyeOff, RefreshCw, Lock, User, KeyRound, FileText, Tag } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { vaultAPI } from '../utils/api';
 import { useAuth } from '../contexts/AuthContext';
 import PasswordStrengthIndicator from './PasswordStrengthIndicator';
+import { getCategoryIcon, getCategoryGradient } from '../utils/categoryIcons';
 
 const UpdateVaultModal = ({ isOpen, onClose, vaultItem, onSuccess }) => {
   const { masterPassword } = useAuth();
@@ -125,41 +125,39 @@ const UpdateVaultModal = ({ isOpen, onClose, vaultItem, onSuccess }) => {
     }
   };
 
+  // Get category icon and gradient
+  const CategoryIcon = getCategoryIcon(formData.category || vaultItem?.category);
+  const categoryGradient = getCategoryGradient(formData.category || vaultItem?.category);
+
   if (!isOpen) return null;
 
   return (
-    <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        {/* Backdrop */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={onClose}
-          className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-        />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div
+        onClick={onClose}
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+      />
 
-        {/* Modal */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative w-full max-w-md bg-white dark:bg-slate-800 rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
-        >
-          {/* Header */}
-          <div className="bg-gradient-to-r from-primary-500 to-purple-600 px-6 py-4 flex-shrink-0">
-            <div className="flex items-center justify-between">
+      {/* Modal */}
+      <div className="relative w-full max-w-md bg-white dark:bg-slate-800 rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+        {/* Header */}
+        <div className={`bg-gradient-to-r ${categoryGradient} px-6 py-4 flex-shrink-0`}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                <CategoryIcon className="w-5 h-5 text-white" />
+              </div>
               <h2 className="text-xl font-bold text-white">Update Password</h2>
-              <button
-                onClick={onClose}
-                className="text-white/80 hover:text-white transition-colors"
-              >
-                <X className="w-6 h-6" />
-              </button>
             </div>
+            <button
+              onClick={onClose}
+              className="text-white/80 hover:text-white transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
           </div>
-
-          {/* Form - Scrollable */}
+        </div>          {/* Form - Scrollable */}
           <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent">
             {/* Name */}
             <div>
@@ -311,9 +309,8 @@ const UpdateVaultModal = ({ isOpen, onClose, vaultItem, onSuccess }) => {
               {isLoading ? 'Updating...' : 'Update Password'}
             </button>
           </div>
-        </motion.div>
+        </div>
       </div>
-    </AnimatePresence>
   );
 };
 

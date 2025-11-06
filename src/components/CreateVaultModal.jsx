@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { 
   X, 
   Eye, 
@@ -14,6 +13,7 @@ import toast from 'react-hot-toast';
 import { useAuth } from '../contexts/AuthContext';
 import { vaultAPI, categoriesAPI } from '../utils/api';
 import { generatePassword, calculatePasswordStrength } from '../utils/passwordGenerator';
+import { getCategoryIcon, getCategoryGradient } from '../utils/categoryIcons';
 
 const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
   const { masterPassword } = useAuth();
@@ -195,23 +195,22 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
   };
 
   const passwordStrength = calculatePasswordStrength(formData.password);
+  
+  // Get selected category for dynamic icon
+  const selectedCategoryObj = categories.find(cat => cat.id === parseInt(formData.category_id));
+  const CategoryIcon = getCategoryIcon(selectedCategoryObj?.name || '');
+  const categoryGradient = getCategoryGradient(selectedCategoryObj?.name || '');
 
   if (!isOpen) return null;
 
   return (
-    <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.95 }}
-          className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
-        >
-          {/* Header */}
-          <div className="sticky top-0 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 p-6 flex items-center justify-between z-10">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        {/* Header */}
+        <div className="sticky top-0 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 p-6 flex items-center justify-between z-10">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-purple-600 rounded-xl flex items-center justify-center">
-                <Lock className="w-5 h-5 text-white" />
+              <div className={`w-10 h-10 bg-gradient-to-br ${categoryGradient} rounded-xl flex items-center justify-center`}>
+                <CategoryIcon className="w-5 h-5 text-white" />
               </div>
               <div>
                 <h2 className="text-xl font-bold text-slate-800 dark:text-white">
@@ -232,11 +231,7 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
 
           {/* Breach Warning */}
           {breachWarning && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mx-6 mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-start gap-3"
-            >
+            <div className="mx-6 mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-start gap-3">
               <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
               <div className="flex-1">
                 <h4 className="font-semibold text-red-800 dark:text-red-300 mb-1">
@@ -246,7 +241,7 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
                   {breachWarning}
                 </p>
               </div>
-            </motion.div>
+            </div>
           )}
 
           <form onSubmit={handleSubmit} className="p-6 space-y-5">
@@ -380,12 +375,7 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
 
               {/* Password Generator */}
               {showGenerator && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="mt-4 p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700"
-                >
+                <div className="mt-4 p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
                   <div className="space-y-3">
                     {/* Length Slider */}
                     <div>
@@ -452,7 +442,7 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
                       Generate Password
                     </button>
                   </div>
-                </motion.div>
+                </div>
               )}
             </div>
 
@@ -526,9 +516,8 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
               </button>
             </div>
           </form>
-        </motion.div>
+        </div>
       </div>
-    </AnimatePresence>
   );
 };
 

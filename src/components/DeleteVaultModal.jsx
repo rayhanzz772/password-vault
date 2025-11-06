@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { 
   X, 
   AlertTriangle,
@@ -11,6 +10,7 @@ import {
   EyeOff
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { getCategoryIcon, getCategoryGradient } from '../utils/categoryIcons';
 
 const DeleteVaultModal = ({ isOpen, onClose, vaultItem, onDelete, isDeleting }) => {
   const [step, setStep] = useState(1); // 1: confirmation, 2: password input
@@ -67,47 +67,29 @@ const DeleteVaultModal = ({ isOpen, onClose, vaultItem, onDelete, isDeleting }) 
 
   if (!isOpen || !vaultItem) return null;
 
+  // Get category icon and gradient
+  const CategoryIcon = getCategoryIcon(vaultItem?.category || vaultItem?.category_name);
+  const categoryGradient = getCategoryGradient(vaultItem?.category || vaultItem?.category_name);
+
   return (
-    <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.9, y: 20 }}
-          transition={{ type: 'spring', duration: 0.5 }}
-          className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl w-full max-w-md overflow-hidden"
-        >
-          {/* Header with animated gradient */}
-          <div className="relative bg-gradient-to-br from-red-500 via-red-600 to-rose-700 p-6">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+      <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl w-full max-w-md overflow-hidden">
+        {/* Header with animated gradient */}
+        <div className="relative bg-gradient-to-br from-red-500 via-red-600 to-rose-700 p-6">
             <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-30"></div>
             
             <div className="relative flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <motion.div 
-                  initial={{ scale: 0, rotate: -180 }}
-                  animate={{ scale: 1, rotate: 0 }}
-                  transition={{ type: 'spring', delay: 0.2 }}
-                  className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center border-2 border-white/30"
-                >
+                <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center border-2 border-white/30">
                   <AlertTriangle className="w-7 h-7 text-white" />
-                </motion.div>
+                </div>
                 <div>
-                  <motion.h2 
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.3 }}
-                    className="text-2xl font-bold text-white"
-                  >
+                  <h2 className="text-2xl font-bold text-white">
                     Delete Password
-                  </motion.h2>
-                  <motion.p 
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.4 }}
-                    className="text-red-100 text-sm"
-                  >
+                  </h2>
+                  <p className="text-red-100 text-sm">
                     This action cannot be undone
-                  </motion.p>
+                  </p>
                 </div>
               </div>
               <button
@@ -142,21 +124,16 @@ const DeleteVaultModal = ({ isOpen, onClose, vaultItem, onDelete, isDeleting }) 
               </div>
             </div>
 
-            <AnimatePresence mode="wait">
-              {/* Step 1: Confirmation */}
-              {step === 1 && (
-                <motion.div
-                  key="step1"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  className="space-y-4"
-                >
+            {/* Step 1: Confirmation */}
+            {step === 1 && (
+              <div
+                className="space-y-4"
+              >
                   {/* Vault Item Info */}
                   <div className="bg-slate-50 dark:bg-slate-900 rounded-2xl p-4 border-2 border-red-200 dark:border-red-900/50">
                     <div className="flex items-start gap-3">
-                      <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-rose-600 rounded-xl flex items-center justify-center flex-shrink-0">
-                        <Trash2 className="w-6 h-6 text-white" />
+                      <div className={`w-12 h-12 bg-gradient-to-br ${categoryGradient} rounded-xl flex items-center justify-center flex-shrink-0`}>
+                        <CategoryIcon className="w-6 h-6 text-white" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3 className="font-semibold text-slate-900 dark:text-white text-lg truncate">
@@ -252,18 +229,12 @@ const DeleteVaultModal = ({ isOpen, onClose, vaultItem, onDelete, isDeleting }) 
                       Continue
                     </button>
                   </div>
-                </motion.div>
+                </div>
               )}
 
               {/* Step 2: Master Password */}
               {step === 2 && (
-                <motion.div
-                  key="step2"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  className="space-y-4"
-                >
+                <div className="space-y-4">
                   {/* Security Notice */}
                   <div className="bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-900/50 rounded-2xl p-4">
                     <div className="flex gap-3">
@@ -359,13 +330,11 @@ const DeleteVaultModal = ({ isOpen, onClose, vaultItem, onDelete, isDeleting }) 
                       )}
                     </button>
                   </div>
-                </motion.div>
+                </div>
               )}
-            </AnimatePresence>
           </div>
-        </motion.div>
+        </div>
       </div>
-    </AnimatePresence>
   );
 };
 

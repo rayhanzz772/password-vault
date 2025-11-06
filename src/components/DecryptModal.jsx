@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   X,
   Eye,
@@ -8,11 +7,12 @@ import {
   Lock,
   Unlock,
   Clock,
-  AlertCircle
+  AlertCircle,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { useAuth } from '../contexts/AuthContext';
 import { vaultAPI } from '../utils/api';
+import { useAuth } from '../contexts/AuthContext';
+import { getCategoryIcon, getCategoryGradient } from '../utils/categoryIcons';
 
 const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
   const { masterPassword } = useAuth();
@@ -183,25 +183,23 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
     onClose();
   };
 
+  // Get category icon and gradient
+  const CategoryIcon = getCategoryIcon(vaultItem?.category || vaultItem?.category_name);
+  const categoryGradient = getCategoryGradient(vaultItem?.category || vaultItem?.category_name);
+
   if (!isOpen || !vaultItem) return null;
 
   return (
-    <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm overflow-y-auto">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.95 }}
-          className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg my-8"
-        >
-          {/* Header */}
-          <div className="border-b border-slate-200 dark:border-slate-700 p-6 flex items-center justify-between">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm overflow-y-auto">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg my-8">
+        {/* Header */}
+        <div className="border-b border-slate-200 dark:border-slate-700 p-6 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-purple-600 rounded-xl flex items-center justify-center">
+              <div className={`w-10 h-10 bg-gradient-to-br ${categoryGradient} rounded-xl flex items-center justify-center`}>
                 {decryptedPassword ? (
                   <Unlock className="w-5 h-5 text-white" />
                 ) : (
-                  <Lock className="w-5 h-5 text-white" />
+                  <CategoryIcon className="w-5 h-5 text-white" />
                 )}
               </div>
               <div>
@@ -235,9 +233,7 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
 
             {/* Master Password Input (if not in memory) */}
             {showMasterPasswordInput && !decryptedPassword && (
-              <motion.form
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
+              <form
                 onSubmit={handleSubmitMasterPassword}
                 className="space-y-4"
               >
@@ -269,16 +265,12 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
                 >
                   {isLoading ? 'Decrypting...' : 'Decrypt Password'}
                 </button>
-              </motion.form>
+              </form>
             )}
 
             {/* Decrypted Password Display */}
             {decryptedPassword && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="space-y-4"
-              >
+              <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                     Password
@@ -328,16 +320,12 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
                     Clear Now
                   </button>
                 </div>
-              </motion.div>
+              </div>
             )}
 
             {/* Rate Limit Warning */}
             {isRateLimited && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-start gap-3"
-              >
+              <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-start gap-3">
                 <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
                   <h4 className="font-semibold text-red-800 dark:text-red-300 mb-1">
@@ -347,7 +335,7 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
                     Please wait {countdown} seconds before trying again.
                   </p>
                 </div>
-              </motion.div>
+              </div>
             )}
 
             {/* Note */}
@@ -397,9 +385,8 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
               Close
             </button>
           </div>
-        </motion.div>
+        </div>
       </div>
-    </AnimatePresence>
   );
 };
 

@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Lock, Eye, EyeOff, X, Shield } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../contexts/AuthContext';
@@ -67,26 +66,17 @@ const UnlockVaultModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        {/* Backdrop */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={handleClose}
-          className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div
+        onClick={handleClose}
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+      />
 
         {/* Modal */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative w-full max-w-md bg-white dark:bg-slate-800 rounded-2xl shadow-2xl overflow-hidden"
-        >
-          {/* Header */}
-          <div className="bg-gradient-to-r from-primary-500 to-purple-600 px-6 py-8 text-center">
+      <div className="relative w-full max-w-md bg-white dark:bg-slate-800 rounded-2xl shadow-2xl overflow-hidden">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-primary-500 to-purple-600 px-6 py-8 text-center">
             <div className="flex justify-center mb-4">
               <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
                 <Lock className="w-8 h-8 text-white" />
@@ -155,13 +145,9 @@ const UnlockVaultModal = ({ isOpen, onClose }) => {
                 </button>
               </div>
               {error && (
-                <motion.p
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mt-2 text-sm text-red-600 dark:text-red-400 flex items-center gap-1"
-                >
+                <p className="mt-2 text-sm text-red-600 dark:text-red-400 flex items-center gap-1">
                   <span>⚠️</span> {error}
-                </motion.p>
+                </p>
               )}
             </div>
 
@@ -194,9 +180,8 @@ const UnlockVaultModal = ({ isOpen, onClose }) => {
               </button>
             </div>
           </form>
-        </motion.div>
+        </div>
       </div>
-    </AnimatePresence>
   );
 };
 
