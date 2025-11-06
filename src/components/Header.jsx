@@ -19,10 +19,10 @@ const Header = () => {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      
+
       // Update background blur effect
       setIsScrolled(currentScrollY > 20);
-      
+
       // Hide navbar when scrolling down, show when scrolling up
       if (currentScrollY > lastScrollY && currentScrollY > 100) {
         // Scrolling down & past 100px
@@ -31,7 +31,7 @@ const Header = () => {
         // Scrolling up or at top
         setIsVisible(true);
       }
-      
+
       setLastScrollY(currentScrollY);
     };
 
@@ -51,11 +51,10 @@ const Header = () => {
       initial={{ y: -100 }}
       animate={{ y: isVisible ? 0 : -100 }}
       transition={{ duration: 0.3, ease: 'easeInOut' }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
           ? 'bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg'
           : 'bg-transparent'
-      }`}
+        }`}
     >
       <nav className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between h-16 sm:h-24">
