@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  X, 
-  Eye, 
-  EyeOff, 
-  Copy, 
+import {
+  X,
+  Eye,
+  EyeOff,
+  Copy,
   Lock,
   Unlock,
   Clock,
@@ -16,7 +16,7 @@ import { vaultAPI } from '../utils/api';
 
 const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
   const { masterPassword } = useAuth();
-  
+
   const [decryptedPassword, setDecryptedPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -25,7 +25,7 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
   const [timeRemaining, setTimeRemaining] = useState(30);
   const [inputMasterPassword, setInputMasterPassword] = useState('');
   const [showMasterPasswordInput, setShowMasterPasswordInput] = useState(false);
-  
+
   const countdownRef = useRef(null);
   const clearTimerRef = useRef(null);
 
@@ -99,10 +99,10 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
       const result = await vaultAPI.decrypt(vaultItem.id, password);
       console.log('🔓 Decrypt API response:', result);
       console.log('🔍 Response structure:', JSON.stringify(result, null, 2));
-      
+
       // Handle different response structures
       let decrypted = null;
-      
+
       if (result.decrypted_password) {
         decrypted = result.decrypted_password;
       } else if (result.password) {
@@ -116,9 +116,9 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
       } else if (result.data?.data?.password) {
         decrypted = result.data.data.password;
       }
-      
+
       console.log('🔑 Extracted decrypted password:', decrypted ? '***' : 'NOT FOUND');
-      
+
       if (!decrypted) {
         console.error('❌ No decrypted password in response!');
         console.error('Available fields:', Object.keys(result));
@@ -128,12 +128,12 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
         toast.error('Failed to extract decrypted password from response');
         return;
       }
-      
+
       setDecryptedPassword(decrypted);
       toast.success('Password decrypted!');
     } catch (error) {
       console.error('Failed to decrypt:', error);
-      
+
       // Handle 429 Too Many Requests
       if (error.response?.status === 429) {
         const retryAfter = error.response?.data?.retry_after || 60;
@@ -187,12 +187,12 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm overflow-y-auto">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
-          className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg"
+          className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg my-8"
         >
           {/* Header */}
           <div className="border-b border-slate-200 dark:border-slate-700 p-6 flex items-center justify-between">
@@ -221,7 +221,8 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
             </button>
           </div>
 
-          <div className="p-6 space-y-4">
+          {/* Scrollable Content */}
+          <div className="p-6 space-y-4 max-h-[calc(100vh-12rem)] overflow-y-auto">
             {/* Username/Email */}
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
@@ -355,13 +356,20 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                   Note
                 </label>
-                <div className="px-4 py-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
-                  <p className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap">
-                    {vaultItem.note}
-                  </p>
+                <div className="relative">
+                  <div className="px-4 py-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 max-h-48 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent">
+                    <p className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap break-words">
+                      {vaultItem.note}
+                    </p>
+                  </div>
+                  {/* Scroll indicator - shows if content is scrollable */}
+                  {vaultItem.note.length > 200 && (
+                    <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-slate-50 dark:from-slate-900 to-transparent rounded-b-xl pointer-events-none"></div>
+                  )}
                 </div>
               </div>
             )}
+
 
             {/* Metadata */}
             <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
@@ -375,7 +383,7 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
                 <div>
                   <p className="text-slate-500 dark:text-slate-400">Last Updated</p>
                   <p className="font-medium text-slate-800 dark:text-white">
-                    {vaultItem.lastUpdated || 'N/A'}
+                    {vaultItem.updated_at || 'N/A'}
                   </p>
                 </div>
               </div>

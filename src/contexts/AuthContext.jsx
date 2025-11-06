@@ -118,6 +118,13 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('jwt_token'); // Ensure token is removed
   };
 
+  const lockVault = () => {
+    // Lock vault by clearing master password from memory
+    // Keep user logged in (JWT token remains)
+    setMasterPassword(null);
+    console.log('🔒 Vault locked - Master password cleared from memory');
+  };
+
   const value = {
     user,
     masterPassword,
@@ -126,6 +133,7 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     logout,
+    lockVault,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -105,8 +105,25 @@ export const categoriesAPI = {
 
 // Vault API endpoints
 export const vaultAPI = {
-  getAll: async () => {
-    const response = await api.get('/api/vault');
+  getAll: async (filters = {}) => {
+    // Build query string from filters
+    const params = new URLSearchParams();
+    
+    if (filters.category) {
+      params.append('category', filters.category);
+    }
+    
+    if (filters.search || filters.q) {
+      params.append('q', filters.search || filters.q);
+    }
+    
+    const queryString = params.toString();
+    const url = queryString ? `/api/vault?${queryString}` : '/api/vault';
+    
+    console.log('🔍 Fetching vault with filters:', filters);
+    console.log('📍 API URL:', url);
+    
+    const response = await api.get(url);
     return response.data;
   },
 
@@ -134,7 +151,7 @@ export const vaultAPI = {
   },
 
   delete: async (id, masterPassword) => {
-    const response = await api.delete(`/api/vault/${id}`, {
+    const response = await api.delete(`/api/vault/${id}/delete`, {
       data: { master_password: masterPassword },
     });
     return response.data;

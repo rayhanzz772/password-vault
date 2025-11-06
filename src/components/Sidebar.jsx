@@ -6,18 +6,30 @@ import {
   Users, 
   Activity,
   Plus,
-  Gamepad2
+  Gamepad2,
+  Lock,
+  LockOpen
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useAuth } from '../contexts/AuthContext';
 
-const Sidebar = ({ onNewPassword }) => {
+const Sidebar = ({ onNewPassword, selectedCategory, onCategoryChange }) => {
+  const { masterPassword } = useAuth();
+  const isVaultUnlocked = !!masterPassword;
+  
   const categories = [
-    { name: 'All', icon: LayoutGrid, path: '/app', count: 0 },
-    { name: 'Work', icon: Briefcase, path: '/app/work', count: 0 },
-    { name: 'Game', icon: Gamepad2, path: '/app/game', count: 0 },
-    { name: 'Finance', icon: Wallet, path: '/app/finance', count: 0 },
-    { name: 'Social', icon: Users, path: '/app/social', count: 0 },
+    { name: 'All', icon: LayoutGrid, value: '', count: 0 },
+    { name: 'Work', icon: Briefcase, value: 'Work', count: 0 },
+    { name: 'Game', icon: Gamepad2, value: 'Game', count: 0 },
+    { name: 'Finance', icon: Wallet, value: 'Finance', count: 0 },
+    { name: 'Social', icon: Users, value: 'Social', count: 0 },
   ];
+
+  const handleCategoryClick = (categoryValue) => {
+    if (onCategoryChange) {
+      onCategoryChange(categoryValue);
+    }
+  };
 
   const secondaryLinks = [
     { name: 'Activity Logs', icon: Activity, path: '/app/logs' },
@@ -46,45 +58,39 @@ const Sidebar = ({ onNewPassword }) => {
           </p>
           {categories.map((category) => {
             const Icon = category.icon;
+            const isActive = selectedCategory === category.value;
             return (
-              <NavLink
-                key={category.path}
-                to={category.path}
-                end={category.path === '/app'}
-                className={({ isActive }) =>
-                  `flex items-center justify-between px-3 py-2.5 rounded-lg transition-all group ${
-                    isActive
-                      ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400'
-                      : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
-                  }`
-                }
+              <button
+                key={category.value}
+                onClick={() => handleCategoryClick(category.value)}
+                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-all group ${
+                  isActive
+                    ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400'
+                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
+                }`}
               >
-                {({ isActive }) => (
-                  <>
-                    <div className="flex items-center gap-3">
-                      <Icon 
-                        className={`w-5 h-5 ${
-                          isActive 
-                            ? 'text-primary-600 dark:text-primary-400' 
-                            : 'text-slate-500 dark:text-slate-500'
-                        }`} 
-                      />
-                      <span className="font-medium text-sm">
-                        {category.name}
-                      </span>
-                    </div>
-                    {category.count > 0 && (
-                      <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-                        isActive
-                          ? 'bg-primary-100 dark:bg-primary-800 text-primary-700 dark:text-primary-300'
-                          : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
-                      }`}>
-                        {category.count}
-                      </span>
-                    )}
-                  </>
+                <div className="flex items-center gap-3">
+                  <Icon 
+                    className={`w-5 h-5 ${
+                      isActive 
+                        ? 'text-primary-600 dark:text-primary-400' 
+                        : 'text-slate-500 dark:text-slate-500'
+                    }`} 
+                  />
+                  <span className="font-medium text-sm">
+                    {category.name}
+                  </span>
+                </div>
+                {category.count > 0 && (
+                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                    isActive
+                      ? 'bg-primary-100 dark:bg-primary-800 text-primary-700 dark:text-primary-300'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+                  }`}>
+                    {category.count}
+                  </span>
                 )}
-              </NavLink>
+              </button>
             );
           })}
         </nav>
@@ -133,17 +139,58 @@ const Sidebar = ({ onNewPassword }) => {
 
       {/* Footer Info */}
       <div className="p-4 border-t border-slate-200 dark:border-slate-800">
-        <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-3">
+        <motion.div 
+          animate={{ 
+            scale: isVaultUnlocked ? 1 : [1, 1.02, 1],
+          }}
+          transition={{ 
+            duration: 2,
+            repeat: isVaultUnlocked ? 0 : Infinity,
+            repeatDelay: 1
+          }}
+          className={`rounded-xl p-3 transition-all ${
+            isVaultUnlocked
+              ? 'bg-green-50 dark:bg-green-900/20 border-2 border-green-200 dark:border-green-800'
+              : 'bg-red-50 dark:bg-red-900/20 border-2 border-red-200 dark:border-red-800'
+          }`}
+        >
           <div className="flex items-center gap-2 mb-1">
-            <div className="w-2 h-2 rounded-full bg-green-500"></div>
-            <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-              Vault Unlocked
+            <motion.div
+              animate={{ 
+                scale: [1, 1.2, 1],
+                rotate: isVaultUnlocked ? 0 : [0, -10, 10, -10, 0]
+              }}
+              transition={{ 
+                duration: isVaultUnlocked ? 2 : 1,
+                repeat: Infinity,
+                repeatDelay: isVaultUnlocked ? 2 : 1
+              }}
+            >
+              {isVaultUnlocked ? (
+                <LockOpen className="w-4 h-4 text-green-600 dark:text-green-400" />
+              ) : (
+                <Lock className="w-4 h-4 text-red-600 dark:text-red-400" />
+              )}
+            </motion.div>
+            <span className={`text-xs font-semibold ${
+              isVaultUnlocked
+                ? 'text-green-700 dark:text-green-300'
+                : 'text-red-700 dark:text-red-300'
+            }`}>
+              {isVaultUnlocked ? 'Vault Unlocked' : 'Vault Locked'}
             </span>
           </div>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
-            All passwords encrypted
+          <p className={`text-xs ${
+            isVaultUnlocked
+              ? 'text-green-600 dark:text-green-400'
+              : 'text-red-600 dark:text-red-400'
+          }`}>
+            {isVaultUnlocked 
+              ? 'All passwords encrypted' 
+              : 'Master password required'
+            }
           </p>
-        </div>
+        </motion.div>
       </div>
     </aside>
   );

@@ -1,12 +1,18 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Moon, Sun, Menu, X, Lock } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
 
 const Header = () => {
   const { theme, toggleTheme } = useTheme();
+  const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const handleGetStarted = () => {
+    navigate('/login');
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -106,6 +112,7 @@ const Header = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              onClick={handleGetStarted}
               className="hidden md:block px-6 py-2.5 bg-gradient-to-r from-primary-500 to-purple-600 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-shadow"
             >
               Get Started
@@ -155,6 +162,7 @@ const Header = () => {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: navLinks.length * 0.1 }}
+                  onClick={handleGetStarted}
                   className="w-full px-4 py-2.5 bg-gradient-to-r from-primary-500 to-purple-600 text-white rounded-lg font-semibold shadow-lg"
                 >
                   Get Started

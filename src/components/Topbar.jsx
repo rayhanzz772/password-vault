@@ -6,12 +6,11 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import toast from 'react-hot-toast';
 
-const Topbar = () => {
+const Topbar = ({ searchQuery = '', onSearchChange }) => {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user, logout, lockVault } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
 
   const handleLogout = () => {
     logout();
@@ -21,8 +20,17 @@ const Topbar = () => {
 
   const handleLock = () => {
     // Lock the vault (clear master password from memory but keep token)
-    toast.success('Vault locked');
-    // In future, implement actual lock functionality
+    lockVault();
+    toast.success('🔒 Vault locked - Master password cleared from memory', {
+      icon: '🔒',
+      duration: 3000,
+    });
+  };
+
+  const handleSearchChange = (e) => {
+    if (onSearchChange) {
+      onSearchChange(e.target.value);
+    }
   };
 
   return (
@@ -48,7 +56,7 @@ const Topbar = () => {
               type="text"
               placeholder="Search passwords..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={handleSearchChange}
               className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none"
             />
           </div>
@@ -174,7 +182,7 @@ const Topbar = () => {
             type="text"
             placeholder="Search passwords..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={handleSearchChange}
             className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none"
           />
         </div>

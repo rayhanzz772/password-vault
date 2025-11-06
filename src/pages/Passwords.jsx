@@ -13,27 +13,48 @@ import {
   Edit
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useAuth } from '../contexts/AuthContext';
 import { vaultAPI } from '../utils/api';
 import CreateVaultModal from '../components/CreateVaultModal';
 import DecryptModal from '../components/DecryptModal';
+import DeleteVaultModal from '../components/DeleteVaultModal';
 
 const Passwords = () => {
-  const { refreshTrigger, openCreateModal } = useOutletContext();
+  const { 
+    refreshTrigger, 
+    openCreateModal, 
+    searchQuery, 
+    selectedCategory 
+  } = useOutletContext();
+  const { masterPassword } = useAuth();
   const [passwords, setPasswords] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isDecryptModalOpen, setIsDecryptModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedVault, setSelectedVault] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
 
-  // Fetch passwords on mount and when refresh trigger changes
+  // Fetch passwords on mount and when refresh trigger, search, or category changes
   useEffect(() => {
     fetchPasswords();
-  }, [refreshTrigger]);
+  }, [refreshTrigger, searchQuery, selectedCategory]);
 
   const fetchPasswords = async () => {
     try {
       setIsLoading(true);
-      const data = await vaultAPI.getAll();
+      
+      // Build filters object
+      const filters = {};
+      if (selectedCategory) {
+        filters.category = selectedCategory;
+      }
+      if (searchQuery) {
+        filters.search = searchQuery;
+      }
+      
+      console.log('🔍 Fetching with filters:', filters);
+      const data = await vaultAPI.getAll(filters);
       console.log('📦 Vault API response:', data);
       
       // Handle different response structures
@@ -71,6 +92,30 @@ const Passwords = () => {
   const handleCopy = (text) => {
     navigator.clipboard.writeText(text);
     toast.success('Copied to clipboard!');
+  };
+
+  const handleDeleteClick = (vault) => {
+    setSelectedVault(vault);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = async (vault, password) => {
+    try {
+      setDeletingId(vault.id);
+      console.log('🗑️ Deleting vault:', vault.id);
+      
+      await vaultAPI.delete(vault.id, password);
+      
+      toast.success('Password deleted successfully!');
+      fetchPasswords(); // Refresh list
+      return { success: true };
+    } catch (error) {
+      console.error('Failed to delete:', error);
+      const errorMsg = error.response?.data?.message || 'Failed to delete password';
+      return { success: false, error: errorMsg };
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   // Empty State
@@ -168,22 +213,36 @@ const Passwords = () => {
             password={password} 
             onCopy={handleCopy}
             onDecrypt={handleDecrypt}
+            onDelete={handleDeleteClick}
+            isDeleting={deletingId === password.id}
           />
         ))}
       </div>
 
-      {/* Decrypt Modal (local to this page) */}
+      {/* Decrypt Modal */}
       <DecryptModal
         isOpen={isDecryptModalOpen}
         onClose={() => setIsDecryptModalOpen(false)}
         vaultItem={selectedVault}
+      />
+
+      {/* Delete Modal */}
+      <DeleteVaultModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setSelectedVault(null);
+        }}
+        vaultItem={selectedVault}
+        onDelete={handleDeleteConfirm}
+        isDeleting={deletingId !== null}
       />
     </div>
   );
 };
 
 // Password Card Component
-const PasswordCard = ({ password, onCopy, onDecrypt }) => {
+const PasswordCard = ({ password, onCopy, onDecrypt, onDelete, isDeleting }) => {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
@@ -244,9 +303,22 @@ const PasswordCard = ({ password, onCopy, onDecrypt }) => {
           <Eye className="w-4 h-4" />
           View
         </button>
-        <button className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors">
-          <Trash2 className="w-4 h-4" />
-          Delete
+        <button 
+          onClick={() => onDelete(password)}
+          disabled={isDeleting}
+          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isDeleting ? (
+            <>
+              <div className="w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></div>
+              Deleting...
+            </>
+          ) : (
+            <>
+              <Trash2 className="w-4 h-4" />
+              Delete
+            </>
+          )}
         </button>
       </div>
 
@@ -254,7 +326,7 @@ const PasswordCard = ({ password, onCopy, onDecrypt }) => {
       <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700">
         <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
           <span>{password.category_name || 'Uncategorized'}</span>
-          <span>Updated {password.lastUpdated || password.updated_at || 'recently'}</span>
+          <span>Updated at {password.lastUpdated || password.updated_at || 'recently'}</span>
         </div>
       </div>
     </motion.div>
