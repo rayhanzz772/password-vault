@@ -48,12 +48,9 @@ const Header = () => {
             whileHover={{ scale: 1.05 }}
             className="flex items-center gap-2 cursor-pointer"
           >
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center shadow-lg">
-              <Lock className="w-6 h-6 text-white" strokeWidth={2.5} />
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center">
+              <img src="/public/logo shield.png" alt="Logo" />
             </div>
-            <span className="text-xl font-bold text-gray-900 dark:text-white">
-              Vault Password
-            </span>
           </motion.div>
 
           {/* Desktop Navigation */}
@@ -108,12 +105,11 @@ const Header = () => {
               </AnimatePresence>
             </motion.button>
 
-            {/* Get Started Button - Desktop */}
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={handleGetStarted}
-              className="hidden md:block px-6 py-2.5 bg-gradient-to-r from-primary-500 to-purple-600 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-shadow"
+              className="hidden md:block px-6 py-2.5 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-shadow"
             >
               Get Started
             </motion.button>
@@ -163,7 +159,7 @@ const Header = () => {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: navLinks.length * 0.1 }}
                   onClick={handleGetStarted}
-                  className="w-full px-4 py-2.5 bg-gradient-to-r from-primary-500 to-purple-600 text-white rounded-lg font-semibold shadow-lg"
+                  className="w-full px-4 py-2.5 bg-orange-500 text-white rounded-lg font-semibold shadow-lg"
                 >
                   Get Started
                 </motion.button>

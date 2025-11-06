@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { Shield, Key, AlertTriangle, Activity, Clock, Hash } from 'lucide-react';
 
 const features = [
@@ -44,14 +43,7 @@ const FeatureCard = ({ feature, index }) => {
   const Icon = feature.icon;
   
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
-      whileHover={{ y: -8, transition: { duration: 0.2 } }}
-      className="group relative"
-    >
+    <div className="group relative h-full">
       <div className="h-full p-8 rounded-2xl glass-effect hover:bg-white/20 dark:hover:bg-gray-800/40 transition-all duration-300 shadow-lg hover:shadow-2xl">
         {/* Icon with gradient background */}
         <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${feature.color} p-3 mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
@@ -71,7 +63,7 @@ const FeatureCard = ({ feature, index }) => {
         {/* Decorative gradient line */}
         <div className={`mt-6 h-1 w-0 group-hover:w-full bg-gradient-to-r ${feature.color} rounded-full transition-all duration-500`}></div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
@@ -80,22 +72,11 @@ const SecurityFeatures = () => {
     <section className="relative py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
-        >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 mb-6"
-          >
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 mb-6">
             <Shield className="w-4 h-4" />
             <span className="text-sm font-semibold">SECURITY FIRST</span>
-          </motion.div>
+          </div>
 
           <h2 className="text-4xl sm:text-5xl font-bold mb-6 text-gray-900 dark:text-white">
             Enterprise-Grade{' '}
@@ -105,7 +86,7 @@ const SecurityFeatures = () => {
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
             Built with the latest cryptographic standards and security best practices to keep your passwords safe.
           </p>
-        </motion.div>
+        </div>
 
         {/* Features Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -115,20 +96,14 @@ const SecurityFeatures = () => {
         </div>
 
         {/* Bottom CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.6 }}
-          className="mt-16 text-center"
-        >
+        <div className="mt-16 text-center">
           <p className="text-gray-600 dark:text-gray-300 mb-6">
             Want to learn more about our security architecture?
           </p>
           <button className="px-8 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg font-semibold hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors duration-200">
             Read Security Documentation
           </button>
-        </motion.div>
+        </div>
       </div>
 
       {/* Background decoration */}

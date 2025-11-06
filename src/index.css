@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Helvetica Neue Medium';
+  src: url('./assets/fonts/HelveticaNeueMedium.otf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 @layer base {
   :root {
     --toast-bg: #ffffff;
@@ -15,12 +22,13 @@
 
   body {
     @apply bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300;
+    font-family: 'Helvetica Neue Medium', sans-serif;
   }
 }
 
 @layer utilities {
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-500 to-purple-600;
+    @apply bg-clip-text text-transparent bg-gradient-to-br from-orange-500 to-orange-600;
   }
   
   .glass-effect {

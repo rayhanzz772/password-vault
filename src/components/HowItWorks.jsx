@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { UserPlus, Lock, Unlock } from 'lucide-react';
 
 const steps = [
@@ -33,20 +32,11 @@ const StepCard = ({ step, index }) => {
   const isEven = index % 2 === 0;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, x: isEven ? -50 : 50 }}
-      whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 0.6, delay: index * 0.2 }}
-      className="relative"
-    >
+    <div className="relative">
       <div className="flex flex-col md:flex-row items-center gap-8">
         {/* Step Number & Icon */}
         <div className="flex-shrink-0">
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            className="relative"
-          >
+          <div className="relative">
             {/* Large number in background */}
             <div className="absolute -top-8 -left-4 text-8xl font-bold text-gray-200 dark:text-gray-800 opacity-50">
               {step.number}
@@ -57,56 +47,34 @@ const StepCard = ({ step, index }) => {
               <Icon className="w-full h-full text-white" strokeWidth={2} />
             </div>
 
-            {/* Emoji decoration */}
-            <motion.div
-              animate={{ 
-                rotate: [0, 10, -10, 0],
-                scale: [1, 1.1, 1],
-              }}
-              transition={{ 
-                duration: 2,
-                repeat: Infinity,
-                repeatDelay: 1,
-              }}
-              className="absolute -top-4 -right-4 text-4xl"
-            >
+            <div className="absolute -top-4 -right-4 text-4xl">
               {step.image}
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         </div>
 
         {/* Content */}
         <div className="flex-1 text-center md:text-left">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: index * 0.2 + 0.2 }}
-          >
+          <div>
             <h3 className="text-2xl sm:text-3xl font-bold mb-4 text-gray-900 dark:text-white">
               {step.title}
             </h3>
             <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed max-w-xl">
               {step.description}
             </p>
-          </motion.div>
+          </div>
         </div>
       </div>
 
-      {/* Connecting line (not for last item) */}
+      {/* Connecting line (not for last item) - Static */}
       {index < steps.length - 1 && (
-        <motion.div
-          initial={{ scaleY: 0 }}
-          whileInView={{ scaleY: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: index * 0.2 + 0.4 }}
-          className="hidden md:block absolute left-16 top-32 w-0.5 h-24 bg-gradient-to-b from-gray-300 to-gray-200 dark:from-gray-700 dark:to-gray-800 origin-top"
+        <div className="hidden md:block absolute left-16 top-32 w-0.5 h-24 bg-gradient-to-b from-gray-300 to-gray-200 dark:from-gray-700 dark:to-gray-800"
           style={{ 
             backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 4px, currentColor 4px, currentColor 8px)',
           }}
         />
       )}
-    </motion.div>
+    </div>
   );
 };
 
@@ -115,21 +83,10 @@ const HowItWorks = () => {
     <section className="relative py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900 overflow-hidden">
       <div className="max-w-5xl mx-auto">
         {/* Section Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-20"
-        >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary-100 to-purple-100 dark:from-primary-900/30 dark:to-purple-900/30 text-primary-700 dark:text-primary-300 mb-6"
-          >
+        <div className="text-center mb-20">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary-100 to-purple-100 dark:from-primary-900/30 dark:to-purple-900/30 text-primary-700 dark:text-primary-300 mb-6">
             <span className="text-sm font-semibold">HOW IT WORKS</span>
-          </motion.div>
+          </div>
 
           <h2 className="text-4xl sm:text-5xl font-bold mb-6 text-gray-900 dark:text-white">
             Get Started in{' '}
@@ -139,7 +96,7 @@ const HowItWorks = () => {
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             Vault Password makes security simple. Here's how it works under the hood.
           </p>
-        </motion.div>
+        </div>
 
         {/* Steps */}
         <div className="space-y-16 md:space-y-24">
@@ -149,13 +106,7 @@ const HowItWorks = () => {
         </div>
 
         {/* Bottom CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.4 }}
-          className="mt-20 text-center"
-        >
+        <div className="mt-20 text-center">
           <div className="inline-flex flex-col sm:flex-row items-center gap-6 p-8 rounded-2xl glass-effect">
             <div className="text-left">
               <h3 className="text-2xl font-bold mb-2 text-gray-900 dark:text-white">
@@ -165,11 +116,11 @@ const HowItWorks = () => {
                 Join thousands of users protecting their digital life.
               </p>
             </div>
-            <button className="flex-shrink-0 px-8 py-4 bg-gradient-to-r from-primary-500 to-purple-600 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
+            <button className="flex-shrink-0 px-8 py-4 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
               Create Account
             </button>
           </div>
-        </motion.div>
+        </div>
       </div>
 
       {/* Background decorations */}

@@ -306,7 +306,7 @@ const UpdateVaultModal = ({ isOpen, onClose, vaultItem, onSuccess }) => {
               type="submit"
               onClick={handleSubmit}
               disabled={isLoading}
-              className="flex-1 px-4 py-2.5 bg-gradient-to-r from-primary-500 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 px-4 py-2.5 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? 'Updating...' : 'Update Password'}
             </button>

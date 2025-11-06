@@ -48,17 +48,10 @@ const Sidebar = ({ onNewPassword, selectedCategory, onCategoryChange, onUnlock }
 
   return (
     <aside className="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col h-full">
-      {/* Add New Button */}
-      <div className="p-4 border-b border-slate-200 dark:border-slate-800">
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={onNewPassword}
-          className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-primary-500 to-purple-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
-        >
-          <Plus className="w-5 h-5" />
-          <span>New Password</span>
-        </motion.button>
+      {/* Logo & Brand */}
+      <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center gap-2 justify-center">
+        <img src="/logo%20shield.png" alt="Crypta Logo" className="w-8 h-8 object-contain" />
+        <p className="text-xl font-bold text-gray-900 dark:text-white">Crypta</p>
       </div>
 
       {/* Categories */}
