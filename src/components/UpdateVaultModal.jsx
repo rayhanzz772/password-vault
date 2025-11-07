@@ -18,10 +18,6 @@ const UpdateVaultModal = ({ isOpen, onClose, vaultItem, onSuccess }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  console.log('🔍 UpdateVaultModal rendered with vaultItem:', vaultItem);
-  console.log('🔍 UpdateVaultModal rendered with formData:', formData);
-
-  // Populate form when vaultItem changes
   useEffect(() => {
     if (vaultItem) {
       setFormData({

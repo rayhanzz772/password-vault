@@ -24,8 +24,6 @@ export const AuthProvider = ({ children }) => {
     try {
       console.log('🔐 Attempting login for:', email);
       const data = await authAPI.login(email, password);
-      console.log('✅ Login response:', data);
-      console.log('✅ Full response structure:', JSON.stringify(data, null, 2));
       
       // Check all possible token field names
       const token = data?.data?.token;

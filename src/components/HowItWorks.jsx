@@ -1,4 +1,5 @@
 import { UserPlus, Lock, Unlock } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const steps = [
   {
@@ -41,7 +42,7 @@ const StepCard = ({ step, index }) => {
             <div className="absolute -top-8 -left-4 text-8xl font-bold text-gray-200 dark:text-gray-800 opacity-50">
               {step.number}
             </div>
-            
+
             {/* Icon container */}
             <div className={`relative z-10 w-32 h-32 rounded-2xl bg-gradient-to-br ${step.color} p-8 shadow-2xl`}>
               <Icon className="w-full h-full text-white" strokeWidth={2} />
@@ -69,7 +70,7 @@ const StepCard = ({ step, index }) => {
       {/* Connecting line (not for last item) - Static */}
       {index < steps.length - 1 && (
         <div className="hidden md:block absolute left-16 top-32 w-0.5 h-24 bg-gradient-to-b from-gray-300 to-gray-200 dark:from-gray-700 dark:to-gray-800"
-          style={{ 
+          style={{
             backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 4px, currentColor 4px, currentColor 8px)',
           }}
         />
@@ -92,7 +93,7 @@ const HowItWorks = () => {
             Get Started in{' '}
             <span className="text-gradient">Three Simple Steps</span>
           </h2>
-          
+
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             Vault Password makes security simple. Here's how it works under the hood.
           </p>
@@ -116,9 +117,12 @@ const HowItWorks = () => {
                 Join thousands of users protecting their digital life.
               </p>
             </div>
-            <button className="flex-shrink-0 px-8 py-4 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
-              Create Account
-            </button>
+            <Link
+              to="/register"
+              className="group px-8 py-4 bg-blue-500 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center gap-2"
+            >
+              Create an Account
+            </Link>
           </div>
         </div>
       </div>

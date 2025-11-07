@@ -97,10 +97,6 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
 
     try {
       const result = await vaultAPI.decrypt(vaultItem.id, password);
-      console.log('🔓 Decrypt API response:', result);
-      console.log('🔍 Response structure:', JSON.stringify(result, null, 2));
-
-      // Handle different response structures
       let decrypted = null;
 
       if (result.decrypted_password) {
