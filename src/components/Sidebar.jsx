@@ -50,7 +50,7 @@ const Sidebar = ({ onNewPassword, selectedCategory, onCategoryChange, onUnlock }
     <aside className="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col h-full">
       {/* Logo & Brand */}
       <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center gap-2 justify-center">
-        <img src="/logo%20shield.png" alt="Crypta Logo" className="w-8 h-8 object-contain" />
+        <img src="/logo_shield.png" alt="Crypta Logo" className="w-8 h-8 object-contain" />
         <p className="text-xl font-bold text-gray-900 dark:text-white">Crypta</p>
       </div>
 
