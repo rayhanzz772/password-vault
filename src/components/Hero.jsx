@@ -5,7 +5,7 @@ const Hero = () => {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden px-4 sm:px-6 lg:px-8">
       {/* Modern Gradient Background - Optimized for Performance */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900"></div>
+      <div className="absolute inset-0"></div>
       
       {/* Subtle Animated Gradient Orbs - Static, No Animation for Performance */}
       <div className="absolute inset-0 overflow-hidden opacity-30">
