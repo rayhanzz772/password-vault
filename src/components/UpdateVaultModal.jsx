@@ -13,10 +13,13 @@ const UpdateVaultModal = ({ isOpen, onClose, vaultItem, onSuccess }) => {
     username: '',
     password: '',
     note: '',
-    category: 'Work',
+    category_name: 'Work',
   });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  console.log('🔍 UpdateVaultModal rendered with vaultItem:', vaultItem);
+  console.log('🔍 UpdateVaultModal rendered with formData:', formData);
 
   // Populate form when vaultItem changes
   useEffect(() => {
@@ -24,9 +27,9 @@ const UpdateVaultModal = ({ isOpen, onClose, vaultItem, onSuccess }) => {
       setFormData({
         name: vaultItem.name || '',
         username: vaultItem.username || '',
-        password: '', // Don't pre-fill password for security
+        password: '',
         note: vaultItem.note || '',
-        category: vaultItem.category || 'Work',
+        category_name: vaultItem.category_name || 'Work',
       });
     }
   }, [vaultItem]);
@@ -87,7 +90,7 @@ const UpdateVaultModal = ({ isOpen, onClose, vaultItem, onSuccess }) => {
         name: formData.name.trim(),
         username: formData.username.trim(),
         note: formData.note.trim(),
-        category_id: formData.category,
+        category: formData.category_name.trim(),
         master_password: masterPassword,
       };
 
@@ -108,7 +111,7 @@ const UpdateVaultModal = ({ isOpen, onClose, vaultItem, onSuccess }) => {
         username: '',
         password: '',
         note: '',
-        category: 'Work',
+        category_name: 'Work',
       });
       
       if (onSuccess) {
@@ -248,8 +251,8 @@ const UpdateVaultModal = ({ isOpen, onClose, vaultItem, onSuccess }) => {
                 </div>
               </label>
               <select
-                name="category"
-                value={formData.category}
+                name="category_name"
+                value={formData.category_name}
                 onChange={handleChange}
                 className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-slate-800 dark:text-white"
               >

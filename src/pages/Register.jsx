@@ -17,7 +17,7 @@ const Register = () => {
 
   const [formData, setFormData] = useState({
     email: '',
-    master_password: '',
+    password: '',
     confirm_password: '',
   });
 
@@ -37,18 +37,18 @@ const Register = () => {
     }
 
     // Password validation
-    if (!formData.master_password) {
-      newErrors.master_password = 'Master password is required';
-    } else if (formData.master_password.length < 8) {
-      newErrors.master_password = 'Password must be at least 8 characters';
-    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.master_password)) {
-      newErrors.master_password = 'Password must contain uppercase, lowercase, and number';
+    if (!formData.password) {
+      newErrors.password = 'Master password is required';
+    } else if (formData.password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters';
+    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
+      newErrors.password = 'Password must contain uppercase, lowercase, and number';
     }
 
     // Confirm password validation
     if (!formData.confirm_password) {
       newErrors.confirm_password = 'Please confirm your password';
-    } else if (formData.master_password !== formData.confirm_password) {
+    } else if (formData.password !== formData.confirm_password) {
       newErrors.confirm_password = 'Passwords do not match';
     }
 
@@ -59,7 +59,6 @@ const Register = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    // Clear error for this field when user types
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: '' }));
     }
@@ -75,7 +74,7 @@ const Register = () => {
 
     setIsLoading(true);
 
-    const result = await register(formData.email, formData.master_password);
+    const result = await register(formData.email, formData.password);
 
     if (result.success) {
       toast.success('Account created successfully!');
@@ -159,18 +158,18 @@ const Register = () => {
 
             {/* Master Password Field */}
             <div>
-              <label htmlFor="master_password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Master Password
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
                   type={showPassword ? 'text' : 'password'}
-                  id="master_password"
-                  name="master_password"
-                  value={formData.master_password}
+                  id="password"
+                  name="password"
+                  value={formData.password}
                   onChange={handleChange}
-                  className={`w-full pl-10 pr-12 py-3 rounded-xl border ${errors.master_password
+                  className={`w-full pl-10 pr-12 py-3 rounded-xl border ${errors.password
                       ? 'border-red-500 focus:ring-red-500'
                       : 'border-gray-300 dark:border-gray-600 focus:ring-primary-500'
                     } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:border-transparent transition-all outline-none`}
@@ -184,8 +183,8 @@ const Register = () => {
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
-              {errors.master_password && (
-                <p className="mt-1 text-sm text-red-500">{errors.master_password}</p>
+              {errors.password && (
+                <p className="mt-1 text-sm text-red-500">{errors.password}</p>
               )}
             </div>
 
@@ -228,26 +227,26 @@ const Register = () => {
               </p>
               <ul className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
                 <li className="flex items-center gap-2">
-                  <span className={formData.master_password.length >= 8 ? 'text-green-500' : ''}>
-                    {formData.master_password.length >= 8 ? '✓' : '•'}
+                  <span className={formData.password.length >= 8 ? 'text-green-500' : ''}>
+                    {formData.password.length >= 8 ? '✓' : '•'}
                   </span>
                   At least 8 characters
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className={/[A-Z]/.test(formData.master_password) ? 'text-green-500' : ''}>
-                    {/[A-Z]/.test(formData.master_password) ? '✓' : '•'}
+                  <span className={/[A-Z]/.test(formData.password) ? 'text-green-500' : ''}>
+                    {/[A-Z]/.test(formData.password) ? '✓' : '•'}
                   </span>
                   One uppercase letter
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className={/[a-z]/.test(formData.master_password) ? 'text-green-500' : ''}>
-                    {/[a-z]/.test(formData.master_password) ? '✓' : '•'}
+                  <span className={/[a-z]/.test(formData.password) ? 'text-green-500' : ''}>
+                    {/[a-z]/.test(formData.password) ? '✓' : '•'}
                   </span>
                   One lowercase letter
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className={/\d/.test(formData.master_password) ? 'text-green-500' : ''}>
-                    {/\d/.test(formData.master_password) ? '✓' : '•'}
+                  <span className={/\d/.test(formData.password) ? 'text-green-500' : ''}>
+                    {/\d/.test(formData.password) ? '✓' : '•'}
                   </span>
                   One number
                 </li>

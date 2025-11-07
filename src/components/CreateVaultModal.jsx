@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { 
   X, 
   Eye, 
@@ -7,13 +7,29 @@ import {
   RefreshCw, 
   Lock,
   AlertTriangle,
-  CheckCircle2
+  CheckCircle2,
+  Shield,
+  AlertCircle
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../contexts/AuthContext';
 import { vaultAPI, categoriesAPI } from '../utils/api';
 import { generatePassword, calculatePasswordStrength } from '../utils/passwordGenerator';
 import { getCategoryIcon, getCategoryGradient } from '../utils/categoryIcons';
+import { checkPasswordPwned, formatBreachCount } from '../utils/pwnedCheck';
+
+// Debounce utility function
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
 
 const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
   const { masterPassword } = useAuth();
@@ -30,6 +46,8 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [breachWarning, setBreachWarning] = useState(null);
+  const [isCheckingBreach, setIsCheckingBreach] = useState(false);
+  const [breachInfo, setBreachInfo] = useState(null);
   const [errors, setErrors] = useState({});
 
   // Password generator state
@@ -99,12 +117,58 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
     setErrors((prev) => ({ ...prev, [name]: '' }));
     setBreachWarning(null);
+    
+    // Check for breaches when password changes
+    if (name === 'password') {
+      debouncedBreachCheck(value);
+    }
   };
+
+  // Debounced breach check to avoid too many API calls
+  const debouncedBreachCheck = useCallback(
+    debounce(async (password) => {
+      if (!password || password.length < 4) {
+        setBreachInfo(null);
+        return;
+      }
+
+      setIsCheckingBreach(true);
+      setBreachInfo(null);
+
+      try {
+        const result = await checkPasswordPwned(password);
+        
+        if (result.error) {
+          // Silent fail - don't show error to user
+          console.warn('Could not check password breach status');
+        } else if (result.isPwned) {
+          setBreachInfo({
+            isPwned: true,
+            count: result.count,
+            severity: result.severity,
+            message: `This password has been exposed ${formatBreachCount(result.count)} in data breaches!`
+          });
+        } else {
+          setBreachInfo({
+            isPwned: false,
+            message: 'Password not found in known breaches ✓'
+          });
+        }
+      } catch (error) {
+        console.error('Breach check error:', error);
+      } finally {
+        setIsCheckingBreach(false);
+      }
+    }, 800),
+    []
+  );
 
   const handleGeneratePassword = () => {
     const newPassword = generatePassword(generatorOptions);
     setFormData((prev) => ({ ...prev, password: newPassword }));
     toast.success('Password generated!');
+    
+    debouncedBreachCheck(newPassword);
   };
 
   const handleCopyPassword = () => {
@@ -370,6 +434,72 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
                       style={{ width: `${(passwordStrength.score / 4) * 100}%` }}
                     />
                   </div>
+                </div>
+              )}
+
+              {/* Breach Check Notification */}
+              {isCheckingBreach && formData.password && (
+                <div className="mt-2 flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                  <div className="w-4 h-4 border-2 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
+                  <span>Checking password breach database...</span>
+                </div>
+              )}
+
+              {breachInfo && !isCheckingBreach && formData.password && (
+                <div className={`mt-2 p-3 rounded-lg flex items-start gap-3 ${
+                  breachInfo.isPwned 
+                    ? breachInfo.severity === 'critical' 
+                      ? 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'
+                      : breachInfo.severity === 'high'
+                      ? 'bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800'
+                      : 'bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800'
+                    : 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800'
+                }`}>
+                  {breachInfo.isPwned ? (
+                    <>
+                      <AlertCircle className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
+                        breachInfo.severity === 'critical' 
+                          ? 'text-red-600 dark:text-red-400'
+                          : breachInfo.severity === 'high'
+                          ? 'text-orange-600 dark:text-orange-400'
+                          : 'text-yellow-600 dark:text-yellow-400'
+                      }`} />
+                      <div className="flex-1">
+                        <p className={`text-sm font-semibold ${
+                          breachInfo.severity === 'critical' 
+                            ? 'text-red-800 dark:text-red-300'
+                            : breachInfo.severity === 'high'
+                            ? 'text-orange-800 dark:text-orange-300'
+                            : 'text-yellow-800 dark:text-yellow-300'
+                        }`}>
+                          ⚠️ Password Found in Data Breaches
+                        </p>
+                        <p className={`text-xs mt-1 ${
+                          breachInfo.severity === 'critical' 
+                            ? 'text-red-700 dark:text-red-400'
+                            : breachInfo.severity === 'high'
+                            ? 'text-orange-700 dark:text-orange-400'
+                            : 'text-yellow-700 dark:text-yellow-400'
+                        }`}>
+                          {breachInfo.message}
+                          <br />
+                          <span className="font-medium">We recommend generating a new password.</span>
+                        </p>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <Shield className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
+                      <div className="flex-1">
+                        <p className="text-sm font-semibold text-green-800 dark:text-green-300">
+                          ✓ Password is Secure
+                        </p>
+                        <p className="text-xs text-green-700 dark:text-green-400 mt-1">
+                          This password hasn't been found in any known data breaches.
+                        </p>
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
 
