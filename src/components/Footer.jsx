@@ -104,7 +104,7 @@ const Footer = () => {
         <div className="pt-8 border-t border-gray-200 dark:border-gray-800">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-gray-600 dark:text-gray-400 text-sm text-center md:text-left">
-              © {currentYear} Vault Password. All rights reserved.
+              © {currentYear} Crypta All rights reserved.
             </p>
             
             <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">

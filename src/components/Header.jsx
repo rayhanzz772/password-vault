@@ -64,7 +64,7 @@ const Header = () => {
             className="flex items-center gap-2 cursor-pointer"
           >
             <div className="w-8 h-8 rounded-lg flex items-center justify-center">
-              <img src="/public/logo shield.png" alt="Logo" />
+              <img src="/logo_shield.png" alt="Logo" />
             </div>
           </motion.div>
 
