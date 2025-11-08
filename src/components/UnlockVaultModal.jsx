@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Lock, Eye, EyeOff, X, Shield } from 'lucide-react';
+import { Lock, Eye, EyeOff, X, Shield, CheckCircle, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../contexts/AuthContext';
-import { vaultAPI } from '../utils/api';
+import { authAPI } from '../utils/api';
 
 const UnlockVaultModal = ({ isOpen, onClose }) => {
   const { unlockVault } = useAuth();
@@ -11,56 +11,104 @@ const UnlockVaultModal = ({ isOpen, onClose }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const validatePassword = (password) => {
+    const errors = [];
+
+    if (!password) {
+      errors.push('Master password is required');
+      return errors;
+    }
+
+    if (password.length < 8) {
+      errors.push('Password must be at least 8 characters');
+    }
+
+    if (password.trim() !== password) {
+      errors.push('Password cannot start or end with spaces');
+    }
+
+    return errors;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
-    if (!masterPassword.trim()) {
-      setError('Master password is required');
+    // Client-side validation
+    const validationErrors = validatePassword(masterPassword);
+    if (validationErrors.length > 0) {
+      setError(validationErrors[0]);
       return;
     }
 
     try {
       setIsLoading(true);
+      console.log('🔐 Verifying master password with server...');
 
-      // Verify master password by attempting to fetch and decrypt a vault item
-      // This ensures the password is correct before unlocking
-      console.log('🔐 Verifying master password...');
+      // Call the password validation endpoint
+      const response = await authAPI.checkPassword(masterPassword);
       
-      try {
-        // Try to get vault items with the provided master password
-        // If it fails, the password is wrong
-        const vaults = await vaultAPI.getAll();
+      console.log('📬 Password validation response:', response);
+
+      // Check if password is valid
+      if (response.data && response.data.valid === true) {
+        console.log('✅ Master password is valid');
         
-        if (vaults && (Array.isArray(vaults) || vaults.data || vaults.vaults)) {
-          // Password is correct, unlock the vault
-          await unlockVault(masterPassword);
-          toast.success('Vault unlocked successfully!');
-          setMasterPassword('');
-          onClose();
-        } else {
-          // This shouldn't happen, but handle it
-          setError('Unable to verify master password');
-        }
-      } catch (verifyError) {
-        console.error('❌ Master password verification failed:', verifyError);
-        // If we get a 401 or authentication error, the password might be wrong
-        // But since we're already authenticated (JWT), this is unlikely
-        // The real verification happens when trying to decrypt data
+        // Unlock the vault with the verified password
+        await unlockVault(masterPassword);
+        
+        toast.success('Vault unlocked successfully!', {
+          icon: '🔓',
+          duration: 3000,
+        });
+        
+        // Clear form and close modal
+        setMasterPassword('');
+        setShowPassword(false);
+        onClose();
+      } else {
+        console.log('❌ Master password is invalid');
         setError('Invalid master password. Please try again.');
+        toast.error('Invalid master password', {
+          icon: '🔒',
+        });
       }
     } catch (error) {
-      console.error('❌ Unlock vault error:', error);
-      setError(error.response?.data?.message || 'Failed to unlock vault');
+      console.error('❌ Password verification error:', error);
+      
+      // Handle specific error cases
+      if (error.response?.status === 401) {
+        setError('Invalid master password. Please try again.');
+        toast.error('Invalid master password');
+      } else if (error.response?.status === 429) {
+        setError('Too many attempts. Please try again later.');
+        toast.error('Too many attempts. Please wait a moment.');
+      } else if (error.code === 'ECONNABORTED' || error.code === 'ERR_NETWORK') {
+        setError('Network error. Please check your connection.');
+        toast.error('Network error. Please try again.');
+      } else {
+        const errorMessage = error.response?.data?.message || 'Failed to verify password. Please try again.';
+        setError(errorMessage);
+        toast.error(errorMessage);
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleClose = () => {
-    setMasterPassword('');
-    setError('');
-    onClose();
+    if (!isLoading) {
+      setMasterPassword('');
+      setShowPassword(false);
+      setError('');
+      onClose();
+    }
+  };
+
+  const handlePasswordChange = (e) => {
+    const newPassword = e.target.value;
+    setMasterPassword(newPassword);
+    setError(''); // Clear error when user types
   };
 
   if (!isOpen) return null;
@@ -102,9 +150,9 @@ const UnlockVaultModal = ({ isOpen, onClose }) => {
             <div className="flex items-start gap-3 p-4 bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800 rounded-xl">
               <Shield className="w-5 h-5 text-primary-600 dark:text-primary-400 flex-shrink-0 mt-0.5" />
               <div className="text-sm text-primary-800 dark:text-primary-200">
-                <p className="font-semibold mb-1">Your master password is never stored</p>
+                <p className="font-semibold mb-1">Secure Verification</p>
                 <p className="text-primary-700 dark:text-primary-300">
-                  It's kept in memory only and used to decrypt your passwords on-the-fly.
+                  Your master password will be verified with the server to ensure it's correct before unlocking your vault.
                 </p>
               </div>
             </div>
@@ -112,30 +160,33 @@ const UnlockVaultModal = ({ isOpen, onClose }) => {
             {/* Master Password Field */}
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                Master Password
+                Master Password <span className="text-red-500">*</span>
               </label>
               <div className="relative">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                  <Lock className="w-5 h-5 text-slate-400" />
+                </div>
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={masterPassword}
-                  onChange={(e) => {
-                    setMasterPassword(e.target.value);
-                    setError('');
-                  }}
+                  onChange={handlePasswordChange}
                   placeholder="Enter your master password"
-                  className={`w-full px-4 py-3 pr-12 bg-slate-50 dark:bg-slate-900 border ${
+                  className={`w-full pl-10 pr-12 py-3 bg-slate-50 dark:bg-slate-900 border-2 ${
                     error 
-                      ? 'border-red-500 focus:ring-red-500' 
-                      : 'border-slate-200 dark:border-slate-700 focus:ring-primary-500'
-                  } rounded-xl focus:ring-2 focus:border-transparent transition-all text-slate-800 dark:text-white`}
+                      ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
+                      : 'border-slate-200 dark:border-slate-700 focus:ring-primary-500 focus:border-primary-500'
+                  } rounded-xl focus:ring-2 transition-all text-slate-800 dark:text-white placeholder:text-slate-400 outline-none`}
                   autoFocus
+                  autoComplete="current-password"
                   disabled={isLoading}
+                  maxLength={128}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors disabled:opacity-50"
                   disabled={isLoading}
+                  tabIndex={-1}
                 >
                   {showPassword ? (
                     <EyeOff className="w-5 h-5 text-slate-600 dark:text-slate-400" />
@@ -144,10 +195,21 @@ const UnlockVaultModal = ({ isOpen, onClose }) => {
                   )}
                 </button>
               </div>
+              
+              {/* Error Message */}
               {error && (
-                <p className="mt-2 text-sm text-red-600 dark:text-red-400 flex items-center gap-1">
-                  <span>⚠️</span> {error}
-                </p>
+                <div className="mt-2 flex items-start gap-2 text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3">
+                  <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                  <span>{error}</span>
+                </div>
+              )}
+
+              {/* Password Requirements */}
+              {!error && masterPassword.length > 0 && masterPassword.length < 8 && (
+                <div className="mt-2 flex items-start gap-2 text-sm text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-3">
+                  <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                  <span>Password must be at least 8 characters</span>
+                </div>
               )}
             </div>
 
@@ -156,20 +218,20 @@ const UnlockVaultModal = ({ isOpen, onClose }) => {
               <button
                 type="button"
                 onClick={handleClose}
-                className="flex-1 px-4 py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-semibold hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+                className="flex-1 px-4 py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-semibold hover:bg-slate-200 dark:hover:bg-slate-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={isLoading}
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                disabled={isLoading || !masterPassword.trim()}
-                className="flex-1 px-4 py-3 bg-gradient-to-r from-primary-500 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                disabled={isLoading || !masterPassword.trim() || masterPassword.length < 8}
+                className="flex-1 px-4 py-3 bg-gradient-to-r from-primary-500 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2"
               >
                 {isLoading ? (
                   <>
                     <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    Unlocking...
+                    Verifying...
                   </>
                 ) : (
                   <>
@@ -178,6 +240,13 @@ const UnlockVaultModal = ({ isOpen, onClose }) => {
                   </>
                 )}
               </button>
+            </div>
+
+            {/* Help Text */}
+            <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
+              <p className="text-xs text-center text-slate-500 dark:text-slate-400">
+                Forgot your master password? Contact support or reset your account.
+              </p>
             </div>
           </form>
         </div>

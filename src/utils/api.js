@@ -93,6 +93,14 @@ export const authAPI = {
   logout: () => {
     localStorage.removeItem('jwt_token');
   },
+
+  // Check if master password is valid
+  checkPassword: async (masterPassword) => {
+    const response = await api.post('/api/users/check-password', {
+      password: masterPassword,
+    });
+    return response.data;
+  },
 };
 
 // Categories API endpoints
