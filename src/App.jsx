@@ -7,6 +7,7 @@ import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Passwords from './pages/Passwords';
+import Notes from './pages/Notes';
 import ActivityLogs from './pages/ActivityLogs';
 
 function App() {
@@ -61,6 +62,7 @@ function App() {
               <Route path="work" element={<Passwords />} />
               <Route path="finance" element={<Passwords />} />
               <Route path="social" element={<Passwords />} />
+              <Route path="notes" element={<Notes />} />
               <Route path="logs" element={<ActivityLogs />} />
             </Route>
 

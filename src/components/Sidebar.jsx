@@ -8,7 +8,8 @@ import {
   Plus,
   Gamepad2,
   Lock,
-  LockOpen
+  LockOpen,
+  FileText
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
@@ -43,6 +44,7 @@ const Sidebar = ({ onNewPassword, selectedCategory, onCategoryChange, onUnlock }
   };
 
   const secondaryLinks = [
+    { name: 'Secret Notes', icon: FileText, path: '/app/notes' },
     { name: 'Activity Logs', icon: Activity, path: '/app/logs' },
   ];
 

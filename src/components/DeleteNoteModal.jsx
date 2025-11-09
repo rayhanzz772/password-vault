@@ -1,0 +1,112 @@
+import { useState } from 'react';
+import { X, Trash2, AlertTriangle } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { useAuth } from '../contexts/AuthContext';
+import { notesAPI } from '../utils/api';
+
+const DeleteNoteModal = ({ isOpen, onClose, note, onSuccess }) => {
+  const { masterPassword } = useAuth();
+  const [confirmText, setConfirmText] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDelete = async () => {
+    if (confirmText.toLowerCase() !== 'delete') {
+      toast.error('Please type DELETE to confirm');
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      await notesAPI.delete(note.id, masterPassword);
+      toast.success('Note deleted successfully');
+      setConfirmText('');
+      onSuccess();
+    } catch (error) {
+      console.error('Failed to delete note:', error);
+      toast.error('Failed to delete note');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleClose = () => {
+    if (!isDeleting) {
+      setConfirmText('');
+      onClose();
+    }
+  };
+
+  if (!isOpen || !note) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md">
+        <div className="p-6">
+          <div className="flex items-center justify-center w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full mx-auto mb-4">
+            <Trash2 className="w-8 h-8 text-red-600 dark:text-red-400" />
+          </div>
+
+          <h2 className="text-2xl font-bold text-slate-800 dark:text-white text-center mb-2">
+            Delete Note?
+          </h2>
+          <p className="text-slate-600 dark:text-slate-400 text-center mb-6">
+            Are you sure you want to delete "<strong>{note.title}</strong>"? This action cannot be undone.
+          </p>
+
+          <div className="p-4 bg-amber-50 dark:bg-amber-900/20 border-2 border-amber-200 dark:border-amber-800 rounded-xl mb-6">
+            <div className="flex gap-3">
+              <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+              <div className="text-sm text-amber-800 dark:text-amber-200">
+                <p className="font-semibold mb-1">Warning</p>
+                <p>This note will be permanently deleted. You won't be able to recover it.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              Type <strong>DELETE</strong> to confirm
+            </label>
+            <input
+              type="text"
+              value={confirmText}
+              onChange={(e) => setConfirmText(e.target.value)}
+              placeholder="Type DELETE"
+              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none"
+              disabled={isDeleting}
+            />
+          </div>
+
+          <div className="flex gap-3">
+            <button
+              onClick={handleClose}
+              disabled={isDeleting}
+              className="flex-1 px-4 py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-semibold hover:bg-slate-200 dark:hover:bg-slate-600 transition-all"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleDelete}
+              disabled={confirmText.toLowerCase() !== 'delete' || isDeleting}
+              className="flex-1 px-4 py-3 bg-red-500 text-white rounded-xl font-semibold hover:bg-red-600 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              {isDeleting ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Deleting...
+                </>
+              ) : (
+                <>
+                  <Trash2 className="w-5 h-5" />
+                  Delete Forever
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default DeleteNoteModal;

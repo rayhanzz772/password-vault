@@ -186,4 +186,83 @@ export const logsAPI = {
   },
 };
 
+// Notes API endpoints
+export const notesAPI = {
+  // Get all notes
+  getAll: async (filters = {}) => {
+    const params = new URLSearchParams();
+    
+    if (filters.category) {
+      params.append('category', filters.category);
+    }
+    
+    if (filters.search || filters.q) {
+      params.append('q', filters.search || filters.q);
+    }
+    
+    const queryString = params.toString();
+    const url = queryString ? `/api/notes?${queryString}` : '/api/notes';
+    
+    console.log('🔍 Fetching notes with filters:', filters);
+    const response = await api.get(url);
+    return response.data;
+  },
+
+  // Get single note by ID
+  getById: async (id) => {
+    const response = await api.get(`/api/notes/${id}`);
+    return response.data;
+  },
+
+  // Create new note
+  create: async (noteData, masterPassword) => {
+    console.log('🔐 Creating encrypted note...');
+    
+    // Encrypt the note content client-side (if encryption is enabled)
+    // For now, send to server as is - server will handle encryption
+    const response = await api.post('/api/notes', {
+      title: noteData.title,
+      content: noteData.content,
+      category: noteData.category || 'personal',
+      tags: noteData.tags || [],
+      master_password: masterPassword,
+    });
+    
+    console.log('✅ Note created successfully');
+    return response.data;
+  },
+
+  // Update existing note
+  update: async (id, noteData, masterPassword) => {
+    console.log('🔐 Updating encrypted note...');
+    
+    const response = await api.put(`/api/notes/${id}`, {
+      title: noteData.title,
+      content: noteData.content,
+      category: noteData.category,
+      tags: noteData.tags || [],
+      master_password: masterPassword,
+    });
+    
+    console.log('✅ Note updated successfully');
+    return response.data;
+  },
+
+  // Delete note
+  delete: async (id, masterPassword) => {
+    const response = await api.delete(`/api/notes/${id}`, {
+      data: { master_password: masterPassword },
+    });
+    return response.data;
+  },
+
+  // Decrypt note content
+  decrypt: async (id, masterPassword) => {
+    const response = await api.post(`/api/notes/${id}/decrypt`, {
+      master_password: masterPassword,
+    });
+    return response.data;
+  },
+};
+
 export default api;
