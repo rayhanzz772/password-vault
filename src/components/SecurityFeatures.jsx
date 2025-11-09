@@ -1,29 +1,23 @@
-import { Shield, Key, AlertTriangle, Activity, Clock, Hash } from 'lucide-react';
+import { Shield, Key, AlertTriangle, Activity, Clock, Hash, FileText, Lock } from 'lucide-react';
 
 const features = [
   {
     icon: Shield,
     title: 'End-to-End Encryption',
-    description: 'AES-256-CBC with Argon2id key derivation ensures your passwords are protected with military-grade encryption.',
+    description: 'AES-256-CBC with Argon2id key derivation ensures your passwords and notes are protected with military-grade encryption.',
     color: 'from-blue-500 to-cyan-500',
+  },
+  {
+    icon: FileText,
+    title: 'Encrypted Secret Notes',
+    description: 'Store sensitive information like recovery codes, API keys, or private notes with the same encryption as your passwords.',
+    color: 'from-emerald-500 to-teal-500',
   },
   {
     icon: Key,
     title: 'Zero Knowledge Design',
     description: 'Your master password never leaves your device. We can\'t access your data even if we wanted to.',
     color: 'from-purple-500 to-pink-500',
-  },
-  {
-    icon: AlertTriangle,
-    title: 'Password Breach Detection',
-    description: 'Automatically checks HaveIBeenPwned before saving passwords to ensure they haven\'t been compromised.',
-    color: 'from-orange-500 to-red-500',
-  },
-  {
-    icon: Activity,
-    title: 'Activity Logs',
-    description: 'Track create, decrypt, and delete actions securely. Know exactly when and how your vault is accessed.',
-    color: 'from-green-500 to-emerald-500',
   },
   {
     icon: Clock,
@@ -36,6 +30,12 @@ const features = [
     title: 'Per-Item Salted KDF',
     description: 'Each vault entry has unique Argon2id parameters, making it impossible to crack multiple passwords at once.',
     color: 'from-violet-500 to-purple-500',
+  },
+  {
+    icon: Lock,
+    title: 'Unified Vault Protection',
+    description: 'Both passwords and notes share the same secure vault with a single master password for easy management.',
+    color: 'from-pink-500 to-rose-500',
   },
 ];
 
@@ -84,7 +84,7 @@ const SecurityFeatures = () => {
           </h2>
           
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            Built with the latest cryptographic standards and security best practices to keep your passwords safe.
+            Built with the latest cryptographic standards and security best practices to keep your passwords and sensitive notes safe.
           </p>
         </div>
 

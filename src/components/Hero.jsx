@@ -24,16 +24,16 @@ const Hero = () => {
 
             {/* Main Title */}
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
-              <span className="animated-text">Vault Password</span>
+              <span className="animated-text">Crypta</span>
               <br />
               <span className="text-gray-900 dark:text-white">
-                Secure. Modern. Yours.
+                Secret Manager
               </span>
             </h1>
 
             {/* Subtitle */}
             <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto lg:mx-0">
-              An advanced open-source password manager built with Argon2id encryption and breach protection.
+              An advanced open-source secret manager for passwords and encrypted notes, built with Argon2id encryption and breach protection.
             </p>
 
             {/* CTA Buttons */}

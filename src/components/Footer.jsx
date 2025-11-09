@@ -49,11 +49,11 @@ const Footer = () => {
                 <Lock className="w-6 h-6 text-white" strokeWidth={2.5} />
               </div>
               <span className="text-xl font-bold text-gray-900 dark:text-white">
-                Vault Password
+                Secret Manager
               </span>
             </div>
             <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-xs">
-              Secure, open-source password manager with enterprise-grade encryption.
+              Secure, open-source secret manager for passwords and encrypted notes with enterprise-grade encryption.
             </p>
             
             {/* Social Links */}

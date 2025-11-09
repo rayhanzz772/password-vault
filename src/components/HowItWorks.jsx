@@ -13,16 +13,16 @@ const steps = [
   {
     number: '02',
     icon: Lock,
-    title: 'Encrypt & Save Passwords Securely',
-    description: 'Add your passwords, and we\'ll encrypt each one with AES-256 using your master password. Each entry gets unique Argon2id salt.',
+    title: 'Encrypt & Save Your Secrets',
+    description: 'Add your passwords and notes, and we\'ll encrypt each one with AES-256 using your master password. Each entry gets unique Argon2id salt.',
     color: 'from-purple-500 to-pink-500',
     image: '🔒',
   },
   {
     number: '03',
     icon: Unlock,
-    title: 'Decrypt Instantly, Locally, When You Need Them',
-    description: 'Unlock your vault with your master password. Decryption happens instantly on your device - your passwords never leave unencrypted.',
+    title: 'Decrypt Instantly When You Need Them',
+    description: 'Unlock your vault with your master password. Decryption happens instantly on your device - your secrets never leave unencrypted.',
     color: 'from-green-500 to-emerald-500',
     image: '✨',
   },
@@ -95,7 +95,7 @@ const HowItWorks = () => {
           </h2>
 
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Vault Password makes security simple. Here's how it works under the hood.
+            Secret Manager makes security simple. Here's how it works under the hood.
           </p>
         </div>
 
@@ -111,10 +111,10 @@ const HowItWorks = () => {
           <div className="inline-flex flex-col sm:flex-row items-center gap-6 p-8 rounded-2xl glass-effect">
             <div className="text-left">
               <h3 className="text-2xl font-bold mb-2 text-gray-900 dark:text-white">
-                Ready to secure your passwords?
+                Ready to secure your secrets?
               </h3>
               <p className="text-gray-600 dark:text-gray-300">
-                Join thousands of users protecting their digital life.
+                Join thousands of users protecting their passwords and sensitive information.
               </p>
             </div>
             <Link
