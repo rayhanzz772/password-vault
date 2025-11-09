@@ -222,8 +222,8 @@ export const notesAPI = {
     // For now, send to server as is - server will handle encryption
     const response = await api.post('/api/notes', {
       title: noteData.title,
-      content: noteData.content,
-      category: noteData.category || 'personal',
+      note: noteData.note,
+      category_id: noteData.category, // Send as category_id to match database schema
       tags: noteData.tags || [],
       master_password: masterPassword,
     });
@@ -235,11 +235,11 @@ export const notesAPI = {
   // Update existing note
   update: async (id, noteData, masterPassword) => {
     console.log('🔐 Updating encrypted note...');
-    
-    const response = await api.put(`/api/notes/${id}`, {
+
+    const response = await api.put(`/api/notes/${id}/update`, {
       title: noteData.title,
-      content: noteData.content,
-      category: noteData.category,
+      note: noteData.note,
+      category_id: noteData.category, // Send as category_id to match database schema
       tags: noteData.tags || [],
       master_password: masterPassword,
     });
@@ -250,7 +250,7 @@ export const notesAPI = {
 
   // Delete note
   delete: async (id, masterPassword) => {
-    const response = await api.delete(`/api/notes/${id}`, {
+    const response = await api.delete(`/api/notes/${id}/delete`, {
       data: { master_password: masterPassword },
     });
     return response.data;

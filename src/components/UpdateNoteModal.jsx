@@ -3,6 +3,7 @@ import { X, Save, Tag, AlertCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../contexts/AuthContext';
 import { notesAPI } from '../utils/api';
+import { getCategoryIcon, getCategoryGradient } from '../utils/categoryIcons';
 
 // Utility function to normalize tags (convert string to array)
 const normalizeTags = (tags) => {
@@ -19,7 +20,7 @@ const UpdateNoteModal = ({ isOpen, onClose, note, onSuccess, categories }) => {
   
   const [formData, setFormData] = useState({
     title: '',
-    content: '',
+    note: '',
     category: 'personal',
     tags: '',
   });
@@ -47,10 +48,17 @@ const UpdateNoteModal = ({ isOpen, onClose, note, onSuccess, categories }) => {
       
       const tagsArray = normalizeTags(note.tags);
       
+      // Backend returns category_name, need to find the matching category ID
+      let categoryId = note.category_id || note.category;
+      if (!categoryId && note.category_name) {
+        const matchedCategory = categories.find(cat => cat.name.toLowerCase() === note.category_name.toLowerCase());
+        categoryId = matchedCategory?.id || 'personal';
+      }
+      
       setFormData({
         title: note.title || '',
-        content: content || '',
-        category: note.category || 'personal',
+        note: content || '',
+        category: categoryId || 'personal',
         tags: tagsArray.join(', '),
       });
     } catch (error) {
@@ -64,7 +72,7 @@ const UpdateNoteModal = ({ isOpen, onClose, note, onSuccess, categories }) => {
   const validateForm = () => {
     const newErrors = {};
     if (!formData.title.trim()) newErrors.title = 'Title is required';
-    if (!formData.content.trim()) newErrors.content = 'Content is required';
+    if (!formData.note.trim()) newErrors.note = 'Note content is required';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -79,7 +87,7 @@ const UpdateNoteModal = ({ isOpen, onClose, note, onSuccess, categories }) => {
       
       await notesAPI.update(note.id, {
         title: formData.title.trim(),
-        content: formData.content.trim(),
+        note: formData.note.trim(),
         category: formData.category,
         tags: tagsArray,
       }, masterPassword);
@@ -131,7 +139,7 @@ const UpdateNoteModal = ({ isOpen, onClose, note, onSuccess, categories }) => {
                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Category *</label>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   {availableCategories.map((category) => {
-                    const Icon = category.icon;
+                    const Icon = getCategoryIcon(category.name);
                     const isSelected = formData.category === category.id;
                     return (
                       <button
@@ -139,7 +147,7 @@ const UpdateNoteModal = ({ isOpen, onClose, note, onSuccess, categories }) => {
                         type="button"
                         onClick={() => setFormData({ ...formData, category: category.id })}
                         disabled={isLoading}
-                        className={`p-3 rounded-xl border-2 transition-all flex items-center gap-2 ${isSelected ? `border-${category.color}-500 bg-${category.color}-50 dark:bg-${category.color}-900/20` : 'border-slate-200 dark:border-slate-700'}`}
+                        className={`p-3 rounded-xl border-2 transition-all flex items-center gap-2 ${isSelected ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20' : 'border-slate-200 dark:border-slate-700'}`}
                       >
                         <Icon className="w-5 h-5" />
                         <span className="text-sm font-medium">{category.name}</span>
@@ -150,15 +158,15 @@ const UpdateNoteModal = ({ isOpen, onClose, note, onSuccess, categories }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Content *</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Note Content *</label>
                 <textarea
-                  value={formData.content}
-                  onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                  value={formData.note}
+                  onChange={(e) => setFormData({ ...formData, note: e.target.value })}
                   rows={12}
-                  className={`w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border-2 ${errors.content ? 'border-red-500' : 'border-slate-200 dark:border-slate-700'} rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-mono text-sm`}
+                  className={`w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border-2 ${errors.note ? 'border-red-500' : 'border-slate-200 dark:border-slate-700'} rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-mono text-sm`}
                   disabled={isLoading}
                 />
-                {errors.content && <p className="mt-2 text-sm text-red-600 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.content}</p>}
+                {errors.note && <p className="mt-2 text-sm text-red-600 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.note}</p>}
               </div>
 
               <div>

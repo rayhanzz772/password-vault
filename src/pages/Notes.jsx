@@ -7,6 +7,7 @@ import {
   List, 
   Filter,
   Lock,
+  LockOpen,
   Calendar,
   Tag,
   Eye,
@@ -18,11 +19,13 @@ import {
   DollarSign,
   Heart,
   Lightbulb,
-  Folder
+  Folder,
+  Shield
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../contexts/AuthContext';
-import { notesAPI } from '../utils/api';
+import { notesAPI, categoriesAPI } from '../utils/api';
+import { getCategoryIcon, getCategoryGradient } from '../utils/categoryIcons';
 import CreateNoteModal from '../components/CreateNoteModal';
 import ViewNoteModal from '../components/ViewNoteModal';
 import UpdateNoteModal from '../components/UpdateNoteModal';
@@ -38,23 +41,16 @@ const normalizeTags = (tags) => {
   return [];
 };
 
-// Note categories with icons and colors
-const NOTE_CATEGORIES = [
-  { id: 'all', name: 'All Notes', icon: FileText, color: 'slate', gradient: 'from-slate-500 to-slate-600' },
-  { id: 'personal', name: 'Personal', icon: StickyNote, color: 'blue', gradient: 'from-blue-500 to-blue-600' },
-  { id: 'work', name: 'Work', icon: Briefcase, color: 'purple', gradient: 'from-purple-500 to-purple-600' },
-  { id: 'finance', name: 'Finance', icon: DollarSign, color: 'green', gradient: 'from-green-500 to-green-600' },
-  { id: 'medical', name: 'Medical', icon: Heart, color: 'red', gradient: 'from-red-500 to-red-600' },
-  { id: 'ideas', name: 'Ideas', icon: Lightbulb, color: 'yellow', gradient: 'from-yellow-500 to-yellow-600' },
-  { id: 'other', name: 'Other', icon: Folder, color: 'gray', gradient: 'from-gray-500 to-gray-600' },
-];
-
 const Notes = () => {
-  const { isVaultLocked, masterPassword } = useAuth();
+  const { masterPassword } = useAuth();
+  
+  // Determine if vault is locked
+  const isVaultLocked = !masterPassword;
   
   // State
   const [notes, setNotes] = useState([]);
   const [filteredNotes, setFilteredNotes] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -67,6 +63,39 @@ const Notes = () => {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedNote, setSelectedNote] = useState(null);
+
+  // Fetch categories on mount
+  useEffect(() => {
+    if (!isVaultLocked) {
+      fetchCategories();
+    }
+  }, [isVaultLocked]);
+
+  const fetchCategories = async () => {
+    try {
+      const data = await categoriesAPI.getAll();
+      console.log('📂 Categories API response:', data);
+      
+      // Handle different response structures
+      let categoryList = [];
+      if (Array.isArray(data)) {
+        categoryList = data;
+      } else if (data.categories && Array.isArray(data.categories)) {
+        categoryList = data.categories;
+      } else if (data.data && Array.isArray(data.data)) {
+        categoryList = data.data;
+      } else if (data.data && data.data.categories && Array.isArray(data.data.categories)) {
+        categoryList = data.data.categories;
+      }
+      
+      console.log('📋 Processed category list:', categoryList);
+      setCategories(categoryList);
+    } catch (error) {
+      console.error('Failed to fetch categories:', error);
+      toast.error('Failed to load categories');
+      setCategories([]);
+    }
+  };
 
   // Fetch notes
   const fetchNotes = async () => {
@@ -100,7 +129,7 @@ const Notes = () => {
 
     // Filter by category
     if (selectedCategory !== 'all') {
-      filtered = filtered.filter(note => note.category === selectedCategory);
+      filtered = filtered.filter(note => note.category_id === selectedCategory || note.category === selectedCategory);
     }
 
     // Filter by search query
@@ -116,10 +145,29 @@ const Notes = () => {
     setFilteredNotes(filtered);
   }, [notes, selectedCategory, searchQuery]);
 
-  // Get category data
-  const getCategoryData = (categoryId) => {
-    return NOTE_CATEGORIES.find(cat => cat.id === categoryId) || NOTE_CATEGORIES[0];
+  // Get category data - match by name since backend returns category_name
+  const getCategoryData = (categoryNameOrId) => {
+    // Try to find by name first (from backend response)
+    let category = categories.find(cat => cat.name.toLowerCase() === categoryNameOrId?.toLowerCase());
+    // Fallback to finding by ID
+    if (!category) {
+      category = categories.find(cat => cat.id === categoryNameOrId);
+    }
+    // Return found category or first category as fallback
+    return category || categories[0];
   };
+
+  // Get category count (including "All")
+  const getCategoryCount = (categoryId) => {
+    if (categoryId === 'all') return notes.length;
+    return notes.filter(note => note.category_id === categoryId).length;
+  };
+
+  // Build category filter list with "All" option
+  const categoryFilters = [
+    { id: 'all', name: 'All Notes' },
+    ...categories
+  ];
 
   // Handle note actions
   const handleView = (note) => {
@@ -171,15 +219,84 @@ const Notes = () => {
 
   if (isVaultLocked) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-center">
-          <Lock className="w-16 h-16 text-slate-400 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-2">
-            Vault is Locked
-          </h2>
-          <p className="text-slate-600 dark:text-slate-400">
-            Unlock your vault to access notes
-          </p>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-6">
+        <div className="max-w-md w-full">
+          {/* Lock Icon */}
+          <div className="flex items-center justify-center mb-6">
+            <div className="relative">
+              <div className="w-24 h-24 bg-gradient-to-br from-red-500 to-rose-600 rounded-full flex items-center justify-center shadow-lg animate-pulse">
+                <Lock className="w-12 h-12 text-white" />
+              </div>
+              <div className="absolute -top-1 -right-1 w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
+                <Shield className="w-5 h-5 text-white" />
+              </div>
+            </div>
+          </div>
+
+          {/* Message */}
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-slate-800 dark:text-white mb-3">
+              Notes Locked
+            </h2>
+            <p className="text-slate-600 dark:text-slate-400 text-lg mb-2">
+              Your secret notes are protected
+            </p>
+            <p className="text-sm text-slate-500 dark:text-slate-500">
+              Unlock your vault with your master password to access your encrypted notes
+            </p>
+          </div>
+
+          {/* Info Cards */}
+          <div className="space-y-3 mb-8">
+            <div className="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl p-4 flex items-start gap-3">
+              <div className="flex-shrink-0 w-10 h-10 bg-primary-100 dark:bg-primary-900/30 rounded-lg flex items-center justify-center">
+                <Lock className="w-5 h-5 text-primary-600 dark:text-primary-400" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-slate-800 dark:text-white mb-1">
+                  End-to-End Encrypted
+                </h3>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  All notes are encrypted with your master password
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl p-4 flex items-start gap-3">
+              <div className="flex-shrink-0 w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+                <Shield className="w-5 h-5 text-green-600 dark:text-green-400" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-slate-800 dark:text-white mb-1">
+                  Zero-Knowledge Security
+                </h3>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  Only you can decrypt and read your notes
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl p-4 flex items-start gap-3">
+              <div className="flex-shrink-0 w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
+                <FileText className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-slate-800 dark:text-white mb-1">
+                  Private Notes Storage
+                </h3>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  Store personal thoughts, ideas, and sensitive information
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Unlock Instruction */}
+          <div className="bg-amber-50 dark:bg-amber-900/20 border-2 border-amber-200 dark:border-amber-800 rounded-xl p-4 text-center">
+            <p className="text-sm text-amber-800 dark:text-amber-200">
+              <strong>Tip:</strong> Click the <strong>"Unlock Vault"</strong> button in the sidebar to access your notes
+            </p>
+          </div>
         </div>
       </div>
     );
@@ -188,6 +305,7 @@ const Notes = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-6">
       <div className="max-w-7xl mx-auto">
+       
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
@@ -272,9 +390,10 @@ const Notes = () => {
                 Categories
               </h3>
               <div className="flex flex-wrap gap-2">
-                {NOTE_CATEGORIES.map((category) => {
-                  const Icon = category.icon;
-                  const count = getNoteCountByCategory(category.id);
+                {categoryFilters.map((category) => {
+                  const Icon = getCategoryIcon(category.name);
+                  const gradient = getCategoryGradient(category.name);
+                  const count = getCategoryCount(category.id);
                   const isSelected = selectedCategory === category.id;
 
                   return (
@@ -283,7 +402,7 @@ const Notes = () => {
                       onClick={() => setSelectedCategory(category.id)}
                       className={`px-4 py-2 rounded-xl font-medium transition-all flex items-center gap-2 ${
                         isSelected
-                          ? `bg-gradient-to-r ${category.gradient} text-white shadow-lg`
+                          ? `bg-gradient-to-r ${gradient} text-white shadow-lg`
                           : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
                       }`}
                     >
@@ -382,8 +501,10 @@ const Notes = () => {
           /* Grid View */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredNotes.map((note) => {
-              const categoryData = getCategoryData(note.category);
-              const Icon = categoryData.icon;
+              // Backend returns category_name, fallback to category_id or category
+              const categoryData = getCategoryData(note.category_name || note.category_id || note.category);
+              const Icon = getCategoryIcon(categoryData?.name);
+              const gradient = getCategoryGradient(categoryData?.name);
 
               return (
                 <div
@@ -391,10 +512,10 @@ const Notes = () => {
                   className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all overflow-hidden group"
                 >
                   {/* Header */}
-                  <div className={`bg-gradient-to-r ${categoryData.gradient} p-4 flex items-center justify-between`}>
+                  <div className={`bg-gradient-to-r ${gradient} p-4 flex items-center justify-between`}>
                     <div className="flex items-center gap-2 text-white">
                       <Icon className="w-5 h-5" />
-                      <span className="text-sm font-medium">{categoryData.name}</span>
+                      <span className="text-sm font-medium">{categoryData?.name}</span>
                     </div>
                     <Lock className="w-4 h-4 text-white/70" />
                   </div>
@@ -466,8 +587,10 @@ const Notes = () => {
           /* List View */
           <div className="space-y-3">
             {filteredNotes.map((note) => {
-              const categoryData = getCategoryData(note.category);
-              const Icon = categoryData.icon;
+              // Backend returns category_name, fallback to category_id or category
+              const categoryData = getCategoryData(note.category_name || note.category_id || note.category);
+              const Icon = getCategoryIcon(categoryData?.name);
+              const gradient = getCategoryGradient(categoryData?.name);
 
               return (
                 <div
@@ -475,7 +598,7 @@ const Notes = () => {
                   className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 hover:shadow-lg transition-all p-4 flex items-center gap-4"
                 >
                   {/* Icon */}
-                  <div className={`w-12 h-12 bg-gradient-to-br ${categoryData.gradient} rounded-xl flex items-center justify-center flex-shrink-0`}>
+                  <div className={`w-12 h-12 bg-gradient-to-br ${gradient} rounded-xl flex items-center justify-center flex-shrink-0`}>
                     <Icon className="w-6 h-6 text-white" />
                   </div>
 
@@ -487,7 +610,7 @@ const Notes = () => {
                     <div className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
                       <span className="flex items-center gap-1">
                         <Icon className="w-3 h-3" />
-                        {categoryData.name}
+                        {categoryData?.name}
                       </span>
                       <span className="flex items-center gap-1">
                         <Calendar className="w-3 h-3" />
@@ -536,7 +659,7 @@ const Notes = () => {
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
         onSuccess={handleCreateSuccess}
-        categories={NOTE_CATEGORIES}
+        categories={categories}
       />
 
       <ViewNoteModal
@@ -545,7 +668,7 @@ const Notes = () => {
         note={selectedNote}
         onEdit={handleEdit}
         onDelete={handleDelete}
-        categories={NOTE_CATEGORIES}
+        categories={categories}
       />
 
       <UpdateNoteModal
@@ -553,7 +676,7 @@ const Notes = () => {
         onClose={() => setShowUpdateModal(false)}
         note={selectedNote}
         onSuccess={handleUpdateSuccess}
-        categories={NOTE_CATEGORIES}
+        categories={categories}
       />
 
       <DeleteNoteModal
