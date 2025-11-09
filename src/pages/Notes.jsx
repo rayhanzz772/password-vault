@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { 
-  FileText, 
-  Plus, 
-  Search, 
-  Grid, 
-  List, 
+import {
+  FileText,
+  Plus,
+  Search,
+  Grid,
+  List,
   Filter,
   Lock,
   LockOpen,
@@ -14,12 +14,6 @@ import {
   Edit,
   Trash2,
   X,
-  StickyNote,
-  Briefcase,
-  DollarSign,
-  Heart,
-  Lightbulb,
-  Folder,
   Shield
 } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -31,7 +25,6 @@ import ViewNoteModal from '../components/ViewNoteModal';
 import UpdateNoteModal from '../components/UpdateNoteModal';
 import DeleteNoteModal from '../components/DeleteNoteModal';
 
-// Utility function to normalize tags (convert string to array)
 const normalizeTags = (tags) => {
   if (!tags) return [];
   if (Array.isArray(tags)) return tags;
@@ -43,28 +36,24 @@ const normalizeTags = (tags) => {
 
 const Notes = () => {
   const { masterPassword } = useAuth();
-  
-  // Determine if vault is locked
+
   const isVaultLocked = !masterPassword;
-  
-  // State
+
   const [notes, setNotes] = useState([]);
   const [filteredNotes, setFilteredNotes] = useState([]);
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
+  const [viewMode, setViewMode] = useState('list');
   const [showFilters, setShowFilters] = useState(false);
-  
-  // Modals
+
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedNote, setSelectedNote] = useState(null);
 
-  // Fetch categories on mount
   useEffect(() => {
     if (!isVaultLocked) {
       fetchCategories();
@@ -74,9 +63,7 @@ const Notes = () => {
   const fetchCategories = async () => {
     try {
       const data = await categoriesAPI.getAll();
-      console.log('📂 Categories API response:', data);
-      
-      // Handle different response structures
+
       let categoryList = [];
       if (Array.isArray(data)) {
         categoryList = data;
@@ -87,9 +74,9 @@ const Notes = () => {
       } else if (data.data && data.data.categories && Array.isArray(data.data.categories)) {
         categoryList = data.data.categories;
       }
-      
-      console.log('📋 Processed category list:', categoryList);
+
       setCategories(categoryList);
+      console.log(categoryList)
     } catch (error) {
       console.error('Failed to fetch categories:', error);
       toast.error('Failed to load categories');
@@ -97,7 +84,6 @@ const Notes = () => {
     }
   };
 
-  // Fetch notes
   const fetchNotes = async () => {
     try {
       setIsLoading(true);
@@ -123,19 +109,27 @@ const Notes = () => {
     }
   }, [isVaultLocked]);
 
-  // Filter notes
   useEffect(() => {
     let filtered = notes;
 
-    // Filter by category
     if (selectedCategory !== 'all') {
-      filtered = filtered.filter(note => note.category_id === selectedCategory || note.category === selectedCategory);
+      filtered = filtered.filter(note => {
+        if (note.category_id === selectedCategory) return true;
+
+        const selectedCategoryData = categories.find(cat => cat.id === selectedCategory);
+        if (selectedCategoryData && note.category_name?.toLowerCase() === selectedCategoryData.name.toLowerCase()) {
+          return true;
+        }
+
+        if (note.category === selectedCategory) return true;
+
+        return false;
+      });
     }
 
-    // Filter by search query
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(note => 
+      filtered = filtered.filter(note =>
         note.title?.toLowerCase().includes(query) ||
         note.preview?.toLowerCase().includes(query) ||
         note.tags?.some(tag => tag.toLowerCase().includes(query))
@@ -143,33 +137,38 @@ const Notes = () => {
     }
 
     setFilteredNotes(filtered);
-  }, [notes, selectedCategory, searchQuery]);
+  }, [notes, selectedCategory, searchQuery, categories]);
 
-  // Get category data - match by name since backend returns category_name
   const getCategoryData = (categoryNameOrId) => {
-    // Try to find by name first (from backend response)
     let category = categories.find(cat => cat.name.toLowerCase() === categoryNameOrId?.toLowerCase());
-    // Fallback to finding by ID
     if (!category) {
       category = categories.find(cat => cat.id === categoryNameOrId);
     }
-    // Return found category or first category as fallback
     return category || categories[0];
   };
 
-  // Get category count (including "All")
   const getCategoryCount = (categoryId) => {
     if (categoryId === 'all') return notes.length;
-    return notes.filter(note => note.category_id === categoryId).length;
+
+    return notes.filter(note => {
+      if (note.category_id === categoryId) return true;
+
+      const categoryData = categories.find(cat => cat.id === categoryId);
+      if (categoryData && note.category_name?.toLowerCase() === categoryData.name.toLowerCase()) {
+        return true;
+      }
+
+      if (note.category === categoryId) return true;
+
+      return false;
+    }).length;
   };
 
-  // Build category filter list with "All" option
   const categoryFilters = [
     { id: 'all', name: 'All Notes' },
     ...categories
   ];
 
-  // Handle note actions
   const handleView = (note) => {
     setSelectedNote(note);
     setShowViewModal(true);
@@ -200,28 +199,21 @@ const Notes = () => {
     setShowDeleteModal(false);
   };
 
-  // Format date
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric' 
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
     });
   };
 
-  // Get note count by category
-  const getNoteCountByCategory = (categoryId) => {
-    if (categoryId === 'all') return notes.length;
-    return notes.filter(note => note.category === categoryId).length;
-  };
 
   if (isVaultLocked) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-6">
         <div className="max-w-md w-full">
-          {/* Lock Icon */}
           <div className="flex items-center justify-center mb-6">
             <div className="relative">
               <div className="w-24 h-24 bg-gradient-to-br from-red-500 to-rose-600 rounded-full flex items-center justify-center shadow-lg animate-pulse">
@@ -233,7 +225,6 @@ const Notes = () => {
             </div>
           </div>
 
-          {/* Message */}
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-slate-800 dark:text-white mb-3">
               Notes Locked
@@ -305,7 +296,7 @@ const Notes = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-6">
       <div className="max-w-7xl mx-auto">
-       
+
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
@@ -353,21 +344,19 @@ const Notes = () => {
             <div className="flex gap-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-1">
               <button
                 onClick={() => setViewMode('grid')}
-                className={`p-2 rounded-lg transition-all ${
-                  viewMode === 'grid'
+                className={`p-2 rounded-lg transition-all ${viewMode === 'grid'
                     ? 'bg-primary-500 text-white'
                     : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700'
-                }`}
+                  }`}
               >
                 <Grid className="w-5 h-5" />
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`p-2 rounded-lg transition-all ${
-                  viewMode === 'list'
+                className={`p-2 rounded-lg transition-all ${viewMode === 'list'
                     ? 'bg-primary-500 text-white'
                     : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700'
-                }`}
+                  }`}
               >
                 <List className="w-5 h-5" />
               </button>
@@ -400,19 +389,17 @@ const Notes = () => {
                     <button
                       key={category.id}
                       onClick={() => setSelectedCategory(category.id)}
-                      className={`px-4 py-2 rounded-xl font-medium transition-all flex items-center gap-2 ${
-                        isSelected
+                      className={`px-4 py-2 rounded-xl font-medium transition-all flex items-center gap-2 ${isSelected
                           ? `bg-gradient-to-r ${gradient} text-white shadow-lg`
                           : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
-                      }`}
+                        }`}
                     >
                       <Icon className="w-4 h-4" />
                       {category.name}
-                      <span className={`px-2 py-0.5 rounded-full text-xs ${
-                        isSelected
+                      <span className={`px-2 py-0.5 rounded-full text-xs ${isSelected
                           ? 'bg-white/20'
                           : 'bg-slate-200 dark:bg-slate-600'
-                      }`}>
+                        }`}>
                         {count}
                       </span>
                     </button>
@@ -421,49 +408,6 @@ const Notes = () => {
               </div>
             </div>
           )}
-
-          {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-4 text-white">
-              <div className="flex items-center justify-between mb-2">
-                <FileText className="w-6 h-6" />
-                <span className="text-2xl font-bold">{notes.length}</span>
-              </div>
-              <p className="text-sm text-blue-100">Total Notes</p>
-            </div>
-            
-            <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-4 text-white">
-              <div className="flex items-center justify-between mb-2">
-                <Lock className="w-6 h-6" />
-                <span className="text-2xl font-bold">{notes.length}</span>
-              </div>
-              <p className="text-sm text-purple-100">Encrypted</p>
-            </div>
-            
-            <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-4 text-white">
-              <div className="flex items-center justify-between mb-2">
-                <Calendar className="w-6 h-6" />
-                <span className="text-2xl font-bold">
-                  {notes.filter(n => {
-                    const date = new Date(n.created_at);
-                    const today = new Date();
-                    return date.toDateString() === today.toDateString();
-                  }).length}
-                </span>
-              </div>
-              <p className="text-sm text-green-100">Today</p>
-            </div>
-            
-            <div className="bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl p-4 text-white">
-              <div className="flex items-center justify-between mb-2">
-                <Tag className="w-6 h-6" />
-                <span className="text-2xl font-bold">
-                  {[...new Set(notes.flatMap(n => n.tags || []))].length}
-                </span>
-              </div>
-              <p className="text-sm text-amber-100">Tags</p>
-            </div>
-          </div>
         </div>
 
         {/* Notes Display */}

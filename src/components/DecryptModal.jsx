@@ -113,8 +113,6 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
         decrypted = result.data.data.password;
       }
 
-      console.log('🔑 Extracted decrypted password:', decrypted ? '***' : 'NOT FOUND');
-
       if (!decrypted) {
         console.error('❌ No decrypted password in response!');
         console.error('Available fields:', Object.keys(result));
@@ -128,9 +126,7 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
       setDecryptedPassword(decrypted);
       toast.success('Password decrypted!');
     } catch (error) {
-      console.error('Failed to decrypt:', error);
 
-      // Handle 429 Too Many Requests
       if (error.response?.status === 429) {
         const retryAfter = error.response?.data?.retry_after || 60;
         setIsRateLimited(true);
@@ -190,199 +186,199 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
       <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg my-8">
         {/* Header */}
         <div className="border-b border-slate-200 dark:border-slate-700 p-6 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className={`w-10 h-10 bg-gradient-to-br ${categoryGradient} rounded-xl flex items-center justify-center`}>
-                {decryptedPassword ? (
-                  <Unlock className="w-5 h-5 text-white" />
-                ) : (
-                  <CategoryIcon className="w-5 h-5 text-white" />
-                )}
+          <div className="flex items-center gap-3">
+            <div className={`w-10 h-10 bg-gradient-to-br ${categoryGradient} rounded-xl flex items-center justify-center`}>
+              {decryptedPassword ? (
+                <Unlock className="w-5 h-5 text-white" />
+              ) : (
+                <CategoryIcon className="w-5 h-5 text-white" />
+              )}
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-slate-800 dark:text-white">
+                {vaultItem.name}
+              </h2>
+              <p className="text-sm text-slate-600 dark:text-slate-400">
+                {decryptedPassword ? 'Password Decrypted' : 'Decrypt Password'}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={handleClose}
+            className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+          >
+            <X className="w-5 h-5 text-slate-500" />
+          </button>
+        </div>
+
+        {/* Scrollable Content */}
+        <div className="p-6 space-y-4 max-h-[calc(100vh-12rem)] overflow-y-auto">
+          {/* Username/Email */}
+          <div>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              Username / Email
+            </label>
+            <div className="px-4 py-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
+              <p className="text-slate-900 dark:text-white">{vaultItem.username}</p>
+            </div>
+          </div>
+
+          {/* Master Password Input (if not in memory) */}
+          {showMasterPasswordInput && !decryptedPassword && (
+            <form
+              onSubmit={handleSubmitMasterPassword}
+              className="space-y-4"
+            >
+              <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
+                <p className="text-sm text-yellow-800 dark:text-yellow-300">
+                  Master password is not in memory. Please re-enter it to decrypt.
+                </p>
               </div>
+
               <div>
-                <h2 className="text-xl font-bold text-slate-800 dark:text-white">
-                  {vaultItem.name}
-                </h2>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
-                  {decryptedPassword ? 'Password Decrypted' : 'Decrypt Password'}
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  Master Password
+                </label>
+                <input
+                  type="password"
+                  value={inputMasterPassword}
+                  onChange={(e) => setInputMasterPassword(e.target.value)}
+                  placeholder="Enter your master password"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none"
+                  autoFocus
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={!inputMasterPassword || isLoading}
+                className="w-full px-4 py-3 bg-gradient-to-r from-primary-500 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading ? 'Decrypting...' : 'Decrypt Password'}
+              </button>
+            </form>
+          )}
+
+          {/* Decrypted Password Display */}
+          {decryptedPassword && (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    value={decryptedPassword}
+                    readOnly
+                    className="w-full px-4 py-3 pr-24 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white font-mono focus:outline-none"
+                  />
+                  <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="w-4 h-4 text-slate-500" />
+                      ) : (
+                        <Eye className="w-4 h-4 text-slate-500" />
+                      )}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleCopy}
+                      className="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                    >
+                      <Copy className="w-4 h-4 text-slate-500" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Auto-clear Timer */}
+              <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                  <span className="text-sm text-blue-800 dark:text-blue-300">
+                    Auto-clear in {timeRemaining}s
+                  </span>
+                </div>
+                <button
+                  onClick={handleClearPassword}
+                  className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
+                >
+                  Clear Now
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Rate Limit Warning */}
+          {isRateLimited && (
+            <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <h4 className="font-semibold text-red-800 dark:text-red-300 mb-1">
+                  Too Many Requests
+                </h4>
+                <p className="text-sm text-red-700 dark:text-red-400">
+                  Please wait {countdown} seconds before trying again.
                 </p>
               </div>
             </div>
-            <button
-              onClick={handleClose}
-              className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
-            >
-              <X className="w-5 h-5 text-slate-500" />
-            </button>
-          </div>
+          )}
 
-          {/* Scrollable Content */}
-          <div className="p-6 space-y-4 max-h-[calc(100vh-12rem)] overflow-y-auto">
-            {/* Username/Email */}
+          {/* Note */}
+          {vaultItem.note && (
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                Username / Email
+                Note
               </label>
-              <div className="px-4 py-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
-                <p className="text-slate-900 dark:text-white">{vaultItem.username}</p>
+              <div className="relative">
+                <div className="px-4 py-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 max-h-48 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent">
+                  <p className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap break-words">
+                    {vaultItem.note}
+                  </p>
+                </div>
+                {/* Scroll indicator - shows if content is scrollable */}
+                {vaultItem.note.length > 200 && (
+                  <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-slate-50 dark:from-slate-900 to-transparent rounded-b-xl pointer-events-none"></div>
+                )}
               </div>
             </div>
+          )}
 
-            {/* Master Password Input (if not in memory) */}
-            {showMasterPasswordInput && !decryptedPassword && (
-              <form
-                onSubmit={handleSubmitMasterPassword}
-                className="space-y-4"
-              >
-                <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl flex items-start gap-3">
-                  <AlertCircle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
-                  <p className="text-sm text-yellow-800 dark:text-yellow-300">
-                    Master password is not in memory. Please re-enter it to decrypt.
-                  </p>
-                </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                    Master Password
-                  </label>
-                  <input
-                    type="password"
-                    value={inputMasterPassword}
-                    onChange={(e) => setInputMasterPassword(e.target.value)}
-                    placeholder="Enter your master password"
-                    className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none"
-                    autoFocus
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={!inputMasterPassword || isLoading}
-                  className="w-full px-4 py-3 bg-gradient-to-r from-primary-500 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isLoading ? 'Decrypting...' : 'Decrypt Password'}
-                </button>
-              </form>
-            )}
-
-            {/* Decrypted Password Display */}
-            {decryptedPassword && (
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                    Password
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      value={decryptedPassword}
-                      readOnly
-                      className="w-full px-4 py-3 pr-24 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white font-mono focus:outline-none"
-                    />
-                    <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
-                      >
-                        {showPassword ? (
-                          <EyeOff className="w-4 h-4 text-slate-500" />
-                        ) : (
-                          <Eye className="w-4 h-4 text-slate-500" />
-                        )}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={handleCopy}
-                        className="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
-                      >
-                        <Copy className="w-4 h-4 text-slate-500" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Auto-clear Timer */}
-                <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                    <span className="text-sm text-blue-800 dark:text-blue-300">
-                      Auto-clear in {timeRemaining}s
-                    </span>
-                  </div>
-                  <button
-                    onClick={handleClearPassword}
-                    className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
-                  >
-                    Clear Now
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Rate Limit Warning */}
-            {isRateLimited && (
-              <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-start gap-3">
-                <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
-                <div className="flex-1">
-                  <h4 className="font-semibold text-red-800 dark:text-red-300 mb-1">
-                    Too Many Requests
-                  </h4>
-                  <p className="text-sm text-red-700 dark:text-red-400">
-                    Please wait {countdown} seconds before trying again.
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Note */}
-            {vaultItem.note && (
+          {/* Metadata */}
+          <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
+            <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                  Note
-                </label>
-                <div className="relative">
-                  <div className="px-4 py-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 max-h-48 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent">
-                    <p className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap break-words">
-                      {vaultItem.note}
-                    </p>
-                  </div>
-                  {/* Scroll indicator - shows if content is scrollable */}
-                  {vaultItem.note.length > 200 && (
-                    <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-slate-50 dark:from-slate-900 to-transparent rounded-b-xl pointer-events-none"></div>
-                  )}
-                </div>
+                <p className="text-slate-500 dark:text-slate-400">Category</p>
+                <p className="font-medium text-slate-800 dark:text-white">
+                  {vaultItem.category_name || 'Uncategorized'}
+                </p>
               </div>
-            )}
-
-
-            {/* Metadata */}
-            <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <p className="text-slate-500 dark:text-slate-400">Category</p>
-                  <p className="font-medium text-slate-800 dark:text-white">
-                    {vaultItem.category_name || 'Uncategorized'}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-slate-500 dark:text-slate-400">Last Updated</p>
-                  <p className="font-medium text-slate-800 dark:text-white">
-                    {vaultItem.updated_at || 'N/A'}
-                  </p>
-                </div>
+              <div>
+                <p className="text-slate-500 dark:text-slate-400">Last Updated</p>
+                <p className="font-medium text-slate-800 dark:text-white">
+                  {vaultItem.updated_at || 'N/A'}
+                </p>
               </div>
             </div>
-
-            {/* Close Button */}
-            <button
-              onClick={handleClose}
-              className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-semibold hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
-            >
-              Close
-            </button>
           </div>
+
+          {/* Close Button */}
+          <button
+            onClick={handleClose}
+            className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-semibold hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+          >
+            Close
+          </button>
         </div>
       </div>
+    </div>
   );
 };
 

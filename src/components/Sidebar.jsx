@@ -5,7 +5,6 @@ import {
   Wallet, 
   Users, 
   Activity,
-  Plus,
   Gamepad2,
   Lock,
   LockOpen,
@@ -25,7 +24,6 @@ const Sidebar = ({ onNewPassword, selectedCategory, onCategoryChange, onUnlock }
       await lockVault();
     } catch (error) {
       console.error('Failed to lock vault:', error);
-      // Vault is still locked locally even if logging fails
     }
   };
   

@@ -1,10 +1,14 @@
 import { 
   Briefcase, 
   Wallet, 
-  Users, 
-  Gamepad2, 
+  Users,
+  Grip,
+  User,
+  Gamepad2,
+  Heart,
   Lock,
-  LayoutGrid 
+  LayoutGrid, 
+  Lightbulb
 } from 'lucide-react';
 
 // Get icon component based on category name
@@ -15,7 +19,11 @@ export const getCategoryIcon = (categoryName) => {
     'work': Briefcase,
     'finance': Wallet,
     'social': Users,
+    'medical': Heart,
+    'ideas': Lightbulb,
+    'personal': User,
     'game': Gamepad2,
+    'other': Grip,
     'all': LayoutGrid,
   };
   
