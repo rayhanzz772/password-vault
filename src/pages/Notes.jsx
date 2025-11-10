@@ -285,7 +285,7 @@ const Notes = () => {
           {/* Unlock Instruction */}
           <div className="bg-amber-50 dark:bg-amber-900/20 border-2 border-amber-200 dark:border-amber-800 rounded-xl p-4 text-center">
             <p className="text-sm text-amber-800 dark:text-amber-200">
-              <strong>Tip:</strong> Click the <strong>"Unlock Vault"</strong> button in the sidebar to access your notes
+              💡 Tip: Click the "Unlock Vault" button in the sidebar to enter your master password.
             </p>
           </div>
         </div>
