@@ -19,7 +19,6 @@ const ApiDocumentation = () => {
   const navigate = useNavigate();
   const [copiedCode, setCopiedCode] = useState(null);
   const [expandedSections, setExpandedSections] = useState({
-    authentication: true,
     passwords: false,
     notes: false,
     categories: false
@@ -61,12 +60,11 @@ const ApiDocumentation = () => {
   const EndpointSection = ({ method, path, description, children }) => (
     <div className="border border-slate-200 dark:border-slate-700 rounded-xl p-6 mb-4">
       <div className="flex items-start gap-3 mb-4">
-        <span className={`px-3 py-1 rounded-lg font-semibold text-sm ${
-          method === 'GET' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' :
-          method === 'POST' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
-          method === 'PUT' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' :
-          'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-        }`}>
+        <span className={`px-3 py-1 rounded-lg font-semibold text-sm ${method === 'GET' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' :
+            method === 'POST' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
+              method === 'PUT' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' :
+                'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+          }`}>
           {method}
         </span>
         <div className="flex-1">
@@ -119,123 +117,9 @@ const ApiDocumentation = () => {
               code={`Authorization: Bearer YOUR_API_KEY`}
             />
             <p className="text-sm text-slate-600 dark:text-slate-400 mt-3">
-              Base URL: <code className="px-2 py-1 bg-white dark:bg-slate-800 rounded">https://your-domain.com/api</code>
+              Base URL: <code className="px-2 py-1 bg-white dark:bg-slate-800 rounded">https://your-domain.com/public-api</code>
             </p>
           </div>
-        </div>
-
-        {/* Authentication Section */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 mb-6">
-          <button
-            onClick={() => toggleSection('authentication')}
-            className="w-full p-6 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors rounded-t-2xl"
-          >
-            <div className="flex items-center gap-3">
-              <Shield className="w-6 h-6 text-primary-500" />
-              <h2 className="text-xl font-bold text-slate-800 dark:text-white">Authentication</h2>
-            </div>
-            {expandedSections.authentication ? (
-              <ChevronDown className="w-5 h-5 text-slate-600 dark:text-slate-400" />
-            ) : (
-              <ChevronRight className="w-5 h-5 text-slate-600 dark:text-slate-400" />
-            )}
-          </button>
-
-          {expandedSections.authentication && (
-            <div className="p-6 pt-0 border-t border-slate-200 dark:border-slate-700">
-              <EndpointSection
-                method="POST"
-                path="/api/developer/generate-key"
-                description="Generate a new API key for authentication"
-              >
-                <div className="mb-4">
-                  <h4 className="font-semibold text-slate-800 dark:text-white mb-2">Request Headers</h4>
-                  <CodeBlock
-                    id="gen-key-headers"
-                    code={`Authorization: Bearer YOUR_JWT_TOKEN
-Content-Type: application/json`}
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <h4 className="font-semibold text-slate-800 dark:text-white mb-2">Response</h4>
-                  <CodeBlock
-                    id="gen-key-response"
-                    language="json"
-                    code={`{
-  "success": true,
-  "message": "API key generated successfully",
-  "data": {
-    "key": "api-dev-32fa0625e488885cd39fdc6abde95223c73a6ca38ff133771fc1b327579d16ae",
-    "id": "cmhsk78zn0000v25s0jkeazpi",
-    "created_at": "2025-11-10T03:04:53.319Z",
-    "status": 201
-  }
-}`}
-                  />
-                </div>
-
-                <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
-                  <p className="text-sm text-yellow-800 dark:text-yellow-300">
-                    <strong>⚠️ Important:</strong> Save your API key securely. It will only be shown once!
-                  </p>
-                </div>
-              </EndpointSection>
-
-              <EndpointSection
-                method="GET"
-                path="/api/developer/api-keys"
-                description="List all your active API keys"
-              >
-                <div className="mb-4">
-                  <h4 className="font-semibold text-slate-800 dark:text-white mb-2">Response</h4>
-                  <CodeBlock
-                    id="list-keys-response"
-                    language="json"
-                    code={`{
-  "success": true,
-  "message": "success",
-  "data": [
-    {
-      "id": "cmhsk78zn0000v25s0jkeazpi",
-      "key": "api-dev-2b099aaa92c31a77fa3d4657344e602b",
-      "revoked": false,
-      "created_at": "2025-11-10T03:04:53.319Z"
-    }
-  ]
-}`}
-                  />
-                </div>
-              </EndpointSection>
-
-              <EndpointSection
-                method="DELETE"
-                path="/api/developer/revoke-key/:id"
-                description="Revoke an API key"
-              >
-                <div className="mb-4">
-                  <h4 className="font-semibold text-slate-800 dark:text-white mb-2">URL Parameters</h4>
-                  <div className="bg-slate-50 dark:bg-slate-900 rounded-lg p-4">
-                    <p className="text-sm text-slate-700 dark:text-slate-300">
-                      <code className="font-mono">id</code> - The API key ID to revoke
-                    </p>
-                  </div>
-                </div>
-
-                <div className="mb-4">
-                  <h4 className="font-semibold text-slate-800 dark:text-white mb-2">Response</h4>
-                  <CodeBlock
-                    id="revoke-key-response"
-                    language="json"
-                    code={`{
-  "success": true,
-  "message": "API key revoked successfully"
-}`}
-                  />
-                </div>
-              </EndpointSection>
-            </div>
-          )}
         </div>
 
         {/* Passwords Section */}
@@ -259,7 +143,7 @@ Content-Type: application/json`}
             <div className="p-6 pt-0 border-t border-slate-200 dark:border-slate-700">
               <EndpointSection
                 method="GET"
-                path="/api/vault"
+                path="/public-api/vault"
                 description="Get all passwords in your vault"
               >
                 <div className="mb-4">
@@ -280,30 +164,30 @@ Content-Type: application/json`}
                     id="get-passwords-response"
                     language="json"
                     code={`{
-  "success": true,
-  "data": [
-    {
-      "id": "abc123",
-      "name": "GitHub",
-      "username": "user@example.com",
-      "encrypted_password": "...",
-      "url": "https://github.com",
-      "category_id": "cat123",
-      "category_name": "Work",
-      "notes": "Development account",
-      "is_favorite": false,
-      "created_at": "2025-11-10T03:04:53.319Z",
-      "updated_at": "2025-11-10T03:04:53.319Z"
-    }
-  ]
-}`}
+                      "success": true,
+                      "data": [
+                        {
+                          "id": "abc123",
+                          "name": "GitHub",
+                          "username": "user@example.com",
+                          "encrypted_password": "...",
+                          "url": "https://github.com",
+                          "category_id": "cat123",
+                          "category_name": "Work",
+                          "notes": "Development account",
+                          "is_favorite": false,
+                          "created_at": "2025-11-10T03:04:53.319Z",
+                          "updated_at": "2025-11-10T03:04:53.319Z"
+                        }
+                      ]
+                    }`}
                   />
                 </div>
               </EndpointSection>
 
               <EndpointSection
                 method="POST"
-                path="/api/vault"
+                path="/public-api/vault"
                 description="Create a new password entry"
               >
                 <div className="mb-4">
@@ -312,14 +196,14 @@ Content-Type: application/json`}
                     id="create-password-request"
                     language="json"
                     code={`{
-  "name": "GitHub",
-  "username": "user@example.com",
-  "encrypted_password": "base64_encrypted_password",
-  "url": "https://github.com",
-  "category_id": "cat123",
-  "notes": "Development account",
-  "is_favorite": false
-}`}
+                      "name": "GitHub",
+                      "username": "user@example.com",
+                      "encrypted_password": "base64_encrypted_password",
+                      "url": "https://github.com",
+                      "category_id": "cat123",
+                      "notes": "Development account",
+                      "is_favorite": false
+                    }`}
                   />
                 </div>
 
@@ -329,21 +213,21 @@ Content-Type: application/json`}
                     id="create-password-response"
                     language="json"
                     code={`{
-  "success": true,
-  "message": "Password created successfully",
-  "data": {
-    "id": "abc123",
-    "name": "GitHub",
-    ...
-  }
-}`}
+                      "success": true,
+                      "message": "Password created successfully",
+                      "data": {
+                        "id": "abc123",
+                        "name": "GitHub",
+                        ...
+                      }
+                    }`}
                   />
                 </div>
               </EndpointSection>
 
               <EndpointSection
                 method="PUT"
-                path="/api/vault/:id"
+                path="/public-api/vault/:id"
                 description="Update an existing password"
               >
                 <div className="mb-4">
@@ -352,21 +236,21 @@ Content-Type: application/json`}
                     id="update-password-request"
                     language="json"
                     code={`{
-  "name": "GitHub Updated",
-  "username": "newuser@example.com",
-  "encrypted_password": "base64_encrypted_password",
-  "url": "https://github.com",
-  "category_id": "cat123",
-  "notes": "Updated notes",
-  "is_favorite": true
-}`}
+                      "name": "GitHub Updated",
+                      "username": "newuser@example.com",
+                      "encrypted_password": "base64_encrypted_password",
+                      "url": "https://github.com",
+                      "category_id": "cat123",
+                      "notes": "Updated notes",
+                      "is_favorite": true
+                    }`}
                   />
                 </div>
               </EndpointSection>
 
               <EndpointSection
                 method="DELETE"
-                path="/api/vault/:id"
+                path="/public-api/vault/:id"
                 description="Delete a password entry"
               >
                 <div className="mb-4">
@@ -375,16 +259,16 @@ Content-Type: application/json`}
                     id="delete-password-response"
                     language="json"
                     code={`{
-  "success": true,
-  "message": "Password deleted successfully"
-}`}
+                        "success": true,
+                        "message": "Password deleted successfully"
+                      }`}
                   />
                 </div>
               </EndpointSection>
 
               <EndpointSection
                 method="POST"
-                path="/api/vault/:id/decrypt"
+                path="/public-api/vault/:id/decrypt"
                 description="Decrypt a password"
               >
                 <div className="mb-4">
@@ -393,8 +277,8 @@ Content-Type: application/json`}
                     id="decrypt-password-request"
                     language="json"
                     code={`{
-  "master_password": "your_master_password"
-}`}
+                        "master_password": "your_master_password"
+                      }`}
                   />
                 </div>
 
@@ -404,11 +288,11 @@ Content-Type: application/json`}
                     id="decrypt-password-response"
                     language="json"
                     code={`{
-  "success": true,
-  "data": {
-    "decrypted_password": "plain_text_password"
-  }
-}`}
+                        "success": true,
+                        "data": {
+                          "decrypted_password": "plain_text_password"
+                        }
+                      }`}
                   />
                 </div>
               </EndpointSection>
@@ -437,7 +321,7 @@ Content-Type: application/json`}
             <div className="p-6 pt-0 border-t border-slate-200 dark:border-slate-700">
               <EndpointSection
                 method="GET"
-                path="/api/notes"
+                path="/public-api/notes"
                 description="Get all secret notes"
               >
                 <div className="mb-4">
@@ -458,27 +342,27 @@ Content-Type: application/json`}
                     id="get-notes-response"
                     language="json"
                     code={`{
-  "success": true,
-  "data": [
-    {
-      "id": "note123",
-      "title": "Meeting Notes",
-      "encrypted_content": "...",
-      "category_id": "cat123",
-      "category_name": "Work",
-      "tags": ["meeting", "Q1"],
-      "created_at": "2025-11-10T03:04:53.319Z",
-      "updated_at": "2025-11-10T03:04:53.319Z"
-    }
-  ]
-}`}
+                      "success": true,
+                      "data": [
+                        {
+                          "id": "note123",
+                          "title": "Meeting Notes",
+                          "encrypted_content": "...",
+                          "category_id": "cat123",
+                          "category_name": "Work",
+                          "tags": ["meeting", "Q1"],
+                          "created_at": "2025-11-10T03:04:53.319Z",
+                          "updated_at": "2025-11-10T03:04:53.319Z"
+                        }
+                      ]
+                    }`}
                   />
                 </div>
               </EndpointSection>
 
               <EndpointSection
                 method="POST"
-                path="/api/notes"
+                path="/public-api/notes"
                 description="Create a new secret note"
               >
                 <div className="mb-4">
@@ -498,7 +382,7 @@ Content-Type: application/json`}
 
               <EndpointSection
                 method="GET"
-                path="/api/notes/:id"
+                path="/public-api/notes/:id"
                 description="Get a specific note"
               >
                 <div className="mb-4">
@@ -524,7 +408,7 @@ Content-Type: application/json`}
 
               <EndpointSection
                 method="PUT"
-                path="/api/notes/:id"
+                path="/public-api/notes/:id"
                 description="Update a secret note"
               >
                 <div className="mb-4">
@@ -544,7 +428,7 @@ Content-Type: application/json`}
 
               <EndpointSection
                 method="DELETE"
-                path="/api/notes/:id"
+                path="/public-api/notes/:id"
                 description="Delete a secret note"
               >
                 <div className="mb-4">
@@ -562,7 +446,7 @@ Content-Type: application/json`}
 
               <EndpointSection
                 method="POST"
-                path="/api/notes/:id/decrypt"
+                path="/public-api/notes/:id/decrypt"
                 description="Decrypt a note"
               >
                 <div className="mb-4">
@@ -615,7 +499,7 @@ Content-Type: application/json`}
             <div className="p-6 pt-0 border-t border-slate-200 dark:border-slate-700">
               <EndpointSection
                 method="GET"
-                path="/api/categories"
+                path="/public-api/categories"
                 description="Get all available categories"
               >
                 <div className="mb-4">
@@ -708,7 +592,7 @@ Content-Type: application/json`}
         {/* Code Examples */}
         <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-6">
           <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-4">Code Examples</h2>
-          
+
           <div className="mb-6">
             <h3 className="font-semibold text-slate-800 dark:text-white mb-3">JavaScript / Node.js</h3>
             <CodeBlock
@@ -810,12 +694,12 @@ get_passwords()`}
               id="example-curl"
               language="bash"
               code={`# Get all passwords
-curl -X GET "https://your-domain.com/api/vault" \\
+curl -X GET "https://your-domain.com/public-api/vault" \\
   -H "Authorization: Bearer your_api_key_here" \\
   -H "Content-Type: application/json"
 
 # Create a new note
-curl -X POST "https://your-domain.com/api/notes" \\
+curl -X POST "https://your-domain.com/public-api/notes" \\
   -H "Authorization: Bearer your_api_key_here" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -826,7 +710,7 @@ curl -X POST "https://your-domain.com/api/notes" \\
   }'
 
 # Delete a password
-curl -X DELETE "https://your-domain.com/api/vault/abc123" \\
+curl -X DELETE "https://your-domain.com/public-api/vault/abc123" \\
   -H "Authorization: Bearer your_api_key_here"`}
             />
           </div>
