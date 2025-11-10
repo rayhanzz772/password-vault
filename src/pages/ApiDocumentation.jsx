@@ -164,23 +164,23 @@ const ApiDocumentation = () => {
                     id="get-passwords-response"
                     language="json"
                     code={`{
-                      "success": true,
-                      "data": [
-                        {
-                          "id": "abc123",
-                          "name": "GitHub",
-                          "username": "user@example.com",
-                          "encrypted_password": "...",
-                          "url": "https://github.com",
-                          "category_id": "cat123",
-                          "category_name": "Work",
-                          "notes": "Development account",
-                          "is_favorite": false,
-                          "created_at": "2025-11-10T03:04:53.319Z",
-                          "updated_at": "2025-11-10T03:04:53.319Z"
-                        }
-                      ]
-                    }`}
+  "success": true,
+  "data": [
+    {
+      "id": "abc123",
+      "name": "GitHub",
+      "username": "user@example.com",
+      "encrypted_password": "...",
+      "url": "https://github.com",
+      "category_id": "cat123",
+      "category_name": "Work",
+      "notes": "Development account",
+      "is_favorite": false,
+      "created_at": "2025-11-10T03:04:53.319Z",
+      "updated_at": "2025-11-10T03:04:53.319Z"
+    }
+  ]
+}`}
                   />
                 </div>
               </EndpointSection>
@@ -196,14 +196,14 @@ const ApiDocumentation = () => {
                     id="create-password-request"
                     language="json"
                     code={`{
-                      "name": "GitHub",
-                      "username": "user@example.com",
-                      "encrypted_password": "base64_encrypted_password",
-                      "url": "https://github.com",
-                      "category_id": "cat123",
-                      "notes": "Development account",
-                      "is_favorite": false
-                    }`}
+  "name": "GitHub",
+  "username": "user@example.com",
+  "encrypted_password": "base64_encrypted_password",
+  "url": "https://github.com",
+  "category_id": "cat123",
+  "notes": "Development account",
+  "is_favorite": false
+}`}
                   />
                 </div>
 
@@ -213,14 +213,14 @@ const ApiDocumentation = () => {
                     id="create-password-response"
                     language="json"
                     code={`{
-                      "success": true,
-                      "message": "Password created successfully",
-                      "data": {
-                        "id": "abc123",
-                        "name": "GitHub",
-                        ...
-                      }
-                    }`}
+  "success": true,
+  "message": "Password created successfully",
+  "data": {
+    "id": "abc123",
+    "name": "GitHub",
+    ...
+  }
+}`}
                   />
                 </div>
               </EndpointSection>
@@ -236,14 +236,14 @@ const ApiDocumentation = () => {
                     id="update-password-request"
                     language="json"
                     code={`{
-                      "name": "GitHub Updated",
-                      "username": "newuser@example.com",
-                      "encrypted_password": "base64_encrypted_password",
-                      "url": "https://github.com",
-                      "category_id": "cat123",
-                      "notes": "Updated notes",
-                      "is_favorite": true
-                    }`}
+  "name": "GitHub Updated",
+  "username": "newuser@example.com",
+  "encrypted_password": "base64_encrypted_password",
+  "url": "https://github.com",
+  "category_id": "cat123",
+  "notes": "Updated notes",
+  "is_favorite": true
+}`}
                   />
                 </div>
               </EndpointSection>
@@ -259,9 +259,9 @@ const ApiDocumentation = () => {
                     id="delete-password-response"
                     language="json"
                     code={`{
-                        "success": true,
-                        "message": "Password deleted successfully"
-                      }`}
+  "success": true,
+  "message": "Password deleted successfully"
+}`}
                   />
                 </div>
               </EndpointSection>
@@ -277,8 +277,8 @@ const ApiDocumentation = () => {
                     id="decrypt-password-request"
                     language="json"
                     code={`{
-                        "master_password": "your_master_password"
-                      }`}
+  "master_password": "your_master_password"
+}`}
                   />
                 </div>
 
@@ -288,11 +288,11 @@ const ApiDocumentation = () => {
                     id="decrypt-password-response"
                     language="json"
                     code={`{
-                        "success": true,
-                        "data": {
-                          "decrypted_password": "plain_text_password"
-                        }
-                      }`}
+  "success": true,
+  "data": {
+    "decrypted_password": "plain_text_password"
+  }
+}`}
                   />
                 </div>
               </EndpointSection>
@@ -342,20 +342,20 @@ const ApiDocumentation = () => {
                     id="get-notes-response"
                     language="json"
                     code={`{
-                      "success": true,
-                      "data": [
-                        {
-                          "id": "note123",
-                          "title": "Meeting Notes",
-                          "encrypted_content": "...",
-                          "category_id": "cat123",
-                          "category_name": "Work",
-                          "tags": ["meeting", "Q1"],
-                          "created_at": "2025-11-10T03:04:53.319Z",
-                          "updated_at": "2025-11-10T03:04:53.319Z"
-                        }
-                      ]
-                    }`}
+  "success": true,
+  "data": [
+    {
+      "id": "note123",
+      "title": "Meeting Notes",
+      "encrypted_content": "...",
+      "category_id": "cat123",
+      "category_name": "Work",
+      "tags": ["meeting", "Q1"],
+      "created_at": "2025-11-10T03:04:53.319Z",
+      "updated_at": "2025-11-10T03:04:53.319Z"
+    }
+  ]
+}`}
                   />
                 </div>
               </EndpointSection>
