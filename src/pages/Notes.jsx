@@ -294,7 +294,7 @@ const Notes = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-6">
+    <div className="min-h-screen">
       <div className="max-w-7xl mx-auto">
 
         {/* Header */}
