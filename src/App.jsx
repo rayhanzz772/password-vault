@@ -9,6 +9,8 @@ import Register from './pages/Register';
 import Passwords from './pages/Passwords';
 import Notes from './pages/Notes';
 import ActivityLogs from './pages/ActivityLogs';
+import DeveloperKeys from './pages/DeveloperKeys';
+import ApiDocumentation from './pages/ApiDocumentation';
 
 function App() {
   return (
@@ -64,6 +66,8 @@ function App() {
               <Route path="social" element={<Passwords />} />
               <Route path="notes" element={<Notes />} />
               <Route path="logs" element={<ActivityLogs />} />
+              <Route path="developer" element={<DeveloperKeys />} />
+              <Route path="api-docs" element={<ApiDocumentation />} />
             </Route>
 
             {/* Catch all - redirect to home */}

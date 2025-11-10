@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-// Create axios instance with base configuration
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:5000',
   headers: {
@@ -11,10 +10,8 @@ const api = axios.create({
 
 console.log('🌐 API Base URL:', api.defaults.baseURL);
 
-// Helper to clear auth and redirect
 const clearAuthAndRedirect = () => {
   localStorage.removeItem('jwt_token');
-  // Only redirect if not already on auth pages
   if (!window.location.pathname.includes('/login') && 
       !window.location.pathname.includes('/register')) {
     console.log('🔄 Redirecting to login...');
@@ -22,7 +19,6 @@ const clearAuthAndRedirect = () => {
   }
 };
 
-// Request interceptor to add auth token
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('jwt_token');
@@ -38,7 +34,6 @@ api.interceptors.request.use(
   }
 );
 
-// Response interceptor to handle errors
 api.interceptors.response.use(
   (response) => {
     console.log('📥 API Response:', response.config.url, response.status);
@@ -54,7 +49,6 @@ api.interceptors.response.use(
       console.error('🚫 Network error - Is the backend running?');
     }
     
-    // Handle JWT errors (malformed, expired, invalid)
     if (error.response?.data?.message?.includes('JWT') || 
         error.response?.data?.message?.includes('jwt') ||
         error.response?.data?.error?.includes('JWT') ||
@@ -64,7 +58,6 @@ api.interceptors.response.use(
     }
     
     if (error.response?.status === 401) {
-      // Token expired or invalid
       console.log('🔐 401 Unauthorized - Clearing token');
       clearAuthAndRedirect();
     }
@@ -72,7 +65,6 @@ api.interceptors.response.use(
   }
 );
 
-// Auth API endpoints
 export const authAPI = {
   register: async (email, masterPassword) => {
     const response = await api.post('/auth/register', {
@@ -94,7 +86,6 @@ export const authAPI = {
     localStorage.removeItem('jwt_token');
   },
 
-  // Check if master password is valid
   checkPassword: async (masterPassword) => {
     const response = await api.post('/api/users/check-password', {
       password: masterPassword,
@@ -103,7 +94,6 @@ export const authAPI = {
   },
 };
 
-// Categories API endpoints
 export const categoriesAPI = {
   getAll: async () => {
     const response = await api.get('/api/categories');
@@ -111,10 +101,8 @@ export const categoriesAPI = {
   },
 };
 
-// Vault API endpoints
 export const vaultAPI = {
   getAll: async (filters = {}) => {
-    // Build query string from filters
     const params = new URLSearchParams();
     
     if (filters.category) {
