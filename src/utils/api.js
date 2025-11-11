@@ -152,6 +152,14 @@ export const vaultAPI = {
     });
     return response.data;
   },
+
+  toggleFavorite: async (targetId) => {
+    const response = await api.post('/api/vault/favorite', {
+      target_id: targetId,
+      type: 'password',
+    });
+    return response.data;
+  },
 };
 
 // Logs API endpoints
@@ -248,6 +256,14 @@ export const notesAPI = {
   decrypt: async (id, masterPassword) => {
     const response = await api.post(`/api/notes/${id}/decrypt`, {
       master_password: masterPassword,
+    });
+    return response.data;
+  },
+
+  toggleFavorite: async (targetId) => {
+    const response = await api.post('/api/vault/favorite', {
+      target_id: targetId,
+      type: 'note',
     });
     return response.data;
   },

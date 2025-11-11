@@ -167,18 +167,15 @@ const ApiDocumentation = () => {
   "success": true,
   "data": [
     {
-      "id": "abc123",
-      "name": "GitHub",
-      "username": "user@example.com",
-      "encrypted_password": "...",
-      "url": "https://github.com",
-      "category_id": "cat123",
-      "category_name": "Work",
-      "notes": "Development account",
-      "is_favorite": false,
-      "created_at": "2025-11-10T03:04:53.319Z",
-      "updated_at": "2025-11-10T03:04:53.319Z"
-    }
+        "id": "cmho9ss44000im75sg3oy1xx5",
+        "name": "BBNU",
+        "username": "Buster@gmail.com",
+        "note": "",
+        "created_at": "2025/11/07",
+        "updated_at": "2025/11/07",
+        "category_name": "Game",
+        "is_favorite": true
+    },
   ]
 }`}
                   />
@@ -198,10 +195,8 @@ const ApiDocumentation = () => {
                     code={`{
   "name": "GitHub",
   "username": "user@example.com",
-  "encrypted_password": "base64_encrypted_password",
-  "url": "https://github.com",
-  "category_id": "cat123",
-  "notes": "Development account",
+  "category_name": "cat123",
+  "encrypted_notes": "Development account",
   "is_favorite": false
 }`}
                   />
@@ -238,11 +233,10 @@ const ApiDocumentation = () => {
                     code={`{
   "name": "GitHub Updated",
   "username": "newuser@example.com",
-  "encrypted_password": "base64_encrypted_password",
+  "password_encrypted": "base64_encrypted_password",
   "url": "https://github.com",
   "category_id": "cat123",
-  "notes": "Updated notes",
-  "is_favorite": true
+  "note": "Updated notes"
 }`}
                   />
                 </div>
@@ -345,15 +339,16 @@ const ApiDocumentation = () => {
   "success": true,
   "data": [
     {
-      "id": "note123",
-      "title": "Meeting Notes",
-      "encrypted_content": "...",
-      "category_id": "cat123",
-      "category_name": "Work",
-      "tags": ["meeting", "Q1"],
-      "created_at": "2025-11-10T03:04:53.319Z",
-      "updated_at": "2025-11-10T03:04:53.319Z"
-    }
+        "id": "cmhrkobyk000uo15s6nk01ie8",
+        "title": "PIN",
+        "category_name": "Finance",
+        "created_at": "2025-11-09T10:30:24.141Z",
+        "updated_at": "2025-11-09T10:30:24.141Z",
+        "tags": [
+            "work"
+        ],
+        "is_favorite": false
+    },
   ]
 }`}
                   />
@@ -371,11 +366,13 @@ const ApiDocumentation = () => {
                     id="create-note-request"
                     language="json"
                     code={`{
-  "title": "Meeting Notes",
-  "encrypted_content": "base64_encrypted_content",
-  "category_id": "cat123",
-  "tags": ["meeting", "Q1"]
-}`}
+    "title": "Link J",
+    "note": "https://j.com",
+    "category_id": "cmhrdgo2u0000dg5sdz525x7s",
+    "tags": ["bok", "nganu"],
+    "master_password": "Password123!"
+}`
+}
                   />
                 </div>
               </EndpointSection>
@@ -391,16 +388,15 @@ const ApiDocumentation = () => {
                     id="get-note-response"
                     language="json"
                     code={`{
-  "success": true,
-  "data": {
-    "id": "note123",
-    "title": "Meeting Notes",
-    "encrypted_content": "...",
-    "category_id": "cat123",
-    "tags": ["meeting", "Q1"],
-    "created_at": "2025-11-10T03:04:53.319Z",
-    "updated_at": "2025-11-10T03:04:53.319Z"
-  }
+    "id": "cmhrkobyk000uo15s6nk01ie8",
+    "title": "PIN",
+    "category_name": "Finance",
+    "created_at": "2025-11-09T10:30:24.141Z",
+    "updated_at": "2025-11-09T10:30:24.141Z",
+    "tags": [
+        "work"
+    ],
+    "is_favorite": false
 }`}
                   />
                 </div>

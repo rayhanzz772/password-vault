@@ -14,7 +14,8 @@ import {
   Edit,
   Trash2,
   X,
-  Shield
+  Shield,
+  Star
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../contexts/AuthContext';
@@ -53,6 +54,7 @@ const Notes = () => {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedNote, setSelectedNote] = useState(null);
+  const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
 
   useEffect(() => {
     if (!isVaultLocked) {
@@ -112,6 +114,11 @@ const Notes = () => {
   useEffect(() => {
     let filtered = notes;
 
+    // Apply favorites filter first
+    if (showOnlyFavorites) {
+      filtered = filtered.filter(note => note.is_favorite);
+    }
+
     if (selectedCategory !== 'all') {
       filtered = filtered.filter(note => {
         if (note.category_id === selectedCategory) return true;
@@ -137,7 +144,7 @@ const Notes = () => {
     }
 
     setFilteredNotes(filtered);
-  }, [notes, selectedCategory, searchQuery, categories]);
+  }, [notes, selectedCategory, searchQuery, categories, showOnlyFavorites]);
 
   const getCategoryData = (categoryNameOrId) => {
     let category = categories.find(cat => cat.name.toLowerCase() === categoryNameOrId?.toLowerCase());
@@ -197,6 +204,20 @@ const Notes = () => {
   const handleDeleteSuccess = () => {
     fetchNotes();
     setShowDeleteModal(false);
+  };
+
+  const handleToggleFavorite = async (noteId) => {
+    try {
+      await notesAPI.toggleFavorite(noteId);
+      
+      // Refresh data from server to get updated favorite status
+      await fetchNotes();
+      
+      toast.success('Favorite status updated!');
+    } catch (error) {
+      console.error('Failed to toggle favorite:', error);
+      toast.error('Failed to update favorite status');
+    }
   };
 
   const formatDate = (dateString) => {
@@ -303,19 +324,34 @@ const Notes = () => {
               <div>
                 <h1 className="text-3xl font-bold text-slate-800 dark:text-white mb-2 flex items-center gap-3">
                   <FileText className="w-8 h-8" />
-                  Secret Notes
+                  {showOnlyFavorites ? 'Favorite Notes' : 'Secret Notes'}
                 </h1>
                 <p className="text-slate-600 dark:text-slate-400">
-                  Securely store your private notes and thoughts
+                  {showOnlyFavorites ? 'Your favorite encrypted notes' : 'Securely store your private notes and thoughts'}
                 </p>
               </div>
-              <button
-                onClick={() => setShowCreateModal(true)}
-                className="px-6 py-3 bg-gradient-to-r from-primary-500 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg hover:scale-105 transition-all flex items-center gap-2"
-              >
-                <Plus className="w-5 h-5" />
-                New Note
-              </button>
+              <div className="flex items-center gap-3">
+                {/* Favorites Filter */}
+                <button
+                  onClick={() => setShowOnlyFavorites(!showOnlyFavorites)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all ${
+                    showOnlyFavorites
+                      ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                  }`}
+                >
+                  <Star className={`w-4 h-4 ${showOnlyFavorites ? 'fill-yellow-500 text-yellow-500' : ''}`} />
+                  Favorites
+                </button>
+                
+                <button
+                  onClick={() => setShowCreateModal(true)}
+                  className="px-6 py-3 bg-gradient-to-r from-primary-500 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg hover:scale-105 transition-all flex items-center gap-2"
+                >
+                  <Plus className="w-5 h-5" />
+                  New Note
+                </button>
+              </div>
             </div>
 
             {/* Search and Filters */}
@@ -461,7 +497,16 @@ const Notes = () => {
                         <Icon className="w-5 h-5" />
                         <span className="text-sm font-medium">{categoryData?.name}</span>
                       </div>
-                      <Lock className="w-4 h-4 text-white/70" />
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleToggleFavorite(note.id)}
+                          className="p-1 rounded-lg hover:bg-white/20 transition-all"
+                          title={note.is_favorite ? 'Remove from favorites' : 'Add to favorites'}
+                        >
+                          <Star className={`w-4 h-4 ${note.is_favorite ? 'text-yellow-300 fill-yellow-300' : 'text-white/70 hover:text-yellow-300'}`} />
+                        </button>
+                        <Lock className="w-4 h-4 text-white/70" />
+                      </div>
                     </div>
 
                     {/* Content */}
@@ -548,9 +593,18 @@ const Notes = () => {
 
                     {/* Content */}
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-1 truncate">
-                        {note.title}
-                      </h3>
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="text-lg font-semibold text-slate-800 dark:text-white truncate">
+                          {note.title}
+                        </h3>
+                        <button
+                          onClick={() => handleToggleFavorite(note.id)}
+                          className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-all flex-shrink-0"
+                          title={note.is_favorite ? 'Remove from favorites' : 'Add to favorites'}
+                        >
+                          <Star className={`w-4 h-4 ${note.is_favorite ? 'text-yellow-500 fill-yellow-500' : 'text-slate-400 hover:text-yellow-500'}`} />
+                        </button>
+                      </div>
                       <div className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
                         <span className="flex items-center gap-1">
                           <Icon className="w-3 h-3" />

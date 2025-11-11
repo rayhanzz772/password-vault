@@ -38,6 +38,7 @@ const Passwords = () => {
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [selectedVault, setSelectedVault] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
+  const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
 
   // Fetch passwords on mount and when refresh trigger, search, or category changes
   useEffect(() => {
@@ -80,7 +81,14 @@ const Passwords = () => {
       }
       
       console.log('📋 Processed vault list:', vaultList);
-      setPasswords(vaultList);
+      
+      // Apply favorites filter if enabled
+      let filteredList = vaultList;
+      if (showOnlyFavorites) {
+        filteredList = vaultList.filter(password => password.is_favorite);
+      }
+      
+      setPasswords(filteredList);
     } catch (error) {
       console.error('Failed to fetch passwords:', error);
       toast.error('Failed to load passwords');
@@ -117,6 +125,20 @@ const Passwords = () => {
   const handleDeleteClick = (vault) => {
     setSelectedVault(vault);
     setIsDeleteModalOpen(true);
+  };
+
+  const handleToggleFavorite = async (vaultId) => {
+    try {
+      await vaultAPI.toggleFavorite(vaultId);
+      
+      // Refresh data from server to get updated favorite status
+      await fetchPasswords();
+      
+      toast.success('Favorite status updated!');
+    } catch (error) {
+      console.error('Failed to toggle favorite:', error);
+      toast.error('Failed to update favorite status');
+    }
   };
 
   const handleDeleteConfirm = async (vault, password) => {
@@ -235,7 +257,7 @@ const Passwords = () => {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-slate-800 dark:text-white mb-1 flex items-center gap-3">
-            All Passwords
+            {showOnlyFavorites ? 'Favorite Passwords' : 'All Passwords'}
             {isFiltering && (
               <span className="inline-flex items-center gap-2 text-sm font-normal text-primary-600 dark:text-primary-400">
                 <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -251,15 +273,30 @@ const Passwords = () => {
           </p>
         </div>
         
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={openCreateModal}
-          className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
-        >
-          <Plus className="w-5 h-5" />
-          <span className="hidden sm:inline">Add Password</span>
-        </motion.button>
+        <div className="flex items-center gap-3">
+          {/* Favorites Filter */}
+          <button
+            onClick={() => setShowOnlyFavorites(!showOnlyFavorites)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all ${
+              showOnlyFavorites
+                ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800'
+                : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+            }`}
+          >
+            <Star className={`w-4 h-4 ${showOnlyFavorites ? 'fill-yellow-500 text-yellow-500' : ''}`} />
+            Favorites
+          </button>
+          
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={openCreateModal}
+            className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
+          >
+            <Plus className="w-5 h-5" />
+            <span className="hidden sm:inline">Add Password</span>
+          </motion.button>
+        </div>
       </div>
 
       {/* Password Grid */}
@@ -272,6 +309,7 @@ const Passwords = () => {
             onDecrypt={handleDecrypt}
             onUpdate={handleUpdateClick}
             onDelete={handleDeleteClick}
+            onToggleFavorite={handleToggleFavorite}
             isDeleting={deletingId === password.id}
           />
         ))}
@@ -311,7 +349,7 @@ const Passwords = () => {
 };
 
 // Password Card Component
-const PasswordCard = ({ password, onCopy, onDecrypt, onUpdate, onDelete, isDeleting }) => {
+const PasswordCard = ({ password, onCopy, onDecrypt, onUpdate, onDelete, isDeleting, onToggleFavorite }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef(null);
@@ -361,13 +399,17 @@ const PasswordCard = ({ password, onCopy, onDecrypt, onUpdate, onDelete, isDelet
         </div>
         
         <div className="flex items-center gap-1">
-          {password.isFavorite && (
-            <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-          )}
+          <button
+            onClick={() => onToggleFavorite(password.id)}
+            className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-all"
+            title={password.is_favorite ? 'Remove from favorites' : 'Add to favorites'}
+          >
+            <Star className={`w-4 h-4 ${password.is_favorite ? 'text-yellow-500 fill-yellow-500' : 'text-slate-400 hover:text-yellow-500'}`} />
+          </button>
           <div className="relative" ref={menuRef}>
             <button 
               onClick={() => setShowMenu(!showMenu)}
-              className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition-all"
+              className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-all"
             >
               <MoreVertical className="w-4 h-4 text-slate-500" />
             </button>
