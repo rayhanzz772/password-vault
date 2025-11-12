@@ -10,7 +10,9 @@ import {
   Lock,
   Star,
   Trash2,
-  Edit
+  Edit,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../contexts/AuthContext';
@@ -30,6 +32,7 @@ const Passwords = () => {
   } = useOutletContext();
   const { masterPassword } = useAuth();
   const [passwords, setPasswords] = useState([]);
+  const [filteredPasswords, setFilteredPasswords] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isFiltering, setIsFiltering] = useState(false); // Separate state for filter operations
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -39,12 +42,23 @@ const Passwords = () => {
   const [selectedVault, setSelectedVault] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
   const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [perPage, setPerPage] = useState(12);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
-  // Fetch passwords on mount and when refresh trigger, search, or category changes
+  // Fetch passwords on mount and when refresh trigger, search, category, or favorites filter changes
   useEffect(() => {
     const isInitialLoad = passwords.length === 0 && isLoading;
     fetchPasswords(isInitialLoad);
-  }, [refreshTrigger, searchQuery, selectedCategory]);
+  }, [refreshTrigger, searchQuery, selectedCategory, showOnlyFavorites]);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedCategory, showOnlyFavorites]);
 
   const fetchPasswords = async (isInitialLoad = false) => {
     try {
@@ -55,8 +69,11 @@ const Passwords = () => {
         setIsFiltering(true);
       }
       
-      // Build filters object
-      const filters = {};
+      // Build filters object (without favorites - we'll filter client-side)
+      const filters = {
+        page: currentPage,
+        per_page: perPage
+      };
       if (selectedCategory) {
         filters.category = selectedCategory;
       }
@@ -70,25 +87,28 @@ const Passwords = () => {
       
       // Handle different response structures
       let vaultList = [];
+      let paginationData = {};
       if (Array.isArray(data)) {
         vaultList = data;
       } else if (data.vaults && Array.isArray(data.vaults)) {
         vaultList = data.vaults;
+        paginationData = data.pagination || {};
       } else if (data.data && Array.isArray(data.data)) {
         vaultList = data.data;
+        paginationData = data.pagination || {};
       } else if (data.data && data.data.vaults && Array.isArray(data.data.vaults)) {
         vaultList = data.data.vaults;
+        paginationData = data.data.pagination || {};
       }
       
       console.log('📋 Processed vault list:', vaultList);
       
-      // Apply favorites filter if enabled
-      let filteredList = vaultList;
-      if (showOnlyFavorites) {
-        filteredList = vaultList.filter(password => password.is_favorite);
-      }
+      setPasswords(vaultList);
       
-      setPasswords(filteredList);
+      // Update pagination state
+      setTotalItems(paginationData.total || paginationData.total_items || vaultList.length);
+      setTotalPages(paginationData.total_pages || Math.ceil((paginationData.total || paginationData.total_items || vaultList.length) / perPage));
+      setCurrentPage(paginationData.current_page || currentPage);
     } catch (error) {
       console.error('Failed to fetch passwords:', error);
       toast.error('Failed to load passwords');
@@ -99,12 +119,24 @@ const Passwords = () => {
     }
   };
 
+  // Client-side filtering for favorites
+  useEffect(() => {
+    let filtered = passwords;
+
+    // Apply favorites filter
+    if (showOnlyFavorites) {
+      filtered = filtered.filter(password => password.is_favorite);
+    }
+
+    setFilteredPasswords(filtered);
+  }, [passwords, showOnlyFavorites]);
+
   const handleCreateSuccess = () => {
     fetchPasswords(); // Refresh list
   };
 
   const handleDecrypt = (vault) => {
-    setSelectedVault(vault);
+    setSelectedVault(vault);S
     setIsDecryptModalOpen(true);
   };
 
@@ -139,6 +171,16 @@ const Passwords = () => {
       console.error('Failed to toggle favorite:', error);
       toast.error('Failed to update favorite status');
     }
+  };
+
+  // Pagination handlers
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const handlePerPageChange = (newPerPage) => {
+    setPerPage(newPerPage);
+    setCurrentPage(1); // Reset to first page when changing items per page
   };
 
   const handleDeleteConfirm = async (vault, password) => {
@@ -269,7 +311,8 @@ const Passwords = () => {
             )}
           </h1>
           <p className="text-slate-600 dark:text-slate-400">
-            {passwords.length} {passwords.length === 1 ? 'password' : 'passwords'} stored securely
+            {filteredPasswords.length} {filteredPasswords.length === 1 ? 'password' : 'passwords'} 
+            {showOnlyFavorites ? ' favorite password' : ' stored securely'}
           </p>
         </div>
         
@@ -300,20 +343,116 @@ const Passwords = () => {
       </div>
 
       {/* Password Grid */}
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {passwords.map((password, index) => (
-          <PasswordCard 
-            key={password.id || `password-${index}`} 
-            password={password} 
-            onCopy={handleCopy}
-            onDecrypt={handleDecrypt}
-            onUpdate={handleUpdateClick}
-            onDelete={handleDeleteClick}
-            onToggleFavorite={handleToggleFavorite}
-            isDeleting={deletingId === password.id}
-          />
-        ))}
-      </div>
+      {filteredPasswords.length > 0 ? (
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {filteredPasswords.map((password, index) => (
+            <PasswordCard 
+              key={password.id || `password-${index}`} 
+              password={password} 
+              onCopy={handleCopy}
+              onDecrypt={handleDecrypt}
+              onUpdate={handleUpdateClick}
+              onDelete={handleDeleteClick}
+              onToggleFavorite={handleToggleFavorite}
+              isDeleting={deletingId === password.id}
+            />
+          ))}
+        </div>
+      ) : (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center justify-center min-h-[400px]"
+        >
+          <div className="text-center">
+            <Star className="w-16 h-16 text-slate-300 dark:text-slate-600 mx-auto mb-4 opacity-50" />
+            <h3 className="text-lg font-semibold text-slate-600 dark:text-slate-400 mb-2">
+              {showOnlyFavorites ? 'No Favorite Passwords' : 'No Passwords Found'}
+            </h3>
+            <p className="text-slate-500 dark:text-slate-500 mb-6">
+              {showOnlyFavorites 
+                ? 'You haven\'t marked any passwords as favorites yet.' 
+                : 'Try adjusting your search or filters.'}
+            </p>
+            {showOnlyFavorites && (
+              <button
+                onClick={() => setShowOnlyFavorites(false)}
+                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+              >
+                View All Passwords
+              </button>
+            )}
+          </div>
+        </motion.div>
+      )}
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between mt-8 px-4 py-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-slate-600 dark:text-slate-400">
+              Showing {Math.min((currentPage - 1) * perPage + 1, totalItems)} to {Math.min(currentPage * perPage, totalItems)} of {totalItems} passwords
+            </span>
+            <select
+              value={perPage}
+              onChange={(e) => handlePerPageChange(Number(e.target.value))}
+              className="text-sm bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-1 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value={6}>6 per page</option>
+              <option value={12}>12 per page</option>
+              <option value={24}>24 per page</option>
+              <option value={48}>48 per page</option>
+            </select>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="px-3 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+
+            <div className="flex items-center gap-1">
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                let pageNum;
+                if (totalPages <= 5) {
+                  pageNum = i + 1;
+                } else if (currentPage <= 3) {
+                  pageNum = i + 1;
+                } else if (currentPage >= totalPages - 2) {
+                  pageNum = totalPages - 4 + i;
+                } else {
+                  pageNum = currentPage - 2 + i;
+                }
+
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => handlePageChange(pageNum)}
+                    className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                      currentPage === pageNum
+                        ? 'bg-blue-500 text-white'
+                        : 'text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600'
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              })}
+            </div>
+
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="px-3 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Decrypt Modal */}
       <DecryptModal

@@ -15,7 +15,9 @@ import {
   Trash2,
   X,
   Shield,
-  Star
+  Star,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../contexts/AuthContext';
@@ -56,6 +58,12 @@ const Notes = () => {
   const [selectedNote, setSelectedNote] = useState(null);
   const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [perPage, setPerPage] = useState(12);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+
   useEffect(() => {
     if (!isVaultLocked) {
       fetchCategories();
@@ -89,13 +97,45 @@ const Notes = () => {
   const fetchNotes = async () => {
     try {
       setIsLoading(true);
-      const response = await notesAPI.getAll();
-      const notesData = response.data || response.notes || response || [];
-      const normalizedNotes = (Array.isArray(notesData) ? notesData : []).map(note => ({
+      
+      // Prepare filters with pagination parameters
+      const filters = {
+        page: currentPage,
+        per_page: perPage
+      };
+      
+      const response = await notesAPI.getAll(filters);
+      
+      // Handle different response structures for backward compatibility
+      let notesData = [];
+      let paginationData = {};
+      
+      if (response.data && Array.isArray(response.data)) {
+        notesData = response.data;
+        paginationData = response.pagination || {};
+      } else if (response.notes && Array.isArray(response.notes)) {
+        notesData = response.notes;
+        paginationData = response.pagination || {};
+      } else if (Array.isArray(response)) {
+        notesData = response;
+      } else if (response.data && response.data.notes && Array.isArray(response.data.notes)) {
+        notesData = response.data.notes;
+        paginationData = response.data.pagination || {};
+      } else {
+        notesData = [];
+      }
+      
+      const normalizedNotes = notesData.map(note => ({
         ...note,
         tags: normalizeTags(note.tags)
       }));
+      
       setNotes(normalizedNotes);
+      
+      // Update pagination state
+      setTotalItems(paginationData.total || paginationData.total_items || notesData.length);
+      setTotalPages(paginationData.total_pages || Math.ceil((paginationData.total || paginationData.total_items || notesData.length) / perPage));
+      
     } catch (error) {
       console.error('Failed to fetch notes:', error);
       toast.error('Failed to load notes');
@@ -218,6 +258,16 @@ const Notes = () => {
       console.error('Failed to toggle favorite:', error);
       toast.error('Failed to update favorite status');
     }
+  };
+
+  // Pagination handlers
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const handlePerPageChange = (newPerPage) => {
+    setPerPage(newPerPage);
+    setCurrentPage(1); // Reset to first page when changing items per page
   };
 
   const formatDate = (dateString) => {
@@ -651,6 +701,74 @@ const Notes = () => {
             </div>
           )}
         </div>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between mt-8 px-4 py-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-slate-600 dark:text-slate-400">
+                Showing {Math.min((currentPage - 1) * perPage + 1, totalItems)} to {Math.min(currentPage * perPage, totalItems)} of {totalItems} notes
+              </span>
+              <select
+                value={perPage}
+                onChange={(e) => handlePerPageChange(Number(e.target.value))}
+                className="text-sm bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-1 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value={6}>6 per page</option>
+                <option value={12}>12 per page</option>
+                <option value={24}>24 per page</option>
+                <option value={48}>48 per page</option>
+              </select>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="px-3 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+
+              <div className="flex items-center gap-1">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  let pageNum;
+                  if (totalPages <= 5) {
+                    pageNum = i + 1;
+                  } else if (currentPage <= 3) {
+                    pageNum = i + 1;
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNum = totalPages - 4 + i;
+                  } else {
+                    pageNum = currentPage - 2 + i;
+                  }
+
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => handlePageChange(pageNum)}
+                      className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                        currentPage === pageNum
+                          ? 'bg-blue-500 text-white'
+                          : 'text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600'
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="px-3 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Modals */}
         <CreateNoteModal

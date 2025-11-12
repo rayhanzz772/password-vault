@@ -113,6 +113,19 @@ export const vaultAPI = {
       params.append('q', filters.search || filters.q);
     }
     
+    if (filters.favorites !== undefined) {
+      params.append('favorites', filters.favorites ? 'true' : 'false');
+    }
+    
+    // Add pagination parameters
+    if (filters.page) {
+      params.append('page', filters.page);
+    }
+    
+    if (filters.per_page) {
+      params.append('per_page', filters.per_page);
+    }
+    
     const queryString = params.toString();
     const url = queryString ? `/api/vault?${queryString}` : '/api/vault';
     
@@ -194,6 +207,15 @@ export const notesAPI = {
     
     if (filters.search || filters.q) {
       params.append('q', filters.search || filters.q);
+    }
+    
+    // Add pagination parameters
+    if (filters.page) {
+      params.append('page', filters.page);
+    }
+    
+    if (filters.per_page) {
+      params.append('per_page', filters.per_page);
     }
     
     const queryString = params.toString();
