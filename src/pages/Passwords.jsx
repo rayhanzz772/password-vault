@@ -131,10 +131,6 @@ const Passwords = () => {
     setFilteredPasswords(filtered);
   }, [passwords, showOnlyFavorites]);
 
-  const handleCreateSuccess = () => {
-    fetchPasswords(); // Refresh list
-  };
-
   const handleDecrypt = (vault) => {
     setSelectedVault(vault);
     setIsDecryptModalOpen(true);

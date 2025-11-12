@@ -65,7 +65,7 @@ const DeleteNoteModal = ({ isOpen, onClose, note, onSuccess }) => {
 
           <div className="mb-6">
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-              Type <strong>DELETE</strong> to confirm
+              Type <span className="px-2 py-0.5 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded font-mono font-bold">DELETE</span> to confirm
             </label>
             <input
               type="text"

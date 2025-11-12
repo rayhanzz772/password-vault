@@ -9,7 +9,6 @@ import {
   Eye,
   EyeOff
 } from 'lucide-react';
-import toast from 'react-hot-toast';
 import { getCategoryIcon, getCategoryGradient } from '../utils/categoryIcons';
 
 const DeleteVaultModal = ({ isOpen, onClose, vaultItem, onDelete, isDeleting }) => {
@@ -31,8 +30,8 @@ const DeleteVaultModal = ({ isOpen, onClose, vaultItem, onDelete, isDeleting }) 
   }, [isOpen]);
 
   const handleConfirm = () => {
-    if (confirmText.toLowerCase() !== 'delete') {
-      setError('Please type "delete" to confirm');
+    if (confirmText.toLowerCase() !== 'DELETE') {
+      setError('Please type "DELETE" to confirm');
       return;
     }
     setError('');
@@ -180,7 +179,7 @@ const DeleteVaultModal = ({ isOpen, onClose, vaultItem, onDelete, isDeleting }) 
                   {/* Confirmation Input */}
                   <div>
                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                      Type <span className="px-2 py-0.5 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded font-mono font-bold">delete</span> to confirm
+                      Type <span className="px-2 py-0.5 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded font-mono font-bold">DELETE</span> to confirm
                     </label>
                     <input
                       type="text"
@@ -190,11 +189,11 @@ const DeleteVaultModal = ({ isOpen, onClose, vaultItem, onDelete, isDeleting }) 
                         setError('');
                       }}
                       onKeyPress={handleKeyPress}
-                      placeholder="Type 'delete' here"
+                      placeholder="Type 'DELETE' here"
                       className={`w-full px-4 py-3 rounded-xl border-2 ${
                         error
                           ? 'border-red-500 focus:ring-red-500'
-                          : confirmText.toLowerCase() === 'delete'
+                          : confirmText.toLowerCase() === 'DELETE'
                           ? 'border-green-500 focus:ring-green-500'
                           : 'border-slate-300 dark:border-slate-600 focus:ring-red-500'
                       } bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:border-transparent transition-all outline-none`}
