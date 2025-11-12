@@ -12,13 +12,12 @@ import {
 import { getCategoryIcon, getCategoryGradient } from '../utils/categoryIcons';
 
 const DeleteVaultModal = ({ isOpen, onClose, vaultItem, onDelete, isDeleting }) => {
-  const [step, setStep] = useState(1); // 1: confirmation, 2: password input
+  const [step, setStep] = useState(1);
   const [masterPassword, setMasterPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [confirmText, setConfirmText] = useState('');
   const [error, setError] = useState('');
 
-  // Reset state when modal opens/closes
   useEffect(() => {
     if (isOpen) {
       setStep(1);
@@ -66,14 +65,12 @@ const DeleteVaultModal = ({ isOpen, onClose, vaultItem, onDelete, isDeleting }) 
 
   if (!isOpen || !vaultItem) return null;
 
-  // Get category icon and gradient
   const CategoryIcon = getCategoryIcon(vaultItem?.category || vaultItem?.category_name);
   const categoryGradient = getCategoryGradient(vaultItem?.category || vaultItem?.category_name);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
       <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl w-full max-w-md overflow-hidden">
-        {/* Header with animated gradient */}
         <div className="relative bg-gradient-to-br from-red-500 via-red-600 to-rose-700 p-6">
             <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-30"></div>
             
@@ -102,7 +99,6 @@ const DeleteVaultModal = ({ isOpen, onClose, vaultItem, onDelete, isDeleting }) 
           </div>
 
           <div className="p-6">
-            {/* Step Indicator */}
             <div className="flex items-center justify-center gap-2 mb-6">
               <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all ${
                 step === 1 
@@ -123,12 +119,10 @@ const DeleteVaultModal = ({ isOpen, onClose, vaultItem, onDelete, isDeleting }) 
               </div>
             </div>
 
-            {/* Step 1: Confirmation */}
             {step === 1 && (
               <div
                 className="space-y-4"
               >
-                  {/* Vault Item Info */}
                   <div className="bg-slate-50 dark:bg-slate-900 rounded-2xl p-4 border-2 border-red-200 dark:border-red-900/50">
                     <div className="flex items-start gap-3">
                       <div className={`w-12 h-12 bg-gradient-to-br ${categoryGradient} rounded-xl flex items-center justify-center flex-shrink-0`}>
