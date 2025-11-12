@@ -136,7 +136,7 @@ const Passwords = () => {
   };
 
   const handleDecrypt = (vault) => {
-    setSelectedVault(vault);S
+    setSelectedVault(vault);
     setIsDecryptModalOpen(true);
   };
 
