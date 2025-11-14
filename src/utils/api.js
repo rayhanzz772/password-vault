@@ -1,64 +1,71 @@
-import axios from 'axios';
+import axios from "axios";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:5000',
+  baseURL:
+    import.meta.env.VITE_API_BASE_URL ||
+    import.meta.env.VITE_API_URL ||
+    "http://localhost:5000",
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
   timeout: 10000,
 });
 
-console.log('🌐 API Base URL:', api.defaults.baseURL);
+console.log("🌐 API Base URL:", api.defaults.baseURL);
 
 const clearAuthAndRedirect = () => {
-  localStorage.removeItem('jwt_token');
-  if (!window.location.pathname.includes('/login') && 
-      !window.location.pathname.includes('/register')) {
-    console.log('🔄 Redirecting to login...');
-    window.location.href = '/login';
+  localStorage.removeItem("jwt_token");
+  if (
+    !window.location.pathname.includes("/login") &&
+    !window.location.pathname.includes("/register")
+  ) {
+    console.log("🔄 Redirecting to login...");
+    window.location.href = "/login";
   }
 };
 
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('jwt_token');
+    const token = localStorage.getItem("jwt_token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    console.log('📤 API Request:', config.method?.toUpperCase(), config.url);
+    console.log("📤 API Request:", config.method?.toUpperCase(), config.url);
     return config;
   },
   (error) => {
-    console.error('❌ Request error:', error);
+    console.error("❌ Request error:", error);
     return Promise.reject(error);
   }
 );
 
 api.interceptors.response.use(
   (response) => {
-    console.log('📥 API Response:', response.config.url, response.status);
+    console.log("📥 API Response:", response.config.url, response.status);
     return response;
   },
   (error) => {
-    console.error('❌ API Error:', error.message);
-    console.error('❌ Error details:', error.response?.data);
-    
-    if (error.code === 'ECONNABORTED') {
-      console.error('⏱️ Request timeout');
-    } else if (error.code === 'ERR_NETWORK') {
-      console.error('🚫 Network error - Is the backend running?');
+    console.error("❌ API Error:", error.message);
+    console.error("❌ Error details:", error.response?.data);
+
+    if (error.code === "ECONNABORTED") {
+      console.error("⏱️ Request timeout");
+    } else if (error.code === "ERR_NETWORK") {
+      console.error("🚫 Network error - Is the backend running?");
     }
-    
-    if (error.response?.data?.message?.includes('JWT') || 
-        error.response?.data?.message?.includes('jwt') ||
-        error.response?.data?.error?.includes('JWT') ||
-        error.response?.data?.error?.includes('jwt')) {
-      console.log('🔐 JWT error detected - Clearing invalid token');
+
+    if (
+      error.response?.data?.message?.includes("JWT") ||
+      error.response?.data?.message?.includes("jwt") ||
+      error.response?.data?.error?.includes("JWT") ||
+      error.response?.data?.error?.includes("jwt")
+    ) {
+      console.log("🔐 JWT error detected - Clearing invalid token");
       clearAuthAndRedirect();
     }
-    
+
     if (error.response?.status === 401) {
-      console.log('🔐 401 Unauthorized - Clearing token');
+      console.log("🔐 401 Unauthorized - Clearing token");
       clearAuthAndRedirect();
     }
     return Promise.reject(error);
@@ -67,7 +74,7 @@ api.interceptors.response.use(
 
 export const authAPI = {
   register: async (email, masterPassword) => {
-    const response = await api.post('/auth/register', {
+    const response = await api.post("/auth/register", {
       email,
       password: masterPassword,
     });
@@ -75,7 +82,7 @@ export const authAPI = {
   },
 
   login: async (email, masterPassword) => {
-    const response = await api.post('/auth/login', {
+    const response = await api.post("/auth/login", {
       email,
       password: masterPassword,
     });
@@ -83,11 +90,11 @@ export const authAPI = {
   },
 
   logout: () => {
-    localStorage.removeItem('jwt_token');
+    localStorage.removeItem("jwt_token");
   },
 
   checkPassword: async (masterPassword) => {
-    const response = await api.post('/api/users/check-password', {
+    const response = await api.post("/api/users/check-password", {
       password: masterPassword,
     });
     return response.data;
@@ -96,7 +103,7 @@ export const authAPI = {
 
 export const categoriesAPI = {
   getAll: async () => {
-    const response = await api.get('/api/categories');
+    const response = await api.get("/api/categories");
     return response.data;
   },
 };
@@ -104,40 +111,40 @@ export const categoriesAPI = {
 export const vaultAPI = {
   getAll: async (filters = {}) => {
     const params = new URLSearchParams();
-    
+
     if (filters.category) {
-      params.append('category', filters.category);
+      params.append("category", filters.category);
     }
-    
+
     if (filters.search || filters.q) {
-      params.append('q', filters.search || filters.q);
+      params.append("q", filters.search || filters.q);
     }
-    
+
     if (filters.favorites !== undefined) {
-      params.append('favorites', filters.favorites ? 'true' : 'false');
+      params.append("favorites", filters.favorites ? "true" : "false");
     }
-    
+
     // Add pagination parameters
     if (filters.page) {
-      params.append('page', filters.page);
+      params.append("page", filters.page);
     }
-    
+
     if (filters.per_page) {
-      params.append('per_page', filters.per_page);
+      params.append("per_page", filters.per_page);
     }
-    
+
     const queryString = params.toString();
-    const url = queryString ? `/api/vault?${queryString}` : '/api/vault';
-    
-    console.log('🔍 Fetching vault with filters:', filters);
-    console.log('📍 API URL:', url);
-    
+    const url = queryString ? `/api/vault?${queryString}` : "/api/vault";
+
+    console.log("🔍 Fetching vault with filters:", filters);
+    console.log("📍 API URL:", url);
+
     const response = await api.get(url);
     return response.data;
   },
 
   create: async (vaultData, masterPassword) => {
-    const response = await api.post('/api/vault', {
+    const response = await api.post("/api/vault", {
       ...vaultData,
       master_password: masterPassword,
     });
@@ -167,9 +174,9 @@ export const vaultAPI = {
   },
 
   toggleFavorite: async (targetId) => {
-    const response = await api.post('/api/vault/favorite', {
+    const response = await api.post("/api/vault/favorite", {
       target_id: targetId,
-      type: 'password',
+      type: "password",
     });
     return response.data;
   },
@@ -178,19 +185,19 @@ export const vaultAPI = {
 // Logs API endpoints
 export const logsAPI = {
   create: async (action) => {
-    const response = await api.post('/api/vault/logs', {
+    const response = await api.post("/api/vault/logs", {
       action: action,
     });
     return response.data;
   },
 
   getAll: async () => {
-    const response = await api.get('/api/vault/logs');
+    const response = await api.get("/api/vault/logs");
     return response.data;
   },
 
   getSummary: async () => {
-    const response = await api.get('/api/vault/recent-activity');
+    const response = await api.get("/api/vault/recent-activity");
     return response.data;
   },
 };
@@ -200,28 +207,28 @@ export const notesAPI = {
   // Get all notes
   getAll: async (filters = {}) => {
     const params = new URLSearchParams();
-    
+
     if (filters.category) {
-      params.append('category', filters.category);
+      params.append("category", filters.category);
     }
-    
+
     if (filters.search || filters.q) {
-      params.append('q', filters.search || filters.q);
+      params.append("q", filters.search || filters.q);
     }
-    
+
     // Add pagination parameters
     if (filters.page) {
-      params.append('page', filters.page);
+      params.append("page", filters.page);
     }
-    
+
     if (filters.per_page) {
-      params.append('per_page', filters.per_page);
+      params.append("per_page", filters.per_page);
     }
-    
+
     const queryString = params.toString();
-    const url = queryString ? `/api/notes?${queryString}` : '/api/notes';
-    
-    console.log('🔍 Fetching notes with filters:', filters);
+    const url = queryString ? `/api/notes?${queryString}` : "/api/notes";
+
+    console.log("🔍 Fetching notes with filters:", filters);
     const response = await api.get(url);
     return response.data;
   },
@@ -234,25 +241,25 @@ export const notesAPI = {
 
   // Create new note
   create: async (noteData, masterPassword) => {
-    console.log('🔐 Creating encrypted note...');
-    
+    console.log("🔐 Creating encrypted note...");
+
     // Encrypt the note content client-side (if encryption is enabled)
     // For now, send to server as is - server will handle encryption
-    const response = await api.post('/api/notes', {
+    const response = await api.post("/api/notes", {
       title: noteData.title,
       note: noteData.note,
       category_id: noteData.category, // Send as category_id to match database schema
       tags: noteData.tags || [],
       master_password: masterPassword,
     });
-    
-    console.log('✅ Note created successfully');
+
+    console.log("✅ Note created successfully");
     return response.data;
   },
 
   // Update existing note
   update: async (id, noteData, masterPassword) => {
-    console.log('🔐 Updating encrypted note...');
+    console.log("🔐 Updating encrypted note...");
 
     const response = await api.put(`/api/notes/${id}/update`, {
       title: noteData.title,
@@ -261,8 +268,8 @@ export const notesAPI = {
       tags: noteData.tags || [],
       master_password: masterPassword,
     });
-    
-    console.log('✅ Note updated successfully');
+
+    console.log("✅ Note updated successfully");
     return response.data;
   },
 
@@ -283,9 +290,9 @@ export const notesAPI = {
   },
 
   toggleFavorite: async (targetId) => {
-    const response = await api.post('/api/vault/favorite', {
+    const response = await api.post("/api/vault/favorite", {
       target_id: targetId,
-      type: 'note',
+      type: "note",
     });
     return response.data;
   },
