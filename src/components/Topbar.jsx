@@ -1,36 +1,54 @@
-import { useState } from 'react';
-import { Search, Moon, Sun, Lock, LogOut, User, ChevronDown, Code } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useAuth } from '../contexts/AuthContext';
-import { useTheme } from '../contexts/ThemeContext';
-import toast from 'react-hot-toast';
+import { useState } from "react";
+import {
+  Search,
+  Moon,
+  Sun,
+  Lock,
+  LogOut,
+  User,
+  ChevronDown,
+  Code,
+  Menu,
+} from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import { useTheme } from "../contexts/ThemeContext";
+import toast from "react-hot-toast";
 
-const Topbar = ({ searchQuery = '', onSearchChange }) => {
+const Topbar = ({ searchQuery = "", onSearchChange, onMenuToggle }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, logout, lockVault } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
+  // Dynamic placeholder based on current route
+  const getSearchPlaceholder = () => {
+    if (location.pathname.includes("/notes")) {
+      return "Search notes by title, content, or tags...";
+    }
+    return "Search passwords...";
+  };
+
   const handleLogout = () => {
     logout();
-    toast.success('Logged out successfully');
-    navigate('/login');
+    toast.success("Logged out successfully");
+    navigate("/login");
   };
 
   const handleLock = async () => {
     // Lock the vault (clear master password from memory but keep token)
     try {
       await lockVault();
-      toast.success('Vault locked', {
-        icon: '🔒',
+      toast.success("Vault locked", {
+        icon: "🔒",
         duration: 3000,
       });
     } catch (error) {
-      console.error('Failed to lock vault:', error);
+      console.error("Failed to lock vault:", error);
       // Still show success as the vault was locked locally
-      toast.success('Vault locked', {
-        icon: '🔒',
+      toast.success("Vault locked", {
+        icon: "🔒",
         duration: 3000,
       });
     }
@@ -45,6 +63,14 @@ const Topbar = ({ searchQuery = '', onSearchChange }) => {
   return (
     <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-40">
       <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8 h-16">
+        {/* Left: Hamburger Menu (mobile only) */}
+        <button
+          onClick={onMenuToggle}
+          className="lg:hidden p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+          aria-label="Toggle menu"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
 
         {/* Center: Search Bar */}
         <div className="flex-1 max-w-2xl mx-4 hidden md:block">
@@ -52,7 +78,7 @@ const Topbar = ({ searchQuery = '', onSearchChange }) => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
             <input
               type="text"
-              placeholder="Search passwords..."
+              placeholder={getSearchPlaceholder()}
               value={searchQuery}
               onChange={handleSearchChange}
               className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none"
@@ -61,45 +87,23 @@ const Topbar = ({ searchQuery = '', onSearchChange }) => {
         </div>
 
         {/* Right: Actions */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 ml-auto">
           {/* Theme Toggle */}
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+          <button
             onClick={toggleTheme}
             className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
             aria-label="Toggle theme"
           >
-            <AnimatePresence mode="wait">
-              {theme === 'light' ? (
-                <motion.div
-                  key="moon"
-                  initial={{ rotate: -90, opacity: 0 }}
-                  animate={{ rotate: 0, opacity: 1 }}
-                  exit={{ rotate: 90, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <Moon className="w-5 h-5" />
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="sun"
-                  initial={{ rotate: 90, opacity: 0 }}
-                  animate={{ rotate: 0, opacity: 1 }}
-                  exit={{ rotate: -90, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <Sun className="w-5 h-5" />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.button>
+            {theme === "light" ? (
+              <Moon className="w-5 h-5" />
+            ) : (
+              <Sun className="w-5 h-5" />
+            )}
+          </button>
 
           {/* User Menu */}
           <div className="relative">
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+            <button
               onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
               className="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
             >
@@ -107,78 +111,76 @@ const Topbar = ({ searchQuery = '', onSearchChange }) => {
                 <User className="w-4 h-4 text-white" />
               </div>
               <span className="text-sm font-medium text-slate-700 dark:text-slate-300 hidden sm:block max-w-[100px] truncate">
-                {user?.email?.split('@')[0]}
+                {user?.email?.split("@")[0]}
               </span>
-              <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
-            </motion.button>
+              <ChevronDown
+                className={`w-4 h-4 text-slate-500 transition-transform ${
+                  isUserMenuOpen ? "rotate-180" : ""
+                }`}
+              />
+            </button>
 
             {/* Dropdown Menu */}
-            <AnimatePresence>
-              {isUserMenuOpen && (
-                <>
-                  {/* Backdrop */}
-                  <div
-                    className="fixed inset-0 z-30"
-                    onClick={() => setIsUserMenuOpen(false)}
-                  />
+            {isUserMenuOpen && (
+              <>
+                {/* Backdrop */}
+                <div
+                  className="fixed inset-0 z-30"
+                  onClick={() => setIsUserMenuOpen(false)}
+                />
 
-                  {/* Menu */}
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.2 }}
-                    className="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden z-40"
-                  >
-                    {/* User Info */}
-                    <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700">
-                      <p className="text-sm font-medium text-slate-800 dark:text-white truncate">
-                        {user?.email}
-                      </p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                        Vault Manager
-                      </p>
-                    </div>
+                {/* Menu */}
+                <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden z-40">
+                  {/* User Info */}
+                  <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700">
+                    <p className="text-sm font-medium text-slate-800 dark:text-white truncate">
+                      {user?.email}
+                    </p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                      Vault Manager
+                    </p>
+                  </div>
 
-                    {/* Menu Items */}
-                    <div className="py-2">
-                      <button
-                        onClick={() => {
-                          handleLock();
-                          setIsUserMenuOpen(false);
-                        }}
-                        className="w-full flex items-center gap-3 px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
-                      >
-                        <Lock className="w-4 h-4" />
-                        <span className="text-sm font-medium">Lock Vault</span>
-                      </button>
+                  {/* Menu Items */}
+                  <div className="py-2">
+                    <button
+                      onClick={() => {
+                        handleLock();
+                        setIsUserMenuOpen(false);
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                    >
+                      <Lock className="w-4 h-4" />
+                      <span className="text-sm font-medium">Lock Vault</span>
+                    </button>
 
-                      <button
-                        onClick={() => {
-                          navigate('/app/developer');
-                          setIsUserMenuOpen(false);
-                        }}
-                        className="w-full flex items-center gap-3 px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
-                      >
-                        <Code className="w-4 h-4" />
-                        <span className="text-sm font-medium">Developer Settings</span>
-                      </button>
+                    <button
+                      onClick={() => {
+                        navigate("/app/developer");
+                        setIsUserMenuOpen(false);
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                    >
+                      <Code className="w-4 h-4" />
+                      <span className="text-sm font-medium">
+                        Developer Settings
+                      </span>
+                    </button>
 
-                      <button
-                        onClick={() => {
-                          handleLogout();
-                          setIsUserMenuOpen(false);
-                        }}
-                        className="w-full flex items-center gap-3 px-4 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                      >
-                        <LogOut className="w-4 h-4" />
-                        <span className="text-sm font-medium">Logout</span>
-                      </button>
-                    </div>
-                  </motion.div>
-                </>
-              )}
-            </AnimatePresence>
+                    <button
+                      onClick={() => {
+                        handleLogout();
+                        setIsUserMenuOpen(false);
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span className="text-sm font-medium">Logout</span>
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -189,7 +191,7 @@ const Topbar = ({ searchQuery = '', onSearchChange }) => {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
           <input
             type="text"
-            placeholder="Search passwords..."
+            placeholder={getSearchPlaceholder()}
             value={searchQuery}
             onChange={handleSearchChange}
             className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none"
