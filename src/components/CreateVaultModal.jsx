@@ -73,31 +73,23 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
   const fetchCategories = async () => {
     try {
       const data = await categoriesAPI.getAll();
-      console.log("📂 Categories API response:", data);
 
-      // Handle different response structures
       let categoryList = [];
-      if (Array.isArray(data)) {
-        categoryList = data;
-      } else if (data.categories && Array.isArray(data.categories)) {
-        categoryList = data.categories;
-      } else if (data.data && Array.isArray(data.data)) {
-        categoryList = data.data;
-      } else if (
-        data.data &&
-        data.data.categories &&
-        Array.isArray(data.data.categories)
-      ) {
+
+      if (Array.isArray(data)) categoryList = data;
+      else if (Array.isArray(data?.categories)) categoryList = data.categories;
+      else if (Array.isArray(data?.data)) categoryList = data.data;
+      else if (Array.isArray(data?.data?.categories))
         categoryList = data.data.categories;
-      }
 
-      console.log("📋 Processed category list:", categoryList);
+      const excluded = ["medical", "ideas", "other"];
+      const filtered = categoryList.filter(
+        (c) => !excluded.includes(c.name?.toLowerCase())
+      );
 
-      // Use fetched categories or fallback
-      if (categoryList.length > 0) {
-        setCategories(categoryList);
+      if (filtered.length > 0) {
+        setCategories(filtered);
       } else {
-        // Fallback categories if API returns empty
         setCategories([
           { id: 1, name: "Work" },
           { id: 2, name: "Personal" },
@@ -108,7 +100,6 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
       }
     } catch (error) {
       console.error("Failed to fetch categories:", error);
-      // Fallback categories if API fails
       setCategories([
         { id: 1, name: "Work" },
         { id: 2, name: "Personal" },
