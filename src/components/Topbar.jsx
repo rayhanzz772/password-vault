@@ -45,7 +45,6 @@ const Topbar = ({ searchQuery = "", onSearchChange, onMenuToggle }) => {
         duration: 3000,
       });
     } catch (error) {
-      console.error("Failed to lock vault:", error);
       // Still show success as the vault was locked locally
       toast.success("Vault locked", {
         icon: "🔒",

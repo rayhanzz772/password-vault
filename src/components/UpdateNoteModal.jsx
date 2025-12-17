@@ -62,7 +62,6 @@ const UpdateNoteModal = ({ isOpen, onClose, note, onSuccess, categories }) => {
         tags: tagsArray.join(', '),
       });
     } catch (error) {
-      console.error('Failed to load note:', error);
       toast.error('Failed to load note content');
     } finally {
       setIsDecrypting(false);
@@ -95,7 +94,6 @@ const UpdateNoteModal = ({ isOpen, onClose, note, onSuccess, categories }) => {
       toast.success('Note updated successfully!');
       onSuccess();
     } catch (error) {
-      console.error('Failed to update note:', error);
       toast.error('Failed to update note');
     } finally {
       setIsLoading(false);

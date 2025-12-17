@@ -38,7 +38,6 @@ const DeveloperKeys = () => {
       const response = await api.get('/api/developer/api-keys');
       setApiKeys(response.data.data || []);
     } catch (error) {
-      console.error('Failed to fetch API keys:', error);
       toast.error('Failed to load API keys');
     } finally {
       setIsLoading(false);
@@ -61,7 +60,6 @@ const DeveloperKeys = () => {
       toast.success('API Key generated successfully!');
       fetchApiKeys();
     } catch (error) {
-      console.error('Failed to generate API key:', error);
       const errorMsg = error.response?.data?.message || 'Failed to generate API key';
       toast.error(errorMsg);
     } finally {
@@ -76,7 +74,6 @@ const DeveloperKeys = () => {
       setKeyToRevoke(null);
       fetchApiKeys();
     } catch (error) {
-      console.error('Failed to revoke API key:', error);
       const errorMsg = error.response?.data?.message || 'Failed to revoke API key';
       toast.error(errorMsg);
     }

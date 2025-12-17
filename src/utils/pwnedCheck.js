@@ -32,7 +32,6 @@ export const checkPasswordPwned = async (password) => {
     });
     
     if (!response.ok) {
-      console.error('Failed to check password:', response.statusText);
       return { isPwned: false, count: 0, error: true };
     }
     
@@ -54,7 +53,6 @@ export const checkPasswordPwned = async (password) => {
     // Password not found in breaches
     return { isPwned: false, count: 0 };
   } catch (error) {
-    console.error('Error checking password breach:', error);
     return { isPwned: false, count: 0, error: true };
   }
 };

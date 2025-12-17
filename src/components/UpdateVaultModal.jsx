@@ -110,13 +110,6 @@ const UpdateVaultModal = ({ isOpen, onClose, vaultItem, onSuccess }) => {
       if (formData.password.trim()) {
         updateData.password = formData.password.trim();
       }
-
-      console.log("🔄 Updating vault with data:", {
-        ...updateData,
-        password: "***",
-        master_password: "***",
-      });
-
       await vaultAPI.update(vaultItem.id, updateData, masterPassword);
 
       toast.success("Password updated successfully!");
@@ -136,7 +129,6 @@ const UpdateVaultModal = ({ isOpen, onClose, vaultItem, onSuccess }) => {
 
       onClose();
     } catch (error) {
-      console.error("❌ Update vault error:", error);
       const errorMessage =
         error.response?.data?.message ||
         error.message ||

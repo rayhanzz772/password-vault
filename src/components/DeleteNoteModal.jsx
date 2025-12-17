@@ -22,7 +22,6 @@ const DeleteNoteModal = ({ isOpen, onClose, note, onSuccess }) => {
       setConfirmText('');
       onSuccess();
     } catch (error) {
-      console.error('Failed to delete note:', error);
       toast.error('Failed to delete note');
     } finally {
       setIsDeleting(false);

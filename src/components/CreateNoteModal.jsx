@@ -86,7 +86,6 @@ const CreateNoteModal = ({ isOpen, onClose, onSuccess, categories }) => {
 
       onSuccess();
     } catch (error) {
-      console.error("Failed to create note:", error);
       toast.error(error.response?.data?.message || "Failed to create note");
     } finally {
       setIsLoading(false);

@@ -34,8 +34,6 @@ const ActivityLogs = () => {
         logsAPI.getAll()
       ]);
 
-      console.log('📊 Activity summary:', summaryData);
-      console.log('📋 Activity logs:', logsData);
 
       // Handle summary data
       if (summaryData?.data) {
@@ -52,7 +50,6 @@ const ActivityLogs = () => {
 
       setLogs(logsList);
     } catch (error) {
-      console.error('Failed to fetch activity logs:', error);
       toast.error('Failed to load activity logs');
     } finally {
       setIsLoading(false);

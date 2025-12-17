@@ -69,7 +69,6 @@ const ViewNoteModal = ({ isOpen, onClose, note, onEdit, onDelete, categories }) 
       setDecryptedContent(content || '');
       setRetryCount(0); // Reset retry count on success
     } catch (error) {
-      console.error('Failed to decrypt note:', error);
 
       // Increment retry count
       const newRetryCount = retryCount + 1;

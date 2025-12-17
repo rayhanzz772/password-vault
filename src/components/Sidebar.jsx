@@ -30,7 +30,6 @@ const Sidebar = ({
     try {
       await lockVault();
     } catch (error) {
-      console.error("Failed to lock vault:", error);
     }
   };
 

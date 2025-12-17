@@ -11,15 +11,12 @@ const api = axios.create({
   timeout: 10000,
 });
 
-console.log("🌐 API Base URL:", api.defaults.baseURL);
-
 const clearAuthAndRedirect = () => {
   localStorage.removeItem("jwt_token");
   if (
     !window.location.pathname.includes("/login") &&
     !window.location.pathname.includes("/register")
   ) {
-    console.log("🔄 Redirecting to login...");
     window.location.href = "/login";
   }
 };
@@ -30,42 +27,28 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    console.log("📤 API Request:", config.method?.toUpperCase(), config.url);
     return config;
   },
   (error) => {
-    console.error("❌ Request error:", error);
     return Promise.reject(error);
   }
 );
 
 api.interceptors.response.use(
   (response) => {
-    console.log("📥 API Response:", response.config.url, response.status);
     return response;
   },
   (error) => {
-    console.error("❌ API Error:", error.message);
-    console.error("❌ Error details:", error.response?.data);
-
-    if (error.code === "ECONNABORTED") {
-      console.error("⏱️ Request timeout");
-    } else if (error.code === "ERR_NETWORK") {
-      console.error("🚫 Network error - Is the backend running?");
-    }
-
     if (
       error.response?.data?.message?.includes("JWT") ||
       error.response?.data?.message?.includes("jwt") ||
       error.response?.data?.error?.includes("JWT") ||
       error.response?.data?.error?.includes("jwt")
     ) {
-      console.log("🔐 JWT error detected - Clearing invalid token");
       clearAuthAndRedirect();
     }
 
     if (error.response?.status === 401) {
-      console.log("🔐 401 Unauthorized - Clearing token");
       clearAuthAndRedirect();
     }
     return Promise.reject(error);
@@ -135,9 +118,6 @@ export const vaultAPI = {
 
     const queryString = params.toString();
     const url = queryString ? `/api/vault?${queryString}` : "/api/vault";
-
-    console.log("🔍 Fetching vault with filters:", filters);
-    console.log("📍 API URL:", url);
 
     const response = await api.get(url);
     return response.data;
@@ -228,7 +208,6 @@ export const notesAPI = {
     const queryString = params.toString();
     const url = queryString ? `/api/notes?${queryString}` : "/api/notes";
 
-    console.log("🔍 Fetching notes with filters:", filters);
     const response = await api.get(url);
     return response.data;
   },
@@ -241,8 +220,6 @@ export const notesAPI = {
 
   // Create new note
   create: async (noteData, masterPassword) => {
-    console.log("🔐 Creating encrypted note...");
-
     // Encrypt the note content client-side (if encryption is enabled)
     // For now, send to server as is - server will handle encryption
     const response = await api.post("/api/notes", {
@@ -253,14 +230,11 @@ export const notesAPI = {
       master_password: masterPassword,
     });
 
-    console.log("✅ Note created successfully");
     return response.data;
   },
 
   // Update existing note
   update: async (id, noteData, masterPassword) => {
-    console.log("🔐 Updating encrypted note...");
-
     const response = await api.put(`/api/notes/${id}/update`, {
       title: noteData.title,
       note: noteData.note,
@@ -269,7 +243,6 @@ export const notesAPI = {
       master_password: masterPassword,
     });
 
-    console.log("✅ Note updated successfully");
     return response.data;
   },
 

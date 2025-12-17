@@ -21,14 +21,10 @@ export const AuthProvider = ({ children }) => {
 
       // Check if token is older than 1 second since last page close
       if (tokenAge > oneSecond) {
-        console.log(
-          "🕐 Token expired (1 second after closing page), logging out..."
-        );
         localStorage.removeItem("jwt_token");
         localStorage.removeItem("jwt_token_timestamp");
         setIsAuthenticated(false);
       } else {
-        console.log(`✅ Token valid, page was closed less than 1 second ago`);
         setIsAuthenticated(true);
         // You might want to fetch user details here
       }
@@ -42,7 +38,6 @@ export const AuthProvider = ({ children }) => {
       if (document.visibilityState === "visible" && isAuthenticated) {
         // Reset timestamp when page becomes visible again
         localStorage.setItem("jwt_token_timestamp", Date.now().toString());
-        console.log("👀 Page visible - timestamp reset");
       }
     };
 
@@ -50,7 +45,6 @@ export const AuthProvider = ({ children }) => {
     const handleBeforeUnload = () => {
       if (isAuthenticated) {
         localStorage.setItem("jwt_token_timestamp", Date.now().toString());
-        console.log("👋 Page closing - timestamp saved");
       }
     };
 
@@ -65,20 +59,13 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      console.log("🔐 Attempting login for:", email);
       const data = await authAPI.login(email, password);
 
       // Check all possible token field names
       const token = data?.data?.token;
 
-      console.log("� Token received:", token);
-      console.log("🔍 Available fields:", Object.keys(data));
-
       // Validate token exists
       if (!token) {
-        console.error("❌ No token in response!");
-        console.error("❌ Response fields:", Object.keys(data));
-        console.error("❌ Full response:", data);
         return {
           success: false,
           error:
@@ -86,17 +73,9 @@ export const AuthProvider = ({ children }) => {
         };
       }
 
-      console.log("🔍 Token type:", typeof token);
-      console.log("🔍 Token length:", token?.length);
-
       // Basic JWT format check (should have 3 parts separated by dots)
       const tokenParts = token.split(".");
-      console.log("🔍 Token parts:", tokenParts.length);
       if (tokenParts.length !== 3) {
-        console.error(
-          "❌ Invalid JWT format! Expected 3 parts, got:",
-          tokenParts.length
-        );
         return {
           success: false,
           error: "Invalid token format received from server",
@@ -106,7 +85,6 @@ export const AuthProvider = ({ children }) => {
       // Save JWT token to localStorage with timestamp
       localStorage.setItem("jwt_token", token);
       localStorage.setItem("jwt_token_timestamp", Date.now().toString());
-      console.log("💾 Token saved to localStorage with 1 hour expiration");
 
       // Store master password in React state only (not localStorage!)
       setMasterPassword(password);
@@ -114,12 +92,9 @@ export const AuthProvider = ({ children }) => {
       // Update auth state
       setUser(data.user || data.data?.user || { email });
       setIsAuthenticated(true);
-      console.log("✅ Auth state updated, isAuthenticated: true");
 
       return { success: true, data };
     } catch (error) {
-      console.error("❌ Login error:", error);
-      console.error("❌ Error response:", error.response?.data);
       return {
         success: false,
         error:
@@ -131,7 +106,6 @@ export const AuthProvider = ({ children }) => {
   const register = async (email, password) => {
     try {
       const data = await authAPI.register(email, password);
-      console.log("✅ Register response:", data);
 
       // Check all possible token field names
       const token =
@@ -143,23 +117,15 @@ export const AuthProvider = ({ children }) => {
 
       // Optionally auto-login after registration
       if (token) {
-        console.log(
-          "💾 Saving token after registration with 1 hour expiration"
-        );
         localStorage.setItem("jwt_token", token);
         localStorage.setItem("jwt_token_timestamp", Date.now().toString());
         setMasterPassword(password);
         setUser(data.user || data.data?.user || { email });
         setIsAuthenticated(true);
-      } else {
-        console.warn(
-          "⚠️ No token in registration response - user needs to login"
-        );
       }
 
       return { success: true, data };
     } catch (error) {
-      console.error("❌ Registration error:", error);
       return {
         success: false,
         error:
@@ -182,14 +148,11 @@ export const AuthProvider = ({ children }) => {
     // Lock vault by clearing master password from memory
     // Keep user logged in (JWT token remains)
     setMasterPassword(null);
-    console.log("🔒 Vault locked - Master password cleared from memory");
 
     // Log the action to the backend
     try {
       await logsAPI.create("Locked Vault");
-      console.log("📝 Lock action logged successfully");
-    } catch (error) {
-      console.error("❌ Failed to log lock action:", error);
+    } catch {
       // Don't throw error, locking should still work even if logging fails
     }
   };
@@ -197,14 +160,11 @@ export const AuthProvider = ({ children }) => {
   const unlockVault = async (password) => {
     // Unlock vault by setting master password in memory
     setMasterPassword(password);
-    console.log("🔓 Vault unlocked - Master password set in memory");
 
     // Log the action to the backend
     try {
       await logsAPI.create("Unlocked Vault");
-      console.log("📝 Unlock action logged successfully");
-    } catch (error) {
-      console.error("❌ Failed to log unlock action:", error);
+    } catch {
       // Don't throw error, unlocking should still work even if logging fails
     }
   };

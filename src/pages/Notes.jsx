@@ -110,9 +110,7 @@ const Notes = () => {
       }
 
       setCategories(categoryList);
-      console.log(categoryList);
     } catch (error) {
-      console.error("Failed to fetch categories:", error);
       toast.error("Failed to load categories");
       setCategories([]);
     }
@@ -173,7 +171,6 @@ const Notes = () => {
           )
       );
     } catch (error) {
-      console.error("Failed to fetch notes:", error);
       toast.error("Failed to load notes");
       setNotes([]);
     } finally {
@@ -306,7 +303,6 @@ const Notes = () => {
 
       toast.success("Favorite status updated!");
     } catch (error) {
-      console.error("Failed to toggle favorite:", error);
       toast.error("Failed to update favorite status");
     }
   };

@@ -609,9 +609,7 @@ async function getPasswords() {
       }
     });
     
-    console.log('Passwords:', response.data.data);
   } catch (error) {
-    console.error('Error:', error.response?.data || error.message);
   }
 }
 
@@ -630,9 +628,7 @@ async function createNote(title, encryptedContent, categoryId, tags) {
       }
     });
     
-    console.log('Note created:', response.data.data);
   } catch (error) {
-    console.error('Error:', error.response?.data || error.message);
   }
 }
 

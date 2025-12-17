@@ -99,7 +99,6 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
         ]);
       }
     } catch (error) {
-      console.error("Failed to fetch categories:", error);
       setCategories([
         { id: 1, name: "Work" },
         { id: 2, name: "Personal" },
@@ -138,7 +137,6 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
 
         if (result.error) {
           // Silent fail - don't show error to user
-          console.warn("Could not check password breach status");
         } else if (result.isPwned) {
           setBreachInfo({
             isPwned: true,
@@ -155,7 +153,6 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
           });
         }
       } catch (error) {
-        console.error("Breach check error:", error);
       } finally {
         setIsCheckingBreach(false);
       }
@@ -229,7 +226,6 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
       onSuccess?.();
       handleClose();
     } catch (error) {
-      console.error("Failed to create vault:", error);
       const errorMsg =
         error.response?.data?.message || "Failed to save password";
 

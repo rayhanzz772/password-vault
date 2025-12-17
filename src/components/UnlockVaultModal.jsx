@@ -43,16 +43,13 @@ const UnlockVaultModal = ({ isOpen, onClose }) => {
 
     try {
       setIsLoading(true);
-      console.log('🔐 Verifying master password with server...');
 
       // Call the password validation endpoint
       const response = await authAPI.checkPassword(masterPassword);
       
-      console.log('📬 Password validation response:', response);
 
       // Check if password is valid
       if (response.data && response.data.valid === true) {
-        console.log('✅ Master password is valid');
         
         // Unlock the vault with the verified password
         await unlockVault(masterPassword);
@@ -67,14 +64,12 @@ const UnlockVaultModal = ({ isOpen, onClose }) => {
         setShowPassword(false);
         onClose();
       } else {
-        console.log('❌ Master password is invalid');
         setError('Invalid master password. Please try again.');
         toast.error('Invalid master password', {
           icon: '🔒',
         });
       }
     } catch (error) {
-      console.error('❌ Password verification error:', error);
       
       // Handle specific error cases
       if (error.response?.status === 401) {

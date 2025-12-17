@@ -61,21 +61,17 @@ const Login = () => {
     }
 
     setIsLoading(true);
-    console.log('📝 Form submitted, calling login...');
 
     // Clear any existing invalid token first
     const existingToken = localStorage.getItem('jwt_token');
     if (existingToken) {
-      console.log('🗑️ Clearing existing token before login');
       localStorage.removeItem('jwt_token');
     }
 
     const result = await login(formData.email, formData.master_password);
-    console.log('📬 Login result:', result);
 
     if (result.success) {
       toast.success('Welcome back!');
-      console.log('🚀 Navigating to /app...');
 
       // Small delay to ensure state is updated
       setTimeout(() => {
@@ -83,7 +79,6 @@ const Login = () => {
       }, 100);
     } else {
       toast.error(result.error);
-      console.error('❌ Login failed:', result.error);
     }
 
     setIsLoading(false);

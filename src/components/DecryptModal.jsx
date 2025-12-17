@@ -114,10 +114,7 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
       }
 
       if (!decrypted) {
-        console.error('❌ No decrypted password in response!');
-        console.error('Available fields:', Object.keys(result));
         if (result.data) {
-          console.error('Data fields:', Object.keys(result.data));
         }
         toast.error('Failed to extract decrypted password from response');
         return;

@@ -81,9 +81,7 @@ const Passwords = () => {
         filters.search = searchQuery;
       }
       
-      console.log('🔍 Fetching with filters:', filters);
       const data = await vaultAPI.getAll(filters);
-      console.log('📦 Vault API response:', data);
       
       // Handle different response structures
       let vaultList = [];
@@ -101,7 +99,6 @@ const Passwords = () => {
         paginationData = data.data.pagination || {};
       }
       
-      console.log('📋 Processed vault list:', vaultList);
       
       setPasswords(vaultList);
       
@@ -110,7 +107,6 @@ const Passwords = () => {
       setTotalPages(paginationData.total_pages || Math.ceil((paginationData.total || paginationData.total_items || vaultList.length) / perPage));
       setCurrentPage(paginationData.current_page || currentPage);
     } catch (error) {
-      console.error('Failed to fetch passwords:', error);
       toast.error('Failed to load passwords');
       setPasswords([]); // Set empty array on error
     } finally {
@@ -164,7 +160,6 @@ const Passwords = () => {
       
       toast.success('Favorite status updated!');
     } catch (error) {
-      console.error('Failed to toggle favorite:', error);
       toast.error('Failed to update favorite status');
     }
   };
@@ -182,7 +177,6 @@ const Passwords = () => {
   const handleDeleteConfirm = async (vault, password) => {
     try {
       setDeletingId(vault.id);
-      console.log('🗑️ Deleting vault:', vault.id);
       
       await vaultAPI.delete(vault.id, password);
       
@@ -190,7 +184,6 @@ const Passwords = () => {
       fetchPasswords(); // Refresh list
       return { success: true };
     } catch (error) {
-      console.error('Failed to delete:', error);
       const errorMsg = error.response?.data?.message || 'Failed to delete password';
       return { success: false, error: errorMsg };
     } finally {
