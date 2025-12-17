@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
     if (token && tokenTimestamp) {
       const now = Date.now();
       const tokenAge = now - parseInt(tokenTimestamp);
-      const oneHour = 60 * 60 * 1000; // 1 hour in milliseconds
+      const oneHour = 60 * 1000; // 1 hour in milliseconds
 
       // Check if token is older than 1 hour
       if (tokenAge > oneHour) {
