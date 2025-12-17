@@ -17,26 +17,51 @@ export const AuthProvider = ({ children }) => {
     if (token && tokenTimestamp) {
       const now = Date.now();
       const tokenAge = now - parseInt(tokenTimestamp);
-      const oneHour = 60 * 1000; // 1 hour in milliseconds
+      const oneSecond = 1000; // 1 second in milliseconds
 
-      // Check if token is older than 1 hour
-      if (tokenAge > oneHour) {
-        console.log("🕐 Token expired (older than 1 hour), logging out...");
+      // Check if token is older than 1 second since last page close
+      if (tokenAge > oneSecond) {
+        console.log(
+          "🕐 Token expired (1 second after closing page), logging out..."
+        );
         localStorage.removeItem("jwt_token");
         localStorage.removeItem("jwt_token_timestamp");
         setIsAuthenticated(false);
       } else {
-        console.log(
-          `✅ Token valid, expires in ${Math.round(
-            (oneHour - tokenAge) / 60000
-          )} minutes`
-        );
+        console.log(`✅ Token valid, page was closed less than 1 second ago`);
         setIsAuthenticated(true);
         // You might want to fetch user details here
       }
     }
     setIsLoading(false);
   }, []);
+
+  // Update timestamp when page becomes visible (page is opened/active)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible" && isAuthenticated) {
+        // Reset timestamp when page becomes visible again
+        localStorage.setItem("jwt_token_timestamp", Date.now().toString());
+        console.log("👀 Page visible - timestamp reset");
+      }
+    };
+
+    // Update timestamp before page closes/hides
+    const handleBeforeUnload = () => {
+      if (isAuthenticated) {
+        localStorage.setItem("jwt_token_timestamp", Date.now().toString());
+        console.log("👋 Page closing - timestamp saved");
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [isAuthenticated]);
 
   const login = async (email, password) => {
     try {
