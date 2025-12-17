@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff, Shield, ArrowRight } from 'lucide-react';
-import toast from 'react-hot-toast';
-import { useAuth } from '../contexts/AuthContext';
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Mail, Lock, Eye, EyeOff, Shield, ArrowRight } from "lucide-react";
+import toast from "react-hot-toast";
+import { useAuth } from "../contexts/AuthContext";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -11,13 +11,13 @@ const Login = () => {
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated && !authLoading) {
-      navigate('/app', { replace: true });
+      navigate("/app", { replace: true });
     }
   }, [isAuthenticated, authLoading, navigate]);
 
   const [formData, setFormData] = useState({
-    email: '',
-    master_password: '',
+    email: "",
+    master_password: "",
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -29,14 +29,14 @@ const Login = () => {
 
     // Email validation
     if (!formData.email) {
-      newErrors.email = 'Email is required';
+      newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid';
+      newErrors.email = "Email is invalid";
     }
 
     // Password validation
     if (!formData.master_password) {
-      newErrors.master_password = 'Master password is required';
+      newErrors.master_password = "Master password is required";
     }
 
     setErrors(newErrors);
@@ -48,7 +48,7 @@ const Login = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
     // Clear error for this field when user types
     if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: '' }));
+      setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
@@ -56,26 +56,26 @@ const Login = () => {
     e.preventDefault();
 
     if (!validateForm()) {
-      toast.error('Please fill in all fields correctly');
+      toast.error("Please fill in all fields correctly");
       return;
     }
 
     setIsLoading(true);
 
     // Clear any existing invalid token first
-    const existingToken = localStorage.getItem('jwt_token');
+    const existingToken = localStorage.getItem("jwt_token");
     if (existingToken) {
-      localStorage.removeItem('jwt_token');
+      localStorage.removeItem("jwt_token");
     }
 
     const result = await login(formData.email, formData.master_password);
 
     if (result.success) {
-      toast.success('Welcome back!');
+      toast.success("Welcome back!");
 
       // Small delay to ensure state is updated
       setTimeout(() => {
-        navigate('/app');
+        navigate("/app");
       }, 100);
     } else {
       toast.error(result.error);
@@ -113,7 +113,12 @@ const Login = () => {
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                />
               </svg>
               Back to Home
             </Link>
@@ -132,7 +137,10 @@ const Login = () => {
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email Field */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
                 Email Address
               </label>
               <div className="relative">
@@ -143,10 +151,11 @@ const Login = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className={`w-full pl-10 pr-4 py-3 rounded-xl border ${errors.email
-                      ? 'border-red-500 focus:ring-red-500'
-                      : 'border-gray-300 dark:border-gray-600 focus:ring-primary-500'
-                    } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:border-transparent transition-all outline-none`}
+                  className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
+                    errors.email
+                      ? "border-red-500 focus:ring-red-500"
+                      : "border-gray-300 dark:border-gray-600 focus:ring-primary-500"
+                  } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:border-transparent transition-all outline-none`}
                   placeholder="you@example.com"
                   autoComplete="email"
                 />
@@ -158,21 +167,25 @@ const Login = () => {
 
             {/* Master Password Field */}
             <div>
-              <label htmlFor="master_password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label
+                htmlFor="master_password"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
                 Master Password
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   id="master_password"
                   name="master_password"
                   value={formData.master_password}
                   onChange={handleChange}
-                  className={`w-full pl-10 pr-12 py-3 rounded-xl border ${errors.master_password
-                      ? 'border-red-500 focus:ring-red-500'
-                      : 'border-gray-300 dark:border-gray-600 focus:ring-primary-500'
-                    } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:border-transparent transition-all outline-none`}
+                  className={`w-full pl-10 pr-12 py-3 rounded-xl border ${
+                    errors.master_password
+                      ? "border-red-500 focus:ring-red-500"
+                      : "border-gray-300 dark:border-gray-600 focus:ring-primary-500"
+                  } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:border-transparent transition-all outline-none`}
                   placeholder="••••••••"
                   autoComplete="current-password"
                 />
@@ -181,31 +194,18 @@ const Login = () => {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                 >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
                 </button>
               </div>
               {errors.master_password && (
-                <p className="mt-1 text-sm text-red-500">{errors.master_password}</p>
+                <p className="mt-1 text-sm text-red-500">
+                  {errors.master_password}
+                </p>
               )}
-            </div>
-
-            {/* Remember Me & Forgot Password */}
-            <div className="flex items-center justify-between">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  className="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                />
-                <span className="text-sm text-gray-600 dark:text-gray-400">
-                  Remember me
-                </span>
-              </label>
-              <Link
-                to="/forgot-password"
-                className="text-sm font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors"
-              >
-                Forgot password?
-              </Link>
             </div>
 
             {/* Submit Button */}
@@ -231,13 +231,14 @@ const Login = () => {
           {/* Security Notice */}
           <div className="mt-6 p-4 bg-primary-50 dark:bg-primary-900/20 rounded-xl">
             <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
-              🔒 Your master password is never stored on our servers and only exists in your browser's memory during your session.
+              🔒 Your master password is never stored on our servers and only
+              exists in your browser's memory during your session.
             </p>
           </div>
 
           {/* Register Link */}
           <p className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
-            Don't have an account?{' '}
+            Don't have an account?{" "}
             <Link
               to="/register"
               className="font-semibold text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors"
