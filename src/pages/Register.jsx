@@ -132,17 +132,17 @@ const Register = () => {
         onConfirm={handleConfirmRegistration}
       />
 
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900 px-4 py-12">
-        <div className="relative w-full max-w-[560px] min-w-[360px]">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900 px-4 py-6 sm:py-12">
+        <div className="w-full max-w-[440px] sm:max-w-[480px]">
           {/* Card */}
-          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-12 border border-gray-200 dark:border-gray-700">
-            <div className="mb-4">
+          <div className="bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl shadow-xl sm:shadow-2xl p-6 sm:p-8 md:p-10 border border-gray-200 dark:border-gray-700">
+            <div className="mb-4 sm:mb-6">
               <Link
                 to="/"
-                className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors group"
+                className="inline-flex items-center gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors group"
               >
                 <svg
-                  className="w-4 h-4 group-hover:-translate-x-1 transition-transform"
+                  className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:-translate-x-1 transition-transform"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -158,34 +158,34 @@ const Register = () => {
               </Link>
             </div>
             {/* Logo & Title */}
-            <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            <div className="text-center mb-5 sm:mb-8">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2">
                 Create Account
               </h1>
-              <p className="text-gray-600 dark:text-gray-400">
+              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
                 Start securing your passwords today
               </p>
             </div>
 
             {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
               {/* Email Field */}
               <div>
                 <label
                   htmlFor="email"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                  className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 sm:mb-2"
                 >
                   Email Address
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
                   <input
                     type="email"
                     id="email"
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
+                    className={`w-full pl-9 sm:pl-10 pr-4 py-2.5 sm:py-3 text-sm sm:text-base rounded-lg sm:rounded-xl border ${
                       errors.email
                         ? "border-red-500 focus:ring-red-500"
                         : "border-gray-300 dark:border-gray-600 focus:ring-primary-500"
@@ -194,7 +194,9 @@ const Register = () => {
                   />
                 </div>
                 {errors.email && (
-                  <p className="mt-1 text-sm text-red-500">{errors.email}</p>
+                  <p className="mt-1 text-xs sm:text-sm text-red-500">
+                    {errors.email}
+                  </p>
                 )}
               </div>
 
@@ -202,19 +204,19 @@ const Register = () => {
               <div>
                 <label
                   htmlFor="password"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                  className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 sm:mb-2"
                 >
                   Master Password
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
                   <input
                     type={showPassword ? "text" : "password"}
                     id="password"
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    className={`w-full pl-10 pr-12 py-3 rounded-xl border ${
+                    className={`w-full pl-9 sm:pl-10 pr-10 sm:pr-12 py-2.5 sm:py-3 text-sm sm:text-base rounded-lg sm:rounded-xl border ${
                       errors.password
                         ? "border-red-500 focus:ring-red-500"
                         : "border-gray-300 dark:border-gray-600 focus:ring-primary-500"
@@ -227,14 +229,16 @@ const Register = () => {
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                   >
                     {showPassword ? (
-                      <EyeOff className="w-5 h-5" />
+                      <EyeOff className="w-4 h-4 sm:w-5 sm:h-5" />
                     ) : (
-                      <Eye className="w-5 h-5" />
+                      <Eye className="w-4 h-4 sm:w-5 sm:h-5" />
                     )}
                   </button>
                 </div>
                 {errors.password && (
-                  <p className="mt-1 text-sm text-red-500">{errors.password}</p>
+                  <p className="mt-1 text-xs sm:text-sm text-red-500">
+                    {errors.password}
+                  </p>
                 )}
               </div>
 
@@ -242,19 +246,19 @@ const Register = () => {
               <div>
                 <label
                   htmlFor="confirm_password"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                  className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 sm:mb-2"
                 >
                   Confirm Password
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
                   <input
                     type={showConfirmPassword ? "text" : "password"}
                     id="confirm_password"
                     name="confirm_password"
                     value={formData.confirm_password}
                     onChange={handleChange}
-                    className={`w-full pl-10 pr-12 py-3 rounded-xl border ${
+                    className={`w-full pl-9 sm:pl-10 pr-10 sm:pr-12 py-2.5 sm:py-3 text-sm sm:text-base rounded-lg sm:rounded-xl border ${
                       errors.confirm_password
                         ? "border-red-500 focus:ring-red-500"
                         : "border-gray-300 dark:border-gray-600 focus:ring-primary-500"
@@ -267,26 +271,26 @@ const Register = () => {
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                   >
                     {showConfirmPassword ? (
-                      <EyeOff className="w-5 h-5" />
+                      <EyeOff className="w-4 h-4 sm:w-5 sm:h-5" />
                     ) : (
-                      <Eye className="w-5 h-5" />
+                      <Eye className="w-4 h-4 sm:w-5 sm:h-5" />
                     )}
                   </button>
                 </div>
                 {errors.confirm_password && (
-                  <p className="mt-1 text-sm text-red-500">
+                  <p className="mt-1 text-xs sm:text-sm text-red-500">
                     {errors.confirm_password}
                   </p>
                 )}
               </div>
 
               {/* Password Requirements */}
-              <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4">
-                <p className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg sm:rounded-xl p-3 sm:p-4">
+                <p className="text-[10px] sm:text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5 sm:mb-2">
                   Password must contain:
                 </p>
-                <ul className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
-                  <li className="flex items-center gap-2">
+                <ul className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400 space-y-0.5 sm:space-y-1">
+                  <li className="flex items-center gap-1.5 sm:gap-2">
                     <span
                       className={
                         formData.password.length >= 8 ? "text-green-500" : ""
@@ -296,7 +300,7 @@ const Register = () => {
                     </span>
                     At least 8 characters
                   </li>
-                  <li className="flex items-center gap-2">
+                  <li className="flex items-center gap-1.5 sm:gap-2">
                     <span
                       className={
                         /[A-Z]/.test(formData.password) ? "text-green-500" : ""
@@ -306,7 +310,7 @@ const Register = () => {
                     </span>
                     One uppercase letter
                   </li>
-                  <li className="flex items-center gap-2">
+                  <li className="flex items-center gap-1.5 sm:gap-2">
                     <span
                       className={
                         /[a-z]/.test(formData.password) ? "text-green-500" : ""
@@ -316,7 +320,7 @@ const Register = () => {
                     </span>
                     One lowercase letter
                   </li>
-                  <li className="flex items-center gap-2">
+                  <li className="flex items-center gap-1.5 sm:gap-2">
                     <span
                       className={
                         /\d/.test(formData.password) ? "text-green-500" : ""
@@ -333,24 +337,24 @@ const Register = () => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3 px-4 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-shadow duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full py-2.5 sm:py-3 px-4 bg-gradient-to-br from-blue-500 to-blue-600 text-white text-sm sm:text-base rounded-lg sm:rounded-xl font-semibold shadow-lg hover:shadow-xl transition-shadow duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? (
                   <>
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                     Creating Account...
                   </>
                 ) : (
                   <>
                     Create Account
-                    <ArrowRight className="w-5 h-5" />
+                    <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
                   </>
                 )}
               </button>
             </form>
 
             {/* Login Link */}
-            <p className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
+            <p className="mt-4 sm:mt-6 text-center text-xs sm:text-sm text-gray-600 dark:text-gray-400">
               Already have an account?{" "}
               <Link
                 to="/login"

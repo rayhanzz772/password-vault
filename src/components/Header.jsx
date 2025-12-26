@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Moon, Sun, Menu, X, Lock } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { useTheme } from '../contexts/ThemeContext';
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Moon, Sun, Menu, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useTheme } from "../contexts/ThemeContext";
 
 const Header = () => {
   const { theme, toggleTheme } = useTheme();
@@ -13,7 +13,7 @@ const Header = () => {
   const [lastScrollY, setLastScrollY] = useState(0);
 
   const handleGetStarted = () => {
-    navigate('/login');
+    navigate("/login");
   };
 
   useEffect(() => {
@@ -35,41 +35,46 @@ const Header = () => {
       setLastScrollY(currentScrollY);
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
   const navLinks = [
-    { name: 'Features', href: '#features' },
-    { name: 'How it Works', href: '#how-it-works' },
-    { name: 'Documentation', href: '#docs' },
-    { name: 'About', href: '#about' },
+    { name: "Features", href: "#features" },
+    { name: "How it Works", href: "#how-it-works" },
+    { name: "Documentation", href: "#docs" },
+    { name: "About", href: "#about" },
   ];
 
   return (
     <motion.header
       initial={{ y: -100 }}
       animate={{ y: isVisible ? 0 : -100 }}
-      transition={{ duration: 0.3, ease: 'easeInOut' }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
-          ? 'bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg'
-          : 'bg-transparent'
-        }`}
+      transition={{ duration: 0.3, ease: "easeInOut" }}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled
+          ? "bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg shadow-sm"
+          : "bg-transparent"
+      }`}
     >
-      <nav className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between h-16 sm:h-24">
+      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-14 sm:h-16 lg:h-20">
           {/* Logo */}
           <motion.div
             whileHover={{ scale: 1.05 }}
             className="flex items-center gap-2 cursor-pointer"
           >
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center">
-              <img src="/logo_shield.png" alt="Logo" />
+            <div className="w-7 h-7 sm:w-8 sm:h-8 lg:w-9 lg:h-9 rounded-lg flex items-center justify-center">
+              <img
+                src="/logo_shield.png"
+                alt="Logo"
+                className="w-full h-full object-contain"
+              />
             </div>
           </motion.div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center justify-between gap-32">
+          {/* Desktop Navigation - Hidden on mobile, visible on tablet (md) and up */}
+          <div className="hidden md:flex items-center justify-center gap-6 lg:gap-10 xl:gap-16">
             {navLinks.map((link, index) => (
               <motion.a
                 key={link.name}
@@ -77,7 +82,7 @@ const Header = () => {
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 font-medium transition-colors relative group"
+                className="text-sm lg:text-base text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 font-medium transition-colors relative group whitespace-nowrap"
               >
                 {link.name}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-primary-500 to-purple-600 group-hover:w-full transition-all duration-300"></span>
@@ -86,17 +91,17 @@ const Header = () => {
           </div>
 
           {/* Right side buttons */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-3 lg:gap-4">
             {/* Theme Toggle */}
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={toggleTheme}
-              className="p-2 rounded-lg bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors"
+              className="p-1.5 sm:p-2 rounded-lg bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors"
               aria-label="Toggle theme"
             >
               <AnimatePresence mode="wait">
-                {theme === 'light' ? (
+                {theme === "light" ? (
                   <motion.div
                     key="moon"
                     initial={{ rotate: -90, opacity: 0 }}
@@ -104,7 +109,7 @@ const Header = () => {
                     exit={{ rotate: 90, opacity: 0 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <Moon className="w-5 h-5" />
+                    <Moon className="w-4 h-4 sm:w-5 sm:h-5" />
                   </motion.div>
                 ) : (
                   <motion.div
@@ -114,48 +119,49 @@ const Header = () => {
                     exit={{ rotate: -90, opacity: 0 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <Sun className="w-5 h-5" />
+                    <Sun className="w-4 h-4 sm:w-5 sm:h-5" />
                   </motion.div>
                 )}
               </AnimatePresence>
             </motion.button>
 
+            {/* Sign in Button - Hidden on mobile, visible on tablet and up */}
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={handleGetStarted}
-              className="hidden md:block px-6 py-2.5 border-2 border-blue-500 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-shadow"
+              className="hidden md:block px-4 lg:px-6 py-2 lg:py-2.5 border-2 border-blue-500 bg-gradient-to-br from-blue-500 to-blue-600 text-white text-sm lg:text-base rounded-lg font-semibold shadow-lg hover:shadow-xl transition-shadow"
             >
               Sign in
             </motion.button>
 
-            {/* Mobile Menu Button */}
+            {/* Mobile Menu Button - Visible only on mobile */}
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 rounded-lg bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+              className="md:hidden p-1.5 sm:p-2 rounded-lg bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
               aria-label="Toggle menu"
             >
               {isMobileMenuOpen ? (
-                <X className="w-6 h-6" />
+                <X className="w-5 h-5 sm:w-6 sm:h-6" />
               ) : (
-                <Menu className="w-6 h-6" />
+                <Menu className="w-5 h-5 sm:w-6 sm:h-6" />
               )}
             </motion.button>
           </div>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Menu - Full screen overlay on mobile */}
         <AnimatePresence>
           {isMobileMenuOpen && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
+              animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className="md:hidden overflow-hidden"
+              className="md:hidden overflow-hidden bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg border-t border-gray-200 dark:border-gray-700"
             >
-              <div className="py-4 space-y-3">
+              <div className="py-4 px-4 space-y-2">
                 {navLinks.map((link, index) => (
                   <motion.a
                     key={link.name}
@@ -164,7 +170,7 @@ const Header = () => {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg font-medium transition-colors"
+                    className="block px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl font-medium transition-colors text-base"
                   >
                     {link.name}
                   </motion.a>
@@ -173,10 +179,13 @@ const Header = () => {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: navLinks.length * 0.1 }}
-                  onClick={handleGetStarted}
-                  className="w-full px-4 py-2.5 bg-orange-500 text-white rounded-lg font-semibold shadow-lg"
+                  onClick={() => {
+                    handleGetStarted();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="w-full mt-4 px-4 py-3 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl font-semibold shadow-lg text-base"
                 >
-                  Get Started
+                  Sign in
                 </motion.button>
               </div>
             </motion.div>
