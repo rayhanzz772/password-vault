@@ -1,0 +1,8 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+Disallow: /app/
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://crypta-vault.vercel.app/sitemap.xml

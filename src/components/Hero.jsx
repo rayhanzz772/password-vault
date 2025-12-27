@@ -3,9 +3,15 @@ import { ArrowRight, Github, Shield, Lock, Sparkles } from "lucide-react";
 
 const Hero = () => {
   return (
-    <section className="relative pt-14 sm:pt-16 overflow-hidden">
+    <section
+      className="relative pt-14 sm:pt-16 overflow-hidden"
+      aria-label="Hero section"
+    >
       {/* Gradient Background with Animation */}
-      <div className="absolute inset-0 bg-white dark:bg-slate-950">
+      <div
+        className="absolute inset-0 bg-white dark:bg-slate-950"
+        aria-hidden="true"
+      >
         {/* Grid Pattern Overlay */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
       </div>
@@ -15,7 +21,10 @@ const Hero = () => {
         <div className="text-center">
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full mb-6 sm:mb-8">
-            <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600 dark:text-blue-400" />
+            <Sparkles
+              className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600 dark:text-blue-400"
+              aria-hidden="true"
+            />
             <span className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
               Zero-Knowledge Encryption
             </span>
@@ -39,13 +48,20 @@ const Hero = () => {
           </p>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-12 sm:mb-16">
+          <nav
+            className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-12 sm:mb-16"
+            aria-label="Call to action"
+          >
             <Link
               to="/login"
               className="group relative inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-br from-blue-500 to-blue-600 hover:bg-blue-700 dark:bg-white text-white dark:text-white font-semibold rounded-xl hover:bg-slate-800 dark:hover:bg-slate-100 transition-all shadow-lg hover:shadow-xl w-full sm:w-auto"
+              aria-label="Start securing your passwords"
             >
               <span>Start Securing</span>
-              <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight
+                className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform"
+                aria-hidden="true"
+              />
             </Link>
 
             <a
@@ -53,11 +69,12 @@ const Hero = () => {
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold rounded-xl hover:border-slate-300 dark:hover:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-900 transition-all gap-2 w-full sm:w-auto"
+              aria-label="View source code on GitHub"
             >
-              <Github className="w-4 h-4 sm:w-5 sm:h-5" />
+              <Github className="w-4 h-4 sm:w-5 sm:h-5" aria-hidden="true" />
               <span>View on GitHub</span>
             </a>
-          </div>
+          </nav>
         </div>
       </div>
 
