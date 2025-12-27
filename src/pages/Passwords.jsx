@@ -1,35 +1,31 @@
-import { useState, useEffect, useRef } from 'react';
-import { useOutletContext } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { 
-  Plus, 
-  Eye, 
-  Copy, 
-  MoreVertical, 
-  Globe, 
+import { useState, useEffect, useRef } from "react";
+import { useOutletContext } from "react-router-dom";
+import { motion } from "framer-motion";
+import {
+  Plus,
+  Eye,
+  Copy,
+  MoreVertical,
+  Globe,
   Lock,
   Star,
   Trash2,
   Edit,
   ChevronLeft,
-  ChevronRight
-} from 'lucide-react';
-import toast from 'react-hot-toast';
-import { useAuth } from '../contexts/AuthContext';
-import { vaultAPI } from '../utils/api';
-import { getCategoryIcon, getCategoryGradient } from '../utils/categoryIcons';
-import CreateVaultModal from '../components/CreateVaultModal';
-import DecryptModal from '../components/DecryptModal';
-import DeleteVaultModal from '../components/DeleteVaultModal';
-import UpdateVaultModal from '../components/UpdateVaultModal';
+  ChevronRight,
+} from "lucide-react";
+import toast from "react-hot-toast";
+import { useAuth } from "../contexts/AuthContext";
+import { vaultAPI } from "../utils/api";
+import { getCategoryIcon, getCategoryGradient } from "../utils/categoryIcons";
+import CreateVaultModal from "../components/CreateVaultModal";
+import DecryptModal from "../components/DecryptModal";
+import DeleteVaultModal from "../components/DeleteVaultModal";
+import UpdateVaultModal from "../components/UpdateVaultModal";
 
 const Passwords = () => {
-  const { 
-    refreshTrigger, 
-    openCreateModal, 
-    searchQuery, 
-    selectedCategory 
-  } = useOutletContext();
+  const { refreshTrigger, openCreateModal, searchQuery, selectedCategory } =
+    useOutletContext();
   const { masterPassword } = useAuth();
   const [passwords, setPasswords] = useState([]);
   const [filteredPasswords, setFilteredPasswords] = useState([]);
@@ -42,7 +38,7 @@ const Passwords = () => {
   const [selectedVault, setSelectedVault] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
   const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
-  
+
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(12);
@@ -68,11 +64,11 @@ const Passwords = () => {
       } else {
         setIsFiltering(true);
       }
-      
+
       // Build filters object (without favorites - we'll filter client-side)
       const filters = {
         page: currentPage,
-        per_page: perPage
+        per_page: perPage,
       };
       if (selectedCategory) {
         filters.category = selectedCategory;
@@ -80,9 +76,9 @@ const Passwords = () => {
       if (searchQuery) {
         filters.search = searchQuery;
       }
-      
+
       const data = await vaultAPI.getAll(filters);
-      
+
       // Handle different response structures
       let vaultList = [];
       let paginationData = {};
@@ -94,20 +90,32 @@ const Passwords = () => {
       } else if (data.data && Array.isArray(data.data)) {
         vaultList = data.data;
         paginationData = data.pagination || {};
-      } else if (data.data && data.data.vaults && Array.isArray(data.data.vaults)) {
+      } else if (
+        data.data &&
+        data.data.vaults &&
+        Array.isArray(data.data.vaults)
+      ) {
         vaultList = data.data.vaults;
         paginationData = data.data.pagination || {};
       }
-      
-      
+
       setPasswords(vaultList);
-      
+
       // Update pagination state
-      setTotalItems(paginationData.total || paginationData.total_items || vaultList.length);
-      setTotalPages(paginationData.total_pages || Math.ceil((paginationData.total || paginationData.total_items || vaultList.length) / perPage));
+      setTotalItems(
+        paginationData.total || paginationData.total_items || vaultList.length
+      );
+      setTotalPages(
+        paginationData.total_pages ||
+          Math.ceil(
+            (paginationData.total ||
+              paginationData.total_items ||
+              vaultList.length) / perPage
+          )
+      );
       setCurrentPage(paginationData.current_page || currentPage);
     } catch (error) {
-      toast.error('Failed to load passwords');
+      toast.error("Failed to load passwords");
       setPasswords([]); // Set empty array on error
     } finally {
       setIsLoading(false);
@@ -121,7 +129,7 @@ const Passwords = () => {
 
     // Apply favorites filter
     if (showOnlyFavorites) {
-      filtered = filtered.filter(password => password.is_favorite);
+      filtered = filtered.filter((password) => password.is_favorite);
     }
 
     setFilteredPasswords(filtered);
@@ -143,7 +151,7 @@ const Passwords = () => {
 
   const handleCopy = (text) => {
     navigator.clipboard.writeText(text);
-    toast.success('Copied to clipboard!');
+    toast.success("Copied to clipboard!");
   };
 
   const handleDeleteClick = (vault) => {
@@ -154,13 +162,13 @@ const Passwords = () => {
   const handleToggleFavorite = async (vaultId) => {
     try {
       await vaultAPI.toggleFavorite(vaultId);
-      
+
       // Refresh data from server to get updated favorite status
       await fetchPasswords();
-      
-      toast.success('Favorite status updated!');
+
+      toast.success("Favorite status updated!");
     } catch (error) {
-      toast.error('Failed to update favorite status');
+      toast.error("Failed to update favorite status");
     }
   };
 
@@ -177,14 +185,15 @@ const Passwords = () => {
   const handleDeleteConfirm = async (vault, password) => {
     try {
       setDeletingId(vault.id);
-      
+
       await vaultAPI.delete(vault.id, password);
-      
-      toast.success('Password deleted successfully!');
+
+      toast.success("Password deleted successfully!");
       fetchPasswords(); // Refresh list
       return { success: true };
     } catch (error) {
-      const errorMsg = error.response?.data?.message || 'Failed to delete password';
+      const errorMsg =
+        error.response?.data?.message || "Failed to delete password";
       return { success: false, error: errorMsg };
     } finally {
       setDeletingId(null);
@@ -207,11 +216,13 @@ const Passwords = () => {
             Vault is Locked
           </h2>
           <p className="text-slate-600 dark:text-slate-400 mb-6">
-            Your vault is currently locked. Please unlock it with your master password to access your encrypted passwords.
+            Your vault is currently locked. Please unlock it with your master
+            password to access your encrypted passwords.
           </p>
           <div className="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl">
             <p className="text-sm text-amber-800 dark:text-amber-200">
-              💡 Tip: Click the "Unlock Vault" button in the sidebar to enter your master password.
+              💡 Tip: Click the "Unlock Vault" button in the sidebar to enter
+              your master password.
             </p>
           </div>
         </motion.div>
@@ -225,7 +236,9 @@ const Passwords = () => {
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-600 dark:text-slate-400">Loading passwords...</p>
+          <p className="text-slate-600 dark:text-slate-400">
+            Loading passwords...
+          </p>
         </div>
       </div>
     );
@@ -242,15 +255,16 @@ const Passwords = () => {
           <div className="w-20 h-20 bg-gradient-to-br from-primary-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl">
             <Lock className="w-10 h-10 text-white" />
           </div>
-          
+
           <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-3">
             No Passwords Yet
           </h2>
-          
+
           <p className="text-slate-600 dark:text-slate-400 mb-8">
-            Your vault is empty. Start securing your passwords by adding your first entry.
+            Your vault is empty. Start securing your passwords by adding your
+            first entry.
           </p>
-          
+
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -260,7 +274,7 @@ const Passwords = () => {
             <Plus className="w-5 h-5" />
             Add First Password
           </motion.button>
-          
+
           {/* Info Card */}
           <div className="mt-12 bg-primary-50 dark:bg-primary-900/20 rounded-xl p-4 border border-primary-100 dark:border-primary-800">
             <div className="flex items-start gap-3 text-left">
@@ -270,8 +284,8 @@ const Passwords = () => {
                   🔒 End-to-End Encrypted
                 </h3>
                 <p className="text-xs text-slate-600 dark:text-slate-400">
-                  All passwords are encrypted with AES-256-CBC using your master password.
-                  Only you can decrypt them.
+                  All passwords are encrypted with AES-256-GCM using your master
+                  password. Only you can decrypt them.
                 </p>
               </div>
             </div>
@@ -288,37 +302,58 @@ const Passwords = () => {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-slate-800 dark:text-white mb-1 flex items-center gap-3">
-            {showOnlyFavorites ? 'Favorite Passwords' : 'All Passwords'}
+            {showOnlyFavorites ? "Favorite Passwords" : "All Passwords"}
             {isFiltering && (
               <span className="inline-flex items-center gap-2 text-sm font-normal text-primary-600 dark:text-primary-400">
-                <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <svg
+                  className="animate-spin h-4 w-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
                 </svg>
                 Filtering...
               </span>
             )}
           </h1>
           <p className="text-slate-600 dark:text-slate-400">
-            {filteredPasswords.length} {filteredPasswords.length === 1 ? 'password' : 'passwords'} 
-            {showOnlyFavorites ? ' favorite password' : ' stored securely'}
+            {filteredPasswords.length}{" "}
+            {filteredPasswords.length === 1 ? "password" : "passwords"}
+            {showOnlyFavorites ? " favorite password" : " stored securely"}
           </p>
         </div>
-        
+
         <div className="flex items-center gap-3">
           {/* Favorites Filter */}
           <button
             onClick={() => setShowOnlyFavorites(!showOnlyFavorites)}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all ${
               showOnlyFavorites
-                ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800'
-                : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800"
+                : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
             }`}
           >
-            <Star className={`w-4 h-4 ${showOnlyFavorites ? 'fill-yellow-500 text-yellow-500' : ''}`} />
+            <Star
+              className={`w-4 h-4 ${
+                showOnlyFavorites ? "fill-yellow-500 text-yellow-500" : ""
+              }`}
+            />
             Favorites
           </button>
-          
+
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -335,9 +370,9 @@ const Passwords = () => {
       {filteredPasswords.length > 0 ? (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {filteredPasswords.map((password, index) => (
-            <PasswordCard 
-              key={password.id || `password-${index}`} 
-              password={password} 
+            <PasswordCard
+              key={password.id || `password-${index}`}
+              password={password}
               onCopy={handleCopy}
               onDecrypt={handleDecrypt}
               onUpdate={handleUpdateClick}
@@ -356,12 +391,14 @@ const Passwords = () => {
           <div className="text-center">
             <Star className="w-16 h-16 text-slate-300 dark:text-slate-600 mx-auto mb-4 opacity-50" />
             <h3 className="text-lg font-semibold text-slate-600 dark:text-slate-400 mb-2">
-              {showOnlyFavorites ? 'No Favorite Passwords' : 'No Passwords Found'}
+              {showOnlyFavorites
+                ? "No Favorite Passwords"
+                : "No Passwords Found"}
             </h3>
             <p className="text-slate-500 dark:text-slate-500 mb-6">
-              {showOnlyFavorites 
-                ? 'You haven\'t marked any passwords as favorites yet.' 
-                : 'Try adjusting your search or filters.'}
+              {showOnlyFavorites
+                ? "You haven't marked any passwords as favorites yet."
+                : "Try adjusting your search or filters."}
             </p>
             {showOnlyFavorites && (
               <button
@@ -380,7 +417,9 @@ const Passwords = () => {
         <div className="flex items-center justify-between mt-8 px-4 py-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
           <div className="flex items-center gap-4">
             <span className="text-sm text-slate-600 dark:text-slate-400">
-              Showing {Math.min((currentPage - 1) * perPage + 1, totalItems)} to {Math.min(currentPage * perPage, totalItems)} of {totalItems} passwords
+              Showing {Math.min((currentPage - 1) * perPage + 1, totalItems)} to{" "}
+              {Math.min(currentPage * perPage, totalItems)} of {totalItems}{" "}
+              passwords
             </span>
             <select
               value={perPage}
@@ -422,8 +461,8 @@ const Passwords = () => {
                     onClick={() => handlePageChange(pageNum)}
                     className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
                       currentPage === pageNum
-                        ? 'bg-blue-500 text-white'
-                        : 'text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600'
+                        ? "bg-blue-500 text-white"
+                        : "text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600"
                     }`}
                   >
                     {pageNum}
@@ -477,14 +516,26 @@ const Passwords = () => {
 };
 
 // Password Card Component
-const PasswordCard = ({ password, onCopy, onDecrypt, onUpdate, onDelete, isDeleting, onToggleFavorite }) => {
+const PasswordCard = ({
+  password,
+  onCopy,
+  onDecrypt,
+  onUpdate,
+  onDelete,
+  isDeleting,
+  onToggleFavorite,
+}) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef(null);
 
   // Get category icon and gradient for this password
-  const CategoryIcon = getCategoryIcon(password.category || password.category_name);
-  const categoryGradient = getCategoryGradient(password.category || password.category_name);
+  const CategoryIcon = getCategoryIcon(
+    password.category || password.category_name
+  );
+  const categoryGradient = getCategoryGradient(
+    password.category || password.category_name
+  );
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -495,11 +546,11 @@ const PasswordCard = ({ password, onCopy, onDecrypt, onUpdate, onDelete, isDelet
     };
 
     if (showMenu) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showMenu]);
 
@@ -513,7 +564,9 @@ const PasswordCard = ({ password, onCopy, onDecrypt, onUpdate, onDelete, isDelet
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
           {/* Icon */}
-          <div className={`w-10 h-10 bg-gradient-to-br ${categoryGradient} rounded-xl flex items-center justify-center shadow-md`}>
+          <div
+            className={`w-10 h-10 bg-gradient-to-br ${categoryGradient} rounded-xl flex items-center justify-center shadow-md`}
+          >
             <CategoryIcon className="w-5 h-5 text-white" />
           </div>
           <div>
@@ -525,23 +578,33 @@ const PasswordCard = ({ password, onCopy, onDecrypt, onUpdate, onDelete, isDelet
             </p>
           </div>
         </div>
-        
+
         <div className="flex items-center gap-1">
           <button
             onClick={() => onToggleFavorite(password.id)}
             className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-all"
-            title={password.is_favorite ? 'Remove from favorites' : 'Add to favorites'}
+            title={
+              password.is_favorite
+                ? "Remove from favorites"
+                : "Add to favorites"
+            }
           >
-            <Star className={`w-4 h-4 ${password.is_favorite ? 'text-yellow-500 fill-yellow-500' : 'text-slate-400 hover:text-yellow-500'}`} />
+            <Star
+              className={`w-4 h-4 ${
+                password.is_favorite
+                  ? "text-yellow-500 fill-yellow-500"
+                  : "text-slate-400 hover:text-yellow-500"
+              }`}
+            />
           </button>
           <div className="relative" ref={menuRef}>
-            <button 
+            <button
               onClick={() => setShowMenu(!showMenu)}
               className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-all"
             >
               <MoreVertical className="w-4 h-4 text-slate-500" />
             </button>
-            
+
             {/* Dropdown Menu */}
             {showMenu && (
               <div className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 py-1 z-10">
@@ -564,7 +627,7 @@ const PasswordCard = ({ password, onCopy, onDecrypt, onUpdate, onDelete, isDelet
                   disabled={isDeleting}
                 >
                   <Trash2 className="w-4 h-4" />
-                  {isDeleting ? 'Deleting...' : 'Delete'}
+                  {isDeleting ? "Deleting..." : "Delete"}
                 </button>
               </div>
             )}
@@ -590,7 +653,7 @@ const PasswordCard = ({ password, onCopy, onDecrypt, onUpdate, onDelete, isDelet
 
       {/* Actions */}
       <div className="flex items-center gap-2">
-        <button 
+        <button
           onClick={() => onDecrypt(password)}
           className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
         >
@@ -602,8 +665,11 @@ const PasswordCard = ({ password, onCopy, onDecrypt, onUpdate, onDelete, isDelet
       {/* Metadata */}
       <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700">
         <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-          <span>{password.category_name || 'Uncategorized'}</span>
-          <span>Updated at {password.lastUpdated || password.updated_at || 'recently'}</span>
+          <span>{password.category_name || "Uncategorized"}</span>
+          <span>
+            Updated at{" "}
+            {password.lastUpdated || password.updated_at || "recently"}
+          </span>
         </div>
       </div>
     </motion.div>

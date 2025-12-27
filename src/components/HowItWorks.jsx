@@ -1,30 +1,33 @@
-import { UserPlus, Lock, Unlock } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { UserPlus, Lock, Unlock } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const steps = [
   {
-    number: '01',
+    number: "01",
     icon: UserPlus,
-    title: 'Register & Create a Master Password',
-    description: 'Sign up and create a strong master password. This is the only password you\'ll need to remember. We never store or transmit it.',
-    color: 'from-blue-500 to-cyan-500',
-    image: '👤',
+    title: "Register & Create a Master Password",
+    description:
+      "Sign up and create a strong master password. This is the only password you'll need to remember. We never store or transmit it.",
+    color: "from-blue-500 to-cyan-500",
+    image: "👤",
   },
   {
-    number: '02',
+    number: "02",
     icon: Lock,
-    title: 'Encrypt & Save Your Secrets',
-    description: 'Add your passwords and notes, and we\'ll encrypt each one with AES-256 using your master password. Each entry gets unique Argon2id salt.',
-    color: 'from-purple-500 to-pink-500',
-    image: '🔒',
+    title: "Encrypt & Save Your Secrets",
+    description:
+      "Add your passwords and notes, and we'll encrypt each one with AES-256-GCM using your master password. Each entry gets unique Argon2id salt.",
+    color: "from-purple-500 to-pink-500",
+    image: "🔒",
   },
   {
-    number: '03',
+    number: "03",
     icon: Unlock,
-    title: 'Decrypt Instantly When You Need Them',
-    description: 'Unlock your vault with your master password. Decryption happens instantly on your device - your secrets never leave unencrypted.',
-    color: 'from-green-500 to-emerald-500',
-    image: '✨',
+    title: "Decrypt Instantly When You Need Them",
+    description:
+      "Unlock your vault with your master password. Decryption happens instantly on your device - your secrets never leave unencrypted.",
+    color: "from-green-500 to-emerald-500",
+    image: "✨",
   },
 ];
 
@@ -44,7 +47,9 @@ const StepCard = ({ step, index }) => {
             </div>
 
             {/* Icon container */}
-            <div className={`relative z-10 w-32 h-32 rounded-2xl bg-gradient-to-br ${step.color} p-8 shadow-2xl`}>
+            <div
+              className={`relative z-10 w-32 h-32 rounded-2xl bg-gradient-to-br ${step.color} p-8 shadow-2xl`}
+            >
               <Icon className="w-full h-full text-white" strokeWidth={2} />
             </div>
 
@@ -69,9 +74,11 @@ const StepCard = ({ step, index }) => {
 
       {/* Connecting line (not for last item) - Static */}
       {index < steps.length - 1 && (
-        <div className="hidden md:block absolute left-16 top-32 w-0.5 h-24 bg-gradient-to-b from-gray-300 to-gray-200 dark:from-gray-700 dark:to-gray-800"
+        <div
+          className="hidden md:block absolute left-16 top-32 w-0.5 h-24 bg-gradient-to-b from-gray-300 to-gray-200 dark:from-gray-700 dark:to-gray-800"
           style={{
-            backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 4px, currentColor 4px, currentColor 8px)',
+            backgroundImage:
+              "repeating-linear-gradient(0deg, transparent, transparent 4px, currentColor 4px, currentColor 8px)",
           }}
         />
       )}
@@ -90,12 +97,13 @@ const HowItWorks = () => {
           </div>
 
           <h2 className="text-4xl sm:text-5xl font-bold mb-6 text-gray-900 dark:text-white">
-            Get Started in{' '}
+            Get Started in{" "}
             <span className="text-gradient">Three Simple Steps</span>
           </h2>
 
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Secret Manager makes security simple. Here's how it works under the hood.
+            Secret Manager makes security simple. Here's how it works under the
+            hood.
           </p>
         </div>
 
@@ -114,7 +122,8 @@ const HowItWorks = () => {
                 Ready to secure your secrets?
               </h3>
               <p className="text-gray-600 dark:text-gray-300">
-                Join thousands of users protecting their passwords and sensitive information.
+                Join thousands of users protecting their passwords and sensitive
+                information.
               </p>
             </div>
             <Link

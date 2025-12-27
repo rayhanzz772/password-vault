@@ -22,6 +22,7 @@ A beautiful, modern landing page for **Vault Password** - an advanced open-sourc
 ## ✨ Features
 
 ### 🔐 **Authentication System**
+
 - Secure user registration and login
 - JWT token management
 - Master password stored only in React state (never localStorage!)
@@ -30,30 +31,35 @@ A beautiful, modern landing page for **Vault Password** - an advanced open-sourc
 - Protected routes with authentication guards
 
 ### 🎨 **Modern Design**
+
 - Glassmorphism effects with beautiful gradients
 - Smooth animations powered by Framer Motion
 - Professional, futuristic aesthetic
 - Pixel-perfect responsive design
 
 ### 🌓 **Dark/Light Theme**
+
 - Seamless theme switching
 - LocalStorage persistence
 - System preference detection
 - Smooth transitions
 
 ### 📱 **Fully Responsive**
+
 - Mobile-first approach
 - Tablet & desktop optimized
 - Touch-friendly interactions
 - Adaptive layouts
 
 ### ⚡ **Performance Optimized**
+
 - Lightning-fast loading with Vite
 - Code splitting & lazy loading
 - Optimized bundle size
 - SEO-friendly structure
 
 ### 🎭 **Rich Animations**
+
 - Scroll-triggered effects
 - Hover interactions
 - Page transitions
@@ -63,16 +69,16 @@ A beautiful, modern landing page for **Vault Password** - an advanced open-sourc
 
 ## 🏗️ Built With
 
-| Technology | Description |
-|-----------|-------------|
-| **[React 19.1](https://react.dev)** | Latest React with modern hooks and features |
-| **[Vite 7.2](https://vitejs.dev)** | Next-generation frontend tooling |
-| **[Tailwind CSS 3](https://tailwindcss.com)** | Utility-first CSS framework |
-| **[Framer Motion](https://www.framer.com/motion/)** | Production-ready animation library |
-| **[Lucide React](https://lucide.dev)** | Beautiful, consistent icon set |
-| **[React Router](https://reactrouter.com)** | Client-side routing |
-| **[Axios](https://axios-http.com)** | HTTP client for API requests |
-| **[React Hot Toast](https://react-hot-toast.com)** | Toast notifications |
+| Technology                                          | Description                                 |
+| --------------------------------------------------- | ------------------------------------------- |
+| **[React 19.1](https://react.dev)**                 | Latest React with modern hooks and features |
+| **[Vite 7.2](https://vitejs.dev)**                  | Next-generation frontend tooling            |
+| **[Tailwind CSS 3](https://tailwindcss.com)**       | Utility-first CSS framework                 |
+| **[Framer Motion](https://www.framer.com/motion/)** | Production-ready animation library          |
+| **[Lucide React](https://lucide.dev)**              | Beautiful, consistent icon set              |
+| **[React Router](https://reactrouter.com)**         | Client-side routing                         |
+| **[Axios](https://axios-http.com)**                 | HTTP client for API requests                |
+| **[React Hot Toast](https://react-hot-toast.com)**  | Toast notifications                         |
 
 ---
 
@@ -86,17 +92,20 @@ A beautiful, modern landing page for **Vault Password** - an advanced open-sourc
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/yourusername/vault-password-frontend.git
    cd vault-password-frontend
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Start development server**
+
    ```bash
    npm run dev
    ```
@@ -148,6 +157,7 @@ vault-password-frontend/
 ## 🔐 Authentication
 
 The app includes a complete authentication system with:
+
 - User registration with email and master password
 - Secure login with JWT token management
 - Master password stored only in React state (never persisted)
@@ -161,6 +171,7 @@ The app includes a complete authentication system with:
 ## 🎨 Landing Page Sections
 
 ### 🏠 Hero Section
+
 - Eye-catching animated title with gradient effects
 - Compelling subtitle highlighting key features
 - Two prominent CTAs (Get Started & View on GitHub)
@@ -169,8 +180,10 @@ The app includes a complete authentication system with:
 - Smooth scroll indicator
 
 ### 🔒 Security Features Section
+
 6 beautifully designed feature cards:
-1. **End-to-End Encryption** - AES-256-CBC with Argon2id
+
+1. **End-to-End Encryption** - AES-256-GCM with Argon2id
 2. **Zero Knowledge Design** - Your master password never leaves your device
 3. **Password Breach Detection** - HaveIBeenPwned integration
 4. **Activity Logs** - Track all vault actions securely
@@ -178,18 +191,22 @@ The app includes a complete authentication system with:
 6. **Per-Item Salted KDF** - Unique Argon2id parameters per entry
 
 Features:
+
 - Gradient icon backgrounds
 - Hover lift animations
 - Responsive grid layout
 - Smooth scroll reveals
 
 ### 💻 How It Works Section
+
 3-step process visualization:
+
 1. **Register & Create Master Password** - One password to rule them all
 2. **Encrypt & Save Passwords** - Military-grade encryption
 3. **Decrypt Instantly** - Local, secure, fast
 
 Features:
+
 - Large numbered backgrounds
 - Animated icons with emojis
 - Connecting dotted lines
@@ -197,6 +214,7 @@ Features:
 - Bottom CTA section
 
 ### 🧭 Header
+
 - Sticky navigation with blur effect
 - Logo with gradient background
 - Responsive menu (hamburger on mobile)
@@ -204,6 +222,7 @@ Features:
 - Smooth scroll to sections
 
 ### 📄 Footer
+
 - Brand information
 - Link columns (Product, Resources, Company, Legal)
 - Social media icons
@@ -217,20 +236,17 @@ Features:
 The app includes a sophisticated theme system:
 
 ```jsx
-import { useTheme } from './contexts/ThemeContext';
+import { useTheme } from "./contexts/ThemeContext";
 
 function MyComponent() {
   const { theme, toggleTheme } = useTheme();
-  
-  return (
-    <button onClick={toggleTheme}>
-      Current theme: {theme}
-    </button>
-  );
+
+  return <button onClick={toggleTheme}>Current theme: {theme}</button>;
 }
 ```
 
 **Features:**
+
 - ✅ Light and dark modes
 - ✅ LocalStorage persistence
 - ✅ System preference detection
@@ -241,12 +257,12 @@ function MyComponent() {
 
 ## 🎯 Available Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server at `localhost:5173` |
-| `npm run build` | Build for production in `dist/` folder |
-| `npm run preview` | Preview production build locally |
-| `npm run lint` | Run ESLint to check code quality |
+| Command           | Description                                  |
+| ----------------- | -------------------------------------------- |
+| `npm run dev`     | Start development server at `localhost:5173` |
+| `npm run build`   | Build for production in `dist/` folder       |
+| `npm run preview` | Preview production build locally             |
+| `npm run lint`    | Run ESLint to check code quality             |
 
 ---
 
@@ -288,12 +304,14 @@ Update component files in `src/components/` to change text, links, and structure
 ## 📦 Dependencies
 
 ### Production
+
 - `react` - UI library
 - `react-dom` - React DOM renderer
 - `framer-motion` - Animation library
 - `lucide-react` - Icon components
 
 ### Development
+
 - `vite` - Build tool
 - `@vitejs/plugin-react` - React plugin for Vite
 - `tailwindcss` - CSS framework
@@ -364,7 +382,6 @@ Made with ❤️ by the Vault Password Team
 
 </div>
 ```
-
 
 ## React Compiler
 

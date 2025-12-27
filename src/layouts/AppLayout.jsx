@@ -78,6 +78,7 @@ const AppLayout = () => {
                   handleUnlock();
                   setIsMobileSidebarOpen(false);
                 }}
+                onNavigate={() => setIsMobileSidebarOpen(false)}
               />
               {/* Close button */}
               <button

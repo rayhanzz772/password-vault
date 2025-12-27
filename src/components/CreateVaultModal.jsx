@@ -660,7 +660,7 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
               ) : (
                 <>
                   <CheckCircle2 className="w-5 h-5" />
-                  Save Password
+                  Save
                 </>
               )}
             </button>

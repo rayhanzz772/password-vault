@@ -18,6 +18,7 @@ const Sidebar = ({
   selectedCategory,
   onCategoryChange,
   onUnlock,
+  onNavigate,
 }) => {
   const { masterPassword, lockVault } = useAuth();
   const location = useLocation();
@@ -29,8 +30,7 @@ const Sidebar = ({
   const handleLockVault = async () => {
     try {
       await lockVault();
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   const categories = [
@@ -127,6 +127,11 @@ const Sidebar = ({
               <NavLink
                 key={link.path}
                 to={link.path}
+                onClick={() => {
+                  if (onNavigate) {
+                    onNavigate();
+                  }
+                }}
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
                     isActive

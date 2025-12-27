@@ -1,9 +1,9 @@
-import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
-import { Lock, LogOut, Plus, Key, Shield, Activity } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
-import { useTheme } from '../contexts/ThemeContext';
-import toast from 'react-hot-toast';
+import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { Lock, LogOut, Plus, Key, Shield, Activity } from "lucide-react";
+import { useAuth } from "../contexts/AuthContext";
+import { useTheme } from "../contexts/ThemeContext";
+import toast from "react-hot-toast";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -12,14 +12,29 @@ const Dashboard = () => {
 
   const handleLogout = () => {
     logout();
-    toast.success('Logged out successfully');
-    navigate('/login');
+    toast.success("Logged out successfully");
+    navigate("/login");
   };
 
   const stats = [
-    { label: 'Total Passwords', value: '0', icon: Key, color: 'from-blue-500 to-cyan-500' },
-    { label: 'Strong Passwords', value: '0', icon: Shield, color: 'from-green-500 to-emerald-500' },
-    { label: 'Recent Activity', value: '0', icon: Activity, color: 'from-purple-500 to-pink-500' },
+    {
+      label: "Total Passwords",
+      value: "0",
+      icon: Key,
+      color: "from-blue-500 to-cyan-500",
+    },
+    {
+      label: "Strong Passwords",
+      value: "0",
+      icon: Shield,
+      color: "from-green-500 to-emerald-500",
+    },
+    {
+      label: "Recent Activity",
+      value: "0",
+      icon: Activity,
+      color: "from-purple-500 to-pink-500",
+    },
   ];
 
   return (
@@ -45,7 +60,7 @@ const Dashboard = () => {
                 onClick={toggleTheme}
                 className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
               >
-                {theme === 'light' ? '🌙' : '☀️'}
+                {theme === "light" ? "🌙" : "☀️"}
               </button>
 
               {/* User Email */}
@@ -78,7 +93,8 @@ const Dashboard = () => {
             Welcome to Your Vault! 🎉
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Your passwords are secure and encrypted. Start adding your first password.
+            Your passwords are secure and encrypted. Start adding your first
+            password.
           </p>
         </motion.div>
 
@@ -95,7 +111,9 @@ const Dashboard = () => {
                 className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow"
               >
                 <div className="flex items-center justify-between mb-4">
-                  <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${stat.color} p-2.5 shadow-lg`}>
+                  <div
+                    className={`w-12 h-12 rounded-lg bg-gradient-to-br ${stat.color} p-2.5 shadow-lg`}
+                  >
                     <Icon className="w-full h-full text-white" />
                   </div>
                   <span className="text-3xl font-bold text-gray-900 dark:text-white">
@@ -120,14 +138,15 @@ const Dashboard = () => {
           <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center mx-auto mb-6">
             <Lock className="w-8 h-8 text-white" />
           </div>
-          
+
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
             No Passwords Yet
           </h2>
           <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto">
-            Your vault is empty. Start securing your passwords by adding your first entry.
+            Your vault is empty. Start securing your passwords by adding your
+            first entry.
           </p>
-          
+
           <button className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-500 to-purple-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5">
             <Plus className="w-5 h-5" />
             Add First Password
@@ -150,8 +169,9 @@ const Dashboard = () => {
                 🔒 Your Vault is Secure
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                All your passwords are encrypted with AES-256-CBC using your master password. 
-                Your master password never leaves this device and is only stored in memory during your session.
+                All your passwords are encrypted with AES-256-GCM using your
+                master password. Your master password never leaves this device
+                and is only stored in memory during your session.
               </p>
             </div>
           </div>

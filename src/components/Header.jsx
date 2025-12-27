@@ -1,43 +1,17 @@
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { Moon, Sun, Menu, X } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useTheme } from "../contexts/ThemeContext";
 
 const Header = () => {
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
 
   const handleGetStarted = () => {
     navigate("/login");
   };
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-
-      // Update background blur effect
-      setIsScrolled(currentScrollY > 20);
-
-      // Hide navbar when scrolling down, show when scrolling up
-      if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        // Scrolling down & past 100px
-        setIsVisible(false);
-      } else {
-        // Scrolling up or at top
-        setIsVisible(true);
-      }
-
-      setLastScrollY(currentScrollY);
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
 
   const navLinks = [
     { name: "Features", href: "#features" },
@@ -47,152 +21,147 @@ const Header = () => {
   ];
 
   return (
-    <motion.header
-      initial={{ y: -100 }}
-      animate={{ y: isVisible ? 0 : -100 }}
-      transition={{ duration: 0.3, ease: "easeInOut" }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled
-          ? "bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg shadow-sm"
-          : "bg-transparent"
-      }`}
-    >
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-14 sm:h-16 lg:h-20">
-          {/* Logo */}
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            className="flex items-center gap-2 cursor-pointer"
-          >
-            <div className="w-7 h-7 sm:w-8 sm:h-8 lg:w-9 lg:h-9 rounded-lg flex items-center justify-center">
+    <>
+      {/* Header */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16 sm:h-18 lg:h-20">
+            {/* Logo */}
+            <Link to="/" className="flex items-center gap-2">
               <img
                 src="/logo_shield.png"
-                alt="Logo"
-                className="w-full h-full object-contain"
+                alt="SecureVault Logo"
+                className="w-8 h-8 sm:w-10 sm:h-10"
               />
-            </div>
-          </motion.div>
+              <span className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
+                Crypta
+              </span>
+            </Link>
 
-          {/* Desktop Navigation - Hidden on mobile, visible on tablet (md) and up */}
-          <div className="hidden md:flex items-center justify-center gap-6 lg:gap-10 xl:gap-16">
-            {navLinks.map((link, index) => (
-              <motion.a
-                key={link.name}
-                href={link.href}
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="text-sm lg:text-base text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 font-medium transition-colors relative group whitespace-nowrap"
-              >
-                {link.name}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-primary-500 to-purple-600 group-hover:w-full transition-all duration-300"></span>
-              </motion.a>
-            ))}
-          </div>
-
-          {/* Right side buttons */}
-          <div className="flex items-center gap-2 sm:gap-3 lg:gap-4">
-            {/* Theme Toggle */}
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={toggleTheme}
-              className="p-1.5 sm:p-2 rounded-lg bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors"
-              aria-label="Toggle theme"
-            >
-              <AnimatePresence mode="wait">
-                {theme === "light" ? (
-                  <motion.div
-                    key="moon"
-                    initial={{ rotate: -90, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: 90, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <Moon className="w-4 h-4 sm:w-5 sm:h-5" />
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="sun"
-                    initial={{ rotate: 90, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: -90, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <Sun className="w-4 h-4 sm:w-5 sm:h-5" />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.button>
-
-            {/* Sign in Button - Hidden on mobile, visible on tablet and up */}
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={handleGetStarted}
-              className="hidden md:block px-4 lg:px-6 py-2 lg:py-2.5 border-2 border-blue-500 bg-gradient-to-br from-blue-500 to-blue-600 text-white text-sm lg:text-base rounded-lg font-semibold shadow-lg hover:shadow-xl transition-shadow"
-            >
-              Sign in
-            </motion.button>
-
-            {/* Mobile Menu Button - Visible only on mobile */}
-            <motion.button
-              whileTap={{ scale: 0.9 }}
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-1.5 sm:p-2 rounded-lg bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
-              aria-label="Toggle menu"
-            >
-              {isMobileMenuOpen ? (
-                <X className="w-5 h-5 sm:w-6 sm:h-6" />
-              ) : (
-                <Menu className="w-5 h-5 sm:w-6 sm:h-6" />
-              )}
-            </motion.button>
-          </div>
-        </div>
-
-        {/* Mobile Menu - Full screen overlay on mobile */}
-        <AnimatePresence>
-          {isMobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
-              className="md:hidden overflow-hidden bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg border-t border-gray-200 dark:border-gray-700"
-            >
-              <div className="py-4 px-4 space-y-2">
-                {navLinks.map((link, index) => (
-                  <motion.a
-                    key={link.name}
-                    href={link.href}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="block px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl font-medium transition-colors text-base"
-                  >
-                    {link.name}
-                  </motion.a>
-                ))}
-                <motion.button
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: navLinks.length * 0.1 }}
-                  onClick={() => {
-                    handleGetStarted();
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className="w-full mt-4 px-4 py-3 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl font-semibold shadow-lg text-base"
+            {/* Desktop Navigation */}
+            <div className="hidden lg:flex items-center gap-8">
+              {navLinks.map((link) => (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium transition-colors"
                 >
-                  Sign in
-                </motion.button>
+                  {link.name}
+                </a>
+              ))}
+            </div>
+
+            {/* Right side - Desktop */}
+            <div className="hidden lg:flex items-center gap-3">
+              {/* Theme Toggle */}
+              <button
+                onClick={toggleTheme}
+                className="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                aria-label="Toggle theme"
+              >
+                {theme === "light" ? (
+                  <Moon className="w-5 h-5" />
+                ) : (
+                  <Sun className="w-5 h-5" />
+                )}
+              </button>
+
+              {/* Sign in Button */}
+              <button
+                onClick={handleGetStarted}
+                className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
+              >
+                Sign in
+              </button>
+            </div>
+
+            {/* Mobile - Right side */}
+            <div className="flex lg:hidden items-center gap-2">
+              {/* Theme Toggle - Mobile */}
+              <button
+                onClick={toggleTheme}
+                className="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                aria-label="Toggle theme"
+              >
+                {theme === "light" ? (
+                  <Moon className="w-5 h-5" />
+                ) : (
+                  <Sun className="w-5 h-5" />
+                )}
+              </button>
+
+              {/* Hamburger Menu Button */}
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="p-2 rounded-lg text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                aria-label="Toggle menu"
+              >
+                {isMobileMenuOpen ? (
+                  <X className="w-6 h-6" />
+                ) : (
+                  <Menu className="w-6 h-6" />
+                )}
+              </button>
+            </div>
+          </div>
+        </nav>
+      </header>
+
+      {/* Mobile Menu Overlay */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-black/20 z-40 lg:hidden"
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
+
+            {/* Menu Panel */}
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              className="fixed top-16 left-0 right-0 z-50 lg:hidden bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shadow-lg"
+            >
+              <div className="max-w-8xl mx-auto px-4 py-4">
+                {/* Navigation Links */}
+                <div className="space-y-1">
+                  {navLinks.map((link) => (
+                    <a
+                      key={link.name}
+                      href={link.href}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg font-medium transition-colors"
+                    >
+                      {link.name}
+                    </a>
+                  ))}
+                </div>
+
+                {/* Sign in Button */}
+                <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <button
+                    onClick={() => {
+                      handleGetStarted();
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
+                  >
+                    Sign in
+                  </button>
+                </div>
               </div>
             </motion.div>
-          )}
-        </AnimatePresence>
-      </nav>
-    </motion.header>
+          </>
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 

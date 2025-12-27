@@ -1,52 +1,69 @@
-import { Shield, Key, AlertTriangle, Activity, Clock, Hash, FileText, Lock } from 'lucide-react';
+import {
+  Shield,
+  Key,
+  AlertTriangle,
+  Activity,
+  Clock,
+  Hash,
+  FileText,
+  Lock,
+} from "lucide-react";
 
 const features = [
   {
     icon: Shield,
-    title: 'End-to-End Encryption',
-    description: 'AES-256-CBC with Argon2id key derivation ensures your passwords and notes are protected with military-grade encryption.',
-    color: 'from-blue-500 to-cyan-500',
+    title: "End-to-End Encryption",
+    description:
+      "AES-256-GCM with Argon2id key derivation ensures your passwords and notes are protected with military-grade encryption.",
+    color: "from-blue-500 to-cyan-500",
   },
   {
     icon: FileText,
-    title: 'Encrypted Secret Notes',
-    description: 'Store sensitive information like recovery codes, API keys, or private notes with the same encryption as your passwords.',
-    color: 'from-emerald-500 to-teal-500',
+    title: "Encrypted Secret Notes",
+    description:
+      "Store sensitive information like recovery codes, API keys, or private notes with the same encryption as your passwords.",
+    color: "from-emerald-500 to-teal-500",
   },
   {
     icon: Key,
-    title: 'Zero Knowledge Design',
-    description: 'Your master password never leaves your device. We can\'t access your data even if we wanted to.',
-    color: 'from-purple-500 to-pink-500',
+    title: "Zero Knowledge Design",
+    description:
+      "Your master password never leaves your device. We can't access your data even if we wanted to.",
+    color: "from-purple-500 to-pink-500",
   },
   {
     icon: Clock,
-    title: 'Rate Limiting & Auto Lock',
-    description: 'Prevent brute force attacks with intelligent rate limiting and automatic session locking after inactivity.',
-    color: 'from-indigo-500 to-blue-500',
+    title: "Rate Limiting & Auto Lock",
+    description:
+      "Prevent brute force attacks with intelligent rate limiting and automatic session locking after inactivity.",
+    color: "from-indigo-500 to-blue-500",
   },
   {
     icon: Hash,
-    title: 'Per-Item Salted KDF',
-    description: 'Each vault entry has unique Argon2id parameters, making it impossible to crack multiple passwords at once.',
-    color: 'from-violet-500 to-purple-500',
+    title: "Per-Item Salted KDF",
+    description:
+      "Each vault entry has unique Argon2id parameters, making it impossible to crack multiple passwords at once.",
+    color: "from-violet-500 to-purple-500",
   },
   {
     icon: Lock,
-    title: 'Unified Vault Protection',
-    description: 'Both passwords and notes share the same secure vault with a single master password for easy management.',
-    color: 'from-pink-500 to-rose-500',
+    title: "Unified Vault Protection",
+    description:
+      "Both passwords and notes share the same secure vault with a single master password for easy management.",
+    color: "from-pink-500 to-rose-500",
   },
 ];
 
 const FeatureCard = ({ feature, index }) => {
   const Icon = feature.icon;
-  
+
   return (
     <div className="group relative h-full">
       <div className="h-full p-8 rounded-2xl glass-effect hover:bg-white/20 dark:hover:bg-gray-800/40 transition-all duration-300 shadow-lg hover:shadow-2xl">
         {/* Icon with gradient background */}
-        <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${feature.color} p-3 mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+        <div
+          className={`w-14 h-14 rounded-xl bg-gradient-to-br ${feature.color} p-3 mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300`}
+        >
           <Icon className="w-full h-full text-white" strokeWidth={2} />
         </div>
 
@@ -61,7 +78,9 @@ const FeatureCard = ({ feature, index }) => {
         </p>
 
         {/* Decorative gradient line */}
-        <div className={`mt-6 h-1 w-0 group-hover:w-full bg-gradient-to-r ${feature.color} rounded-full transition-all duration-500`}></div>
+        <div
+          className={`mt-6 h-1 w-0 group-hover:w-full bg-gradient-to-r ${feature.color} rounded-full transition-all duration-500`}
+        ></div>
       </div>
     </div>
   );
@@ -79,12 +98,13 @@ const SecurityFeatures = () => {
           </div>
 
           <h2 className="text-4xl sm:text-5xl font-bold mb-6 text-gray-900 dark:text-white">
-            Enterprise-Grade{' '}
+            Enterprise-Grade{" "}
             <span className="text-gradient">Security Features</span>
           </h2>
-          
+
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            Built with the latest cryptographic standards and security best practices to keep your passwords and sensitive notes safe.
+            Built with the latest cryptographic standards and security best
+            practices to keep your passwords and sensitive notes safe.
           </p>
         </div>
 
