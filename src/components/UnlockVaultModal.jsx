@@ -11,9 +11,11 @@ import {
 import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
 import { authAPI } from "../utils/api";
+import { useNavigate } from "react-router-dom";
 
 const UnlockVaultModal = ({ isOpen, onClose }) => {
-  const { unlockVault } = useAuth();
+  const { unlockVault, logout } = useAuth();
+  const navigate = useNavigate();
   const [masterPassword, setMasterPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -114,6 +116,15 @@ const UnlockVaultModal = ({ isOpen, onClose }) => {
     const newPassword = e.target.value;
     setMasterPassword(newPassword);
     setError(""); // Clear error when user types
+  };
+
+  const handleLogout = () => {
+    // Prevent logging out while verifying
+    if (isLoading) return;
+    logout();
+    toast.success("Logged out successfully");
+    onClose();
+    navigate("/login");
   };
 
   if (!isOpen) return null;
@@ -260,11 +271,16 @@ const UnlockVaultModal = ({ isOpen, onClose }) => {
           {/* Help Text */}
           <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
             <p className="text-xs text-center text-slate-500 dark:text-slate-400">
-              Forgot your master password? re-Login to{" "}
-              <a href="/login" className="text-blue-500 hover:underline">
-                reset it
-              </a>
-              .
+              Forgot your master password? re-login to{" "}
+              <button
+                type="button"
+                onClick={handleLogout}
+                disabled={isLoading}
+                className="text-blue-500 hover:underline disabled:opacity-50"
+              >
+                try
+              </button>{" "}
+              unlocking again.
             </p>
           </div>
         </form>
