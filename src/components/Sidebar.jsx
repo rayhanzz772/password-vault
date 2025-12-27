@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useAuth } from "../contexts/AuthContext";
+import toast from "react-hot-toast";
 
 const Sidebar = ({
   onNewPassword,
@@ -30,7 +31,17 @@ const Sidebar = ({
   const handleLockVault = async () => {
     try {
       await lockVault();
-    } catch (error) {}
+      toast.success("Vault Locked Successfully", {
+        icon: "🔒",
+        duration: 1500,
+      });
+    } catch (error) {
+      // Still show success as the vault was locked locally
+      toast.success("Vault Locked Successfully", {
+        icon: "🔒",
+        duration: 1500,
+      });
+    }
   };
 
   const categories = [

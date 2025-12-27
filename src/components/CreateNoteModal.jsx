@@ -116,7 +116,7 @@ const CreateNoteModal = ({ isOpen, onClose, onSuccess, categories }) => {
         {/* Header */}
         <div className="border-b border-slate-200 dark:border-slate-700 p-4 sm:p-6 flex items-center justify-between">
           <div className="flex items-center gap-2 sm:gap-3">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary-500 to-purple-600 rounded-xl flex items-center justify-center">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
               <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
             <div>
@@ -300,7 +300,7 @@ const CreateNoteModal = ({ isOpen, onClose, onSuccess, categories }) => {
               disabled={
                 isLoading || !formData.title.trim() || !formData.note.trim()
               }
-              className="w-full sm:flex-1 px-4 py-3 bg-gradient-to-r from-primary-500 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2 order-1"
+              className="w-full sm:flex-1 px-4 py-3 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2 order-1"
             >
               {isLoading ? (
                 <>

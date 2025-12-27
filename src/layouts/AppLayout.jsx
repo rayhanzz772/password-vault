@@ -100,6 +100,7 @@ const AppLayout = () => {
           searchQuery={searchQuery}
           onSearchChange={handleSearch}
           onMenuToggle={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+          onUnlock={handleUnlock}
         />
 
         {/* Page Content */}

@@ -9,6 +9,7 @@ import {
   ChevronDown,
   Code,
   Menu,
+  LockOpen,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
@@ -17,10 +18,16 @@ import toast from "react-hot-toast";
 
 const headerBtn = "h-11 flex items-center rounded-lg transition-colors";
 
-const Topbar = ({ searchQuery = "", onSearchChange, onMenuToggle }) => {
+const Topbar = ({
+  searchQuery = "",
+  onSearchChange,
+  onMenuToggle,
+  onUnlock,
+}) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, logout, lockVault } = useAuth();
+  const { user, logout, lockVault, masterPassword } = useAuth();
+  const isVaultUnlocked = !!masterPassword;
   const { theme, toggleTheme } = useTheme();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
@@ -38,19 +45,35 @@ const Topbar = ({ searchQuery = "", onSearchChange, onMenuToggle }) => {
     navigate("/login");
   };
 
+  const handleLockVault = async () => {
+    try {
+      await lockVault();
+      toast.success("Vault Locked Successfully", {
+        icon: "🔒",
+        duration: 1500,
+      });
+    } catch (error) {
+      // Still show success as the vault was locked locally
+      toast.success("Vault Locked Successfully", {
+        icon: "🔒",
+        duration: 1500,
+      });
+    }
+  };
+
   const handleLock = async () => {
     // Lock the vault (clear master password from memory but keep token)
     try {
       await lockVault();
-      toast.success("Vault locked", {
+      toast.success("Vault Locked Successfully", {
         icon: "🔒",
-        duration: 3000,
+        duration: 1500,
       });
     } catch (error) {
       // Still show success as the vault was locked locally
-      toast.success("Vault locked", {
+      toast.success("Vault Locked Successfully", {
         icon: "🔒",
-        duration: 3000,
+        duration: 1500,
       });
     }
   };
@@ -111,9 +134,6 @@ const Topbar = ({ searchQuery = "", onSearchChange, onMenuToggle }) => {
               <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center">
                 <User className="w-4 h-4 text-white" />
               </div>
-              <span className="text-sm font-medium text-slate-700 dark:text-slate-300 hidden sm:block max-w-[100px] truncate">
-                {user?.email?.split("@")[0]}
-              </span>
               <ChevronDown
                 className={`w-4 h-4 text-slate-500 transition-transform ${
                   isUserMenuOpen ? "rotate-180" : ""
@@ -145,14 +165,24 @@ const Topbar = ({ searchQuery = "", onSearchChange, onMenuToggle }) => {
                   {/* Menu Items */}
                   <div className="py-2">
                     <button
-                      onClick={() => {
-                        handleLock();
-                        setIsUserMenuOpen(false);
-                      }}
+                      onClick={isVaultUnlocked ? handleLockVault : onUnlock}
                       className="w-full flex items-center gap-3 px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
                     >
-                      <Lock className="w-4 h-4" />
-                      <span className="text-sm font-medium">Lock Vault</span>
+                      {isVaultUnlocked ? (
+                        <>
+                          <Lock className="text-xs w-4 h-4" />
+                          <p className="text-sm font-medium text-slate-800 dark:text-white truncate">
+                            Lock Vault
+                          </p>
+                        </>
+                      ) : (
+                        <>
+                          <LockOpen className="text-xs w-4 h-4" />
+                          <p className="text-sm font-medium text-slate-800 dark:text-white truncate">
+                            Unlock Vault
+                          </p>
+                        </>
+                      )}
                     </button>
 
                     <button

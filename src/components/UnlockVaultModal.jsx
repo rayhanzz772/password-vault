@@ -62,7 +62,7 @@ const UnlockVaultModal = ({ isOpen, onClose }) => {
 
         toast.success("Vault unlocked successfully!", {
           icon: "🔓",
-          duration: 3000,
+          duration: 1500,
         });
 
         // Clear form and close modal
@@ -129,7 +129,7 @@ const UnlockVaultModal = ({ isOpen, onClose }) => {
       {/* Modal */}
       <div className="relative w-full max-w-md bg-white dark:bg-slate-800 rounded-2xl shadow-2xl overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-primary-500 to-purple-600 px-4 sm:px-6 py-6 sm:py-8 text-center">
+        <div className="bg-gradient-to-br from-blue-500 to-blue-600 px-4 sm:px-6 py-6 sm:py-8 text-center">
           <div className="flex justify-center mb-3 sm:mb-4">
             <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
               <Lock className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
@@ -241,7 +241,7 @@ const UnlockVaultModal = ({ isOpen, onClose }) => {
               disabled={
                 isLoading || !masterPassword.trim() || masterPassword.length < 8
               }
-              className="w-full sm:flex-1 px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gradient-to-r from-primary-500 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2 order-1 sm:order-2"
+              className="w-full sm:flex-1 px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2 order-1 sm:order-2"
             >
               {isLoading ? (
                 <>
@@ -260,8 +260,11 @@ const UnlockVaultModal = ({ isOpen, onClose }) => {
           {/* Help Text */}
           <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
             <p className="text-xs text-center text-slate-500 dark:text-slate-400">
-              Forgot your master password? Contact support or reset your
-              account.
+              Forgot your master password? re-Login to{" "}
+              <a href="/login" className="text-blue-500 hover:underline">
+                reset it
+              </a>
+              .
             </p>
           </div>
         </form>
