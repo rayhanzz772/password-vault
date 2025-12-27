@@ -151,7 +151,7 @@ const Header = () => {
                       handleGetStarted();
                       setIsMobileMenuOpen(false);
                     }}
-                    className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
+                    className="w-full px-4 py-3 bg-slate-900 hover:bg-blue-700 text-white font-semibold rounded-xl transition-colors"
                   >
                     Sign in
                   </button>

@@ -1,58 +1,81 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Github, Shield, Lock, Key, FileText } from "lucide-react";
+import { ArrowRight, Github, Shield, Lock, Sparkles } from "lucide-react";
 
 const Hero = () => {
   return (
-    <section className="relative pt-14 sm:pt-16">
-      {/* Orange/Blue Gradient Background Section */}
-      <div className="relative bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-600 dark:from-blue-900 dark:via-blue-800 dark:to-indigo-900 overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')]"></div>
-        </div>
+    <section className="relative pt-14 sm:pt-16 overflow-hidden">
+      {/* Gradient Background with Animation */}
+      <div className="absolute inset-0 bg-white dark:bg-slate-950">
+        {/* Grid Pattern Overlay */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+      </div>
 
-        {/* Decorative Circles */}
-        <div className="absolute top-20 right-10 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-10 left-10 w-96 h-96 bg-white/5 rounded-full blur-3xl"></div>
+      {/* Hero Content */}
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 lg:py-32">
+        <div className="text-center">
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full mb-6 sm:mb-8">
+            <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600 dark:text-blue-400" />
+            <span className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
+              Zero-Knowledge Encryption
+            </span>
+          </div>
 
-        {/* Hero Content */}
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-28">
-          <div className="max-w-3xl">
-            {/* Main Title */}
-            <h1 className="text-5xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
-              Secure your secrets,{" "}
-              <span className="text-blue-200">everywhere</span>
-            </h1>
+          {/* Main Title */}
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 sm:mb-8">
+            <span className="block text-slate-900 dark:text-white mb-2">
+              Build and secure
+            </span>
+            <span className="block animated-text dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
+              your digital vault.
+            </span>
+          </h1>
 
-            {/* Subtitle */}
-            <p className="text-lg sm:text-xl text-blue-100 mb-8 max-w-2xl">
-              An advanced open-source secret manager for passwords and encrypted
-              notes. Built with Argon2id encryption and zero-knowledge
-              architecture.
-            </p>
+          {/* Subtitle */}
+          <p className="text-base sm:text-lg lg:text-xl text-slate-600 dark:text-slate-400 mb-8 sm:mb-10 max-w-3xl mx-auto px-4">
+            Crypta provides military-grade encryption and developer-friendly
+            tools to build, scale, and secure your passwords and sensitive data
+            with confidence.
+          </p>
 
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-              <Link
-                to="/register"
-                className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 bg-white text-blue-600 font-semibold rounded-lg hover:bg-gray-100 transition-colors shadow-lg"
-              >
-                Start for free
-              </Link>
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-12 sm:mb-16">
+            <Link
+              to="/login"
+              className="group relative inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-semibold rounded-xl hover:bg-slate-800 dark:hover:bg-slate-100 transition-all shadow-lg hover:shadow-xl w-full sm:w-auto"
+            >
+              <span>Start Securing</span>
+              <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+            </Link>
 
-              <a
-                href="https://github.com/rayhanzz772/password-vault-backend"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 border-2 border-white/30 text-white font-semibold rounded-lg hover:bg-white/10 transition-colors gap-2"
-              >
-                <Github className="w-5 h-5" />
-                View on GitHub
-              </a>
-            </div>
+            <a
+              href="https://github.com/rayhanzz772/password-vault-backend"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold rounded-xl hover:border-slate-300 dark:hover:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-900 transition-all gap-2 w-full sm:w-auto"
+            >
+              <Github className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span>View on GitHub</span>
+            </a>
           </div>
         </div>
       </div>
+
+      {/* Add custom animation */}
+      <style jsx>{`
+        @keyframes float {
+          0%,
+          100% {
+            transform: translateY(0px);
+          }
+          50% {
+            transform: translateY(-20px);
+          }
+        }
+        .animate-float {
+          animation: float 3s ease-in-out infinite;
+        }
+      `}</style>
     </section>
   );
 };
