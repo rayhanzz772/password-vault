@@ -99,7 +99,7 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] px-4 py-6 sm:py-12">
       {/* Card */}
-      <div className="bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl shadow-xl sm:shadow-2xl p-6 sm:p-8 md:p-12 border border-gray-200 dark:border-gray-700 w-full max-w-[440px]">
+      <div className="bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl shadow-lg sm:shadow-lg p-6 sm:p-8 md:p-12 border border-gray-200 dark:border-gray-700 w-full max-w-[440px]">
         <div className="relative w-full">
           {/* Back to Home - Top of Card */}
           <div className="mb-4 sm:mb-6">
@@ -233,7 +233,7 @@ const Login = () => {
           {/* Security Notice */}
           <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-primary-50 dark:bg-primary-900/20 rounded-lg sm:rounded-xl">
             <p className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400 text-center">
-              🔒 Your master password is never stored on our servers and only
+              Your master password is never stored on our servers and only
               exists in your browser's memory during your session.
             </p>
           </div>

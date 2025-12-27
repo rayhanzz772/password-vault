@@ -23,7 +23,7 @@ const PasswordWarningModal = ({ isOpen, onClose, onConfirm }) => {
 
         {/* Title */}
         <h2 className="text-xl sm:text-2xl font-bold text-center text-gray-900 dark:text-white mb-3 sm:mb-4">
-          ⚠️ Important Warning!
+          Important Warning!
         </h2>
 
         {/* Content */}
@@ -90,7 +90,7 @@ const PasswordWarningModal = ({ isOpen, onClose, onConfirm }) => {
           </button>
           <button
             onClick={onConfirm}
-            className="flex-1 px-4 py-2.5 sm:py-3 bg-gradient-to-r from-primary-600 to-purple-600 text-white rounded-lg sm:rounded-xl hover:from-primary-700 hover:to-purple-700 transition-all font-medium shadow-lg shadow-primary-500/30 text-sm sm:text-base"
+            className="flex-1 px-4 py-2.5 sm:py-3 bg-slate-900 text-white rounded-lg sm:rounded-xl hover:from-primary-700 hover:to-purple-700 transition-all font-medium text-sm sm:text-base"
           >
             I Understand
           </button>

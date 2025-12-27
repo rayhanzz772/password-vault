@@ -136,7 +136,7 @@ const Register = () => {
         {/* Card */}
         <div className="w-full max-w-[440px] sm:max-w-[480px]">
           {/* Card */}
-          <div className="bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl shadow-xl sm:shadow-2xl p-6 sm:p-8 md:p-10 border border-gray-200 dark:border-gray-700">
+          <div className="bg-white dark:bg-gray-900 rounded-xl sm:rounded-xl shadow-lg sm:shadow-lg p-6 sm:p-8 md:p-10 border border-gray-200 dark:border-gray-700">
             <div className="mb-4 sm:mb-6">
               <Link
                 to="/"
