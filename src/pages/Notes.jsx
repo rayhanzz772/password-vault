@@ -419,124 +419,131 @@ const Notes = () => {
           {/* Header */}
           <div className="mb-8">
             {/* Title */}
-            <div className="mb-4">
-              <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-white mb-2 flex items-center gap-3">
-                <FileText className="w-6 h-6 sm:w-8 sm:h-8" />
-                {showOnlyFavorites ? "Favorite Notes" : "Secret Notes"}
-              </h1>
-              <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400">
-                {showOnlyFavorites
-                  ? "Your favorite encrypted notes"
-                  : "Securely store your private notes and thoughts"}
-              </p>
-            </div>
-
-            {/* Controls: Favorites, View Mode, Filters, and New Note Button */}
-            <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-3 mb-6">
-              {/* Left side: Favorites, View Mode, and Filters */}
-              <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-                {/* Favorites Filter */}
-                <button
-                  onClick={() => setShowOnlyFavorites(!showOnlyFavorites)}
-                  className={`flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-sm font-medium transition-all ${
-                    showOnlyFavorites
-                      ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800"
-                      : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700"
-                  }`}
-                >
-                  <Star
-                    className={`w-4 h-4 ${
-                      showOnlyFavorites ? "fill-yellow-500 text-yellow-500" : ""
-                    }`}
-                  />
-                  <span className="hidden sm:inline">Favorites</span>
-                </button>
-
-                {/* View Mode Toggle - Hidden on mobile */}
-                <div className="hidden md:flex gap-1 sm:gap-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-1">
-                  <button
-                    onClick={() => setViewMode("grid")}
-                    className={`p-2 rounded-lg transition-all ${
-                      viewMode === "grid"
-                        ? "bg-primary-500 text-white"
-                        : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
-                    }`}
-                    title="Grid View"
-                  >
-                    <Grid className="w-4 h-4 sm:w-5 sm:h-5" />
-                  </button>
-                  <button
-                    onClick={() => setViewMode("list")}
-                    className={`p-2 rounded-lg transition-all ${
-                      viewMode === "list"
-                        ? "bg-primary-500 text-white"
-                        : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
-                    }`}
-                    title="List View"
-                  >
-                    <List className="w-4 h-4 sm:w-5 sm:h-5" />
-                  </button>
+            {/* Controls: Only show when there are notes OR when filters are active */}
+            {notes.length > 0 && (
+              <>
+                <div className="mb-4">
+                  <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-white mb-2 flex items-center gap-3">
+                    <FileText className="w-6 h-6 sm:w-8 sm:h-8" />
+                    {showOnlyFavorites ? "Favorite Notes" : "Secret Notes"}
+                  </h1>
+                  <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400">
+                    {showOnlyFavorites
+                      ? "Your favorite encrypted notes"
+                      : "Securely store your private notes and thoughts"}
+                  </p>
                 </div>
 
-                {/* Filter Toggle */}
-                <button
-                  onClick={() => setShowFilters(!showFilters)}
-                  className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-all text-slate-700 dark:text-slate-300 text-sm font-medium"
-                >
-                  <Filter className="w-4 h-4 sm:w-5 sm:h-5" />
-                  <span className="hidden sm:inline">Categories</span>
-                </button>
-              </div>
-
-              {/* Right side: New Note Button */}
-              <button
-                onClick={() => setShowCreateModal(true)}
-                className="px-4 sm:px-6 py-2 sm:py-2.5 bg-gradient-to-r from-primary-500 to-purple-600 text-white rounded-xl text-sm font-semibold hover:shadow-lg hover:scale-105 transition-all flex items-center gap-2"
-              >
-                <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
-                <span>New Note</span>
-              </button>
-            </div>
-
-            {/* Category Filters */}
-            {showFilters && (
-              <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 mb-6">
-                <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
-                  Categories
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {categoryFilters.map((category) => {
-                    const Icon = getCategoryIcon(category.name);
-                    const gradient = getCategoryGradient(category.name);
-                    const count = getCategoryCount(category.id);
-                    const isSelected = selectedCategory === category.id;
-
-                    return (
-                      <button
-                        key={category.id}
-                        onClick={() => setSelectedCategory(category.id)}
-                        className={`px-4 py-2 rounded-xl font-medium transition-all flex items-center gap-2 ${
-                          isSelected
-                            ? `bg-gradient-to-r ${gradient} text-white shadow-lg`
-                            : "bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600"
+                {/* Controls: Favorites, View Mode, Filters, and New Note Button */}
+                <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-3 mb-6">
+                  {/* Left side: Favorites, View Mode, and Filters */}
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                    {/* Favorites Filter */}
+                    <button
+                      onClick={() => setShowOnlyFavorites(!showOnlyFavorites)}
+                      className={`flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-sm font-medium transition-all ${
+                        showOnlyFavorites
+                          ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800"
+                          : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700"
+                      }`}
+                    >
+                      <Star
+                        className={`w-4 h-4 ${
+                          showOnlyFavorites
+                            ? "fill-yellow-500 text-yellow-500"
+                            : ""
                         }`}
+                      />
+                      <span className="hidden sm:inline">Favorites</span>
+                    </button>
+
+                    {/* View Mode Toggle - Hidden on mobile */}
+                    <div className="hidden md:flex gap-1 sm:gap-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-1">
+                      <button
+                        onClick={() => setViewMode("grid")}
+                        className={`p-2 rounded-lg transition-all ${
+                          viewMode === "grid"
+                            ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white"
+                            : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
+                        }`}
+                        title="Grid View"
                       >
-                        <Icon className="w-4 h-4" />
-                        {category.name}
-                        <span
-                          className={`px-2 py-0.5 rounded-full text-xs ${
-                            isSelected
-                              ? "bg-white/20"
-                              : "bg-slate-200 dark:bg-slate-600"
-                          }`}
-                        >
-                          {count}
-                        </span>
+                        <Grid className="w-4 h-4 sm:w-5 sm:h-5" />
                       </button>
-                    );
-                  })}
+                      <button
+                        onClick={() => setViewMode("list")}
+                        className={`p-2 rounded-lg transition-all ${
+                          viewMode === "list"
+                            ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white"
+                            : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
+                        }`}
+                        title="List View"
+                      >
+                        <List className="w-4 h-4 sm:w-5 sm:h-5" />
+                      </button>
+                    </div>
+
+                    {/* Filter Toggle */}
+                    <button
+                      onClick={() => setShowFilters(!showFilters)}
+                      className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-all text-slate-700 dark:text-slate-300 text-sm font-medium"
+                    >
+                      <Filter className="w-4 h-4 sm:w-5 sm:h-5" />
+                      <span className="hidden sm:inline">Categories</span>
+                    </button>
+                  </div>
+
+                  {/* Right side: New Note Button */}
+                  <button
+                    onClick={() => setShowCreateModal(true)}
+                    className="px-4 sm:px-6 py-2 sm:py-2.5 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl text-sm font-semibold hover:shadow-lg hover:scale-105 transition-all flex items-center gap-2"
+                  >
+                    <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span>New Note</span>
+                  </button>
                 </div>
-              </div>
+
+                {/* Category Filters */}
+                {showFilters && (
+                  <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 mb-6">
+                    <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
+                      Categories
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {categoryFilters.map((category) => {
+                        const Icon = getCategoryIcon(category.name);
+                        const gradient = getCategoryGradient(category.name);
+                        const count = getCategoryCount(category.id);
+                        const isSelected = selectedCategory === category.id;
+
+                        return (
+                          <button
+                            key={category.id}
+                            onClick={() => setSelectedCategory(category.id)}
+                            className={`px-4 py-2 rounded-xl font-medium transition-all flex items-center gap-2 ${
+                              isSelected
+                                ? `bg-gradient-to-r ${gradient} text-white shadow-lg`
+                                : "bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600"
+                            }`}
+                          >
+                            <Icon className="w-4 h-4" />
+                            {category.name}
+                            <span
+                              className={`px-2 py-0.5 rounded-full text-xs ${
+                                isSelected
+                                  ? "bg-white/20"
+                                  : "bg-slate-200 dark:bg-slate-600"
+                              }`}
+                            >
+                              {count}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </>
             )}
           </div>
 
@@ -567,7 +574,7 @@ const Notes = () => {
                 {!searchQuery && selectedCategory === "all" && (
                   <button
                     onClick={() => setShowCreateModal(true)}
-                    className="px-6 py-3 bg-gradient-to-r from-primary-500 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all inline-flex items-center gap-2"
+                    className="px-6 py-3 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all inline-flex items-center gap-2"
                   >
                     <Plus className="w-5 h-5" />
                     Create Your First Note

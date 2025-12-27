@@ -304,7 +304,7 @@ const Passwords = () => {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800 dark:text-white mb-1 flex items-center gap-3">
+          <h1 className="text-xl font-bold text-slate-800 dark:text-white mb-1 flex items-center gap-3">
             {showOnlyFavorites ? "Favorite Passwords" : "All Passwords"}
             {isFiltering && (
               <span className="inline-flex items-center gap-2 text-sm font-normal text-primary-600 dark:text-primary-400">
@@ -332,7 +332,7 @@ const Passwords = () => {
               </span>
             )}
           </h1>
-          <p className="text-slate-600 dark:text-slate-400">
+          <p className="text-sm text-slate-600 dark:text-slate-400">
             {filteredPasswords.length}{" "}
             {filteredPasswords.length === 1 ? "password" : "passwords"}
             {showOnlyFavorites ? " favorite password" : " stored securely"}
