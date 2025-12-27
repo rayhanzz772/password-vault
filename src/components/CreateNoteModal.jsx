@@ -111,19 +111,19 @@ const CreateNoteModal = ({ isOpen, onClose, onSuccess, categories }) => {
   const availableCategories = categories.filter((cat) => cat.id !== "all");
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm overflow-y-auto">
-      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-3xl my-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/50 backdrop-blur-sm overflow-y-auto">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-3xl my-4 sm:my-8">
         {/* Header */}
-        <div className="border-b border-slate-200 dark:border-slate-700 p-6 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-purple-600 rounded-xl flex items-center justify-center">
-              <FileText className="w-5 h-5 text-white" />
+        <div className="border-b border-slate-200 dark:border-slate-700 p-4 sm:p-6 flex items-center justify-between">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary-500 to-purple-600 rounded-xl flex items-center justify-center">
+              <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-slate-800 dark:text-white">
+              <h2 className="text-lg sm:text-xl font-bold text-slate-800 dark:text-white">
                 Create New Note
               </h2>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
                 Create an encrypted note
               </p>
             </div>
@@ -140,12 +140,12 @@ const CreateNoteModal = ({ isOpen, onClose, onSuccess, categories }) => {
         {/* Form */}
         <form
           onSubmit={handleSubmit}
-          className="p-6 space-y-6 max-h-[calc(100vh-12rem)] overflow-y-auto"
+          className="p-4 sm:p-6 space-y-4 sm:space-y-6 max-h-[calc(100vh-8rem)] sm:max-h-[calc(100vh-12rem)] overflow-y-auto"
         >
           {/* Security Notice */}
-          <div className="flex items-start gap-3 p-4 bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800 rounded-xl">
-            <Lock className="w-5 h-5 text-primary-600 dark:text-primary-400 flex-shrink-0 mt-0.5" />
-            <div className="text-sm text-primary-800 dark:text-primary-200">
+          <div className="flex items-start gap-2 sm:gap-3 p-3 sm:p-4 bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800 rounded-xl">
+            <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-primary-600 dark:text-primary-400 flex-shrink-0 mt-0.5" />
+            <div className="text-xs sm:text-sm text-primary-800 dark:text-primary-200">
               <p className="font-semibold mb-1">End-to-End Encrypted</p>
               <p className="text-primary-700 dark:text-primary-300">
                 Your note will be encrypted with your master password before
@@ -156,7 +156,7 @@ const CreateNoteModal = ({ isOpen, onClose, onSuccess, categories }) => {
 
           {/* Title */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
               Title <span className="text-red-500">*</span>
             </label>
             <input
@@ -168,7 +168,7 @@ const CreateNoteModal = ({ isOpen, onClose, onSuccess, categories }) => {
               }}
               placeholder="Enter note title..."
               maxLength={200}
-              className={`w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border-2 ${
+              className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-slate-50 dark:bg-slate-900 border-2 ${
                 errors.title
                   ? "border-red-500 focus:ring-red-500"
                   : "border-slate-200 dark:border-slate-700 focus:ring-primary-500"
@@ -176,8 +176,8 @@ const CreateNoteModal = ({ isOpen, onClose, onSuccess, categories }) => {
               disabled={isLoading}
             />
             {errors.title && (
-              <p className="mt-2 text-sm text-red-600 dark:text-red-400 flex items-center gap-1">
-                <AlertCircle className="w-4 h-4" />
+              <p className="mt-2 text-xs sm:text-sm text-red-600 dark:text-red-400 flex items-center gap-1">
+                <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4" />
                 {errors.title}
               </p>
             )}
@@ -188,10 +188,10 @@ const CreateNoteModal = ({ isOpen, onClose, onSuccess, categories }) => {
 
           {/* Category */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
               Category <span className="text-red-500">*</span>
             </label>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
               {availableCategories.map((category) => {
                 const Icon = getCategoryIcon(category.name);
                 const isSelected = formData.category === category.id;
@@ -204,21 +204,21 @@ const CreateNoteModal = ({ isOpen, onClose, onSuccess, categories }) => {
                       setFormData({ ...formData, category: category.id })
                     }
                     disabled={isLoading}
-                    className={`p-3 rounded-xl border-2 transition-all flex items-center gap-2 ${
+                    className={`p-2.5 sm:p-3 rounded-xl border-2 transition-all flex items-center gap-2 ${
                       isSelected
                         ? "border-primary-500 bg-primary-50 dark:bg-primary-900/20"
                         : "border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600"
                     } disabled:opacity-50`}
                   >
                     <Icon
-                      className={`w-5 h-5 ${
+                      className={`w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 ${
                         isSelected
                           ? "text-primary-600 dark:text-primary-400"
                           : "text-slate-500"
                       }`}
                     />
                     <span
-                      className={`text-sm font-medium ${
+                      className={`text-xs sm:text-sm font-medium truncate ${
                         isSelected
                           ? "text-primary-700 dark:text-primary-300"
                           : "text-slate-700 dark:text-slate-300"
@@ -231,8 +231,8 @@ const CreateNoteModal = ({ isOpen, onClose, onSuccess, categories }) => {
               })}
             </div>
             {errors.category && (
-              <p className="mt-2 text-sm text-red-600 dark:text-red-400 flex items-center gap-1">
-                <AlertCircle className="w-4 h-4" />
+              <p className="mt-2 text-xs sm:text-sm text-red-600 dark:text-red-400 flex items-center gap-1">
+                <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4" />
                 {errors.category}
               </p>
             )}
@@ -240,7 +240,7 @@ const CreateNoteModal = ({ isOpen, onClose, onSuccess, categories }) => {
 
           {/* Note Content */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
               Note Content <span className="text-red-500">*</span>
             </label>
             <textarea
@@ -250,18 +250,18 @@ const CreateNoteModal = ({ isOpen, onClose, onSuccess, categories }) => {
                 setErrors({ ...errors, note: "" });
               }}
               placeholder="Write your secret note here..."
-              rows={12}
+              rows={8}
               maxLength={50000}
-              className={`w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border-2 ${
+              className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-slate-50 dark:bg-slate-900 border-2 ${
                 errors.note
                   ? "border-red-500 focus:ring-red-500"
                   : "border-slate-200 dark:border-slate-700 focus:ring-primary-500"
-              } rounded-xl focus:ring-2 focus:border-transparent transition-all text-slate-800 dark:text-white outline-none resize-none font-mono text-sm`}
+              } rounded-xl focus:ring-2 focus:border-transparent transition-all text-slate-800 dark:text-white outline-none resize-none font-mono`}
               disabled={isLoading}
             />
             {errors.note && (
-              <p className="mt-2 text-sm text-red-600 dark:text-red-400 flex items-center gap-1">
-                <AlertCircle className="w-4 h-4" />
+              <p className="mt-2 text-xs sm:text-sm text-red-600 dark:text-red-400 flex items-center gap-1">
+                <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4" />
                 {errors.note}
               </p>
             )}
@@ -272,19 +272,19 @@ const CreateNoteModal = ({ isOpen, onClose, onSuccess, categories }) => {
 
           {/* Tags */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
               Tags <span className="text-slate-500">(optional)</span>
             </label>
             <div className="relative">
-              <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+              <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-slate-400" />
               <input
                 type="text"
                 value={formData.tags}
                 onChange={(e) =>
                   setFormData({ ...formData, tags: e.target.value })
                 }
-                placeholder="work, important, ideas (comma-separated)"
-                className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-slate-800 dark:text-white outline-none"
+                placeholder="work, important, ideas"
+                className="w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2.5 sm:py-3 text-sm sm:text-base bg-slate-50 dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-slate-800 dark:text-white outline-none"
                 disabled={isLoading}
               />
             </div>
@@ -294,21 +294,13 @@ const CreateNoteModal = ({ isOpen, onClose, onSuccess, categories }) => {
           </div>
 
           {/* Buttons */}
-          <div className="flex gap-3 pt-4 border-t border-slate-200 dark:border-slate-700">
-            <button
-              type="button"
-              onClick={handleClose}
-              disabled={isLoading}
-              className="flex-1 px-4 py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-semibold hover:bg-slate-200 dark:hover:bg-slate-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Cancel
-            </button>
+          <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-slate-200 dark:border-slate-700">
             <button
               type="submit"
               disabled={
                 isLoading || !formData.title.trim() || !formData.note.trim()
               }
-              className="flex-1 px-4 py-3 bg-gradient-to-r from-primary-500 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2"
+              className="w-full sm:flex-1 px-4 py-3 bg-gradient-to-r from-primary-500 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2 order-1"
             >
               {isLoading ? (
                 <>
@@ -321,6 +313,14 @@ const CreateNoteModal = ({ isOpen, onClose, onSuccess, categories }) => {
                   Create Note
                 </>
               )}
+            </button>
+            <button
+              type="button"
+              onClick={handleClose}
+              disabled={isLoading}
+              className="w-full sm:flex-1 px-4 py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-semibold hover:bg-slate-200 dark:hover:bg-slate-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed order-2"
+            >
+              Cancel
             </button>
           </div>
         </form>

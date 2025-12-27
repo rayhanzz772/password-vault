@@ -150,7 +150,7 @@ const UpdateVaultModal = ({ isOpen, onClose, vaultItem, onSuccess }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4">
       {/* Backdrop */}
       <div
         onClick={onClose}
@@ -158,36 +158,38 @@ const UpdateVaultModal = ({ isOpen, onClose, vaultItem, onSuccess }) => {
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-md bg-white dark:bg-slate-800 rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+      <div className="relative w-full max-w-md bg-white dark:bg-slate-800 rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col my-4 sm:my-8">
         {/* Header */}
         <div
-          className={`bg-gradient-to-r ${categoryGradient} px-6 py-4 flex-shrink-0`}
+          className={`bg-gradient-to-r ${categoryGradient} px-4 sm:px-6 py-3.5 sm:py-4 flex-shrink-0`}
         >
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                <CategoryIcon className="w-5 h-5 text-white" />
+            <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center flex-shrink-0">
+                <CategoryIcon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </div>
-              <h2 className="text-xl font-bold text-white">Update Password</h2>
+              <h2 className="text-base sm:text-xl font-bold text-white truncate">
+                Update Password
+              </h2>
             </div>
             <button
               onClick={onClose}
-              className="text-white/80 hover:text-white transition-colors"
+              className="text-white/80 hover:text-white transition-colors flex-shrink-0 ml-2"
             >
-              <X className="w-6 h-6" />
+              <X className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
           </div>
         </div>{" "}
         {/* Form - Scrollable */}
         <form
           onSubmit={handleSubmit}
-          className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent"
+          className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3 sm:space-y-4 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent"
         >
           {/* Name */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-              <div className="flex items-center gap-2">
-                <Tag className="w-4 h-4" />
+            <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <Tag className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 Name *
               </div>
             </label>
@@ -197,16 +199,16 @@ const UpdateVaultModal = ({ isOpen, onClose, vaultItem, onSuccess }) => {
               value={formData.name}
               onChange={handleChange}
               placeholder="e.g., Gmail Account"
-              className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-slate-800 dark:text-white"
+              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-slate-800 dark:text-white"
               required
             />
           </div>
 
           {/* Username */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-              <div className="flex items-center gap-2">
-                <User className="w-4 h-4" />
+            <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <User className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 Username / Email *
               </div>
             </label>
@@ -216,16 +218,16 @@ const UpdateVaultModal = ({ isOpen, onClose, vaultItem, onSuccess }) => {
               value={formData.username}
               onChange={handleChange}
               placeholder="e.g., user@example.com"
-              className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-slate-800 dark:text-white"
+              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-slate-800 dark:text-white"
               required
             />
           </div>
 
           {/* Password */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-              <div className="flex items-center gap-2">
-                <KeyRound className="w-4 h-4" />
+            <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <KeyRound className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 Password (leave empty to keep current)
               </div>
             </label>
@@ -236,27 +238,27 @@ const UpdateVaultModal = ({ isOpen, onClose, vaultItem, onSuccess }) => {
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Leave empty to keep current password"
-                className="w-full px-4 py-2.5 pr-24 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-slate-800 dark:text-white"
+                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-20 sm:pr-24 text-sm sm:text-base bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-slate-800 dark:text-white"
               />
-              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+              <div className="absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 flex items-center gap-0.5 sm:gap-1">
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="p-1.5 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                  className="p-1.5 sm:p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
                 >
                   {showPassword ? (
-                    <EyeOff className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+                    <EyeOff className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-600 dark:text-slate-400" />
                   ) : (
-                    <Eye className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+                    <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-600 dark:text-slate-400" />
                   )}
                 </button>
                 <button
                   type="button"
                   onClick={generatePassword}
-                  className="p-1.5 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                  className="p-1.5 sm:p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
                   title="Generate password"
                 >
-                  <RefreshCw className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+                  <RefreshCw className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-600 dark:text-slate-400" />
                 </button>
               </div>
             </div>
@@ -267,9 +269,9 @@ const UpdateVaultModal = ({ isOpen, onClose, vaultItem, onSuccess }) => {
 
           {/* Category */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-              <div className="flex items-center gap-2">
-                <Tag className="w-4 h-4" />
+            <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <Tag className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 Category
               </div>
             </label>
@@ -277,7 +279,7 @@ const UpdateVaultModal = ({ isOpen, onClose, vaultItem, onSuccess }) => {
               name="category_name"
               value={formData.category_name}
               onChange={handleChange}
-              className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-slate-800 dark:text-white"
+              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-slate-800 dark:text-white"
             >
               <option value="Work">Work</option>
               <option value="Game">Game</option>
@@ -288,9 +290,9 @@ const UpdateVaultModal = ({ isOpen, onClose, vaultItem, onSuccess }) => {
 
           {/* Note */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-              <div className="flex items-center gap-2">
-                <FileText className="w-4 h-4" />
+            <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 Note (Optional)
               </div>
             </label>
@@ -300,15 +302,17 @@ const UpdateVaultModal = ({ isOpen, onClose, vaultItem, onSuccess }) => {
               onChange={handleChange}
               placeholder="Add any additional notes..."
               rows={3}
-              className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-slate-800 dark:text-white resize-none"
+              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-slate-800 dark:text-white resize-none"
             />
           </div>
 
           {/* Master Password Warning */}
-          <div className="flex items-start gap-3 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl">
-            <Lock className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
-            <div className="text-sm text-amber-800 dark:text-amber-200">
-              <p className="font-semibold mb-1">Master Password Required</p>
+          <div className="flex items-start gap-2 sm:gap-3 p-2.5 sm:p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl">
+            <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+            <div className="text-xs sm:text-sm text-amber-800 dark:text-amber-200">
+              <p className="font-semibold mb-0.5 sm:mb-1">
+                Master Password Required
+              </p>
               <p className="text-amber-700 dark:text-amber-300">
                 Your master password will be used to re-encrypt this password
                 entry.
@@ -317,22 +321,22 @@ const UpdateVaultModal = ({ isOpen, onClose, vaultItem, onSuccess }) => {
           </div>
         </form>
         {/* Buttons - Fixed at bottom */}
-        <div className="flex gap-3 p-6 pt-4 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 flex-shrink-0">
-          <button
-            type="button"
-            onClick={onClose}
-            disabled={isLoading}
-            className="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-semibold hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors disabled:opacity-50"
-          >
-            Cancel
-          </button>
+        <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 p-4 sm:p-6 pt-3 sm:pt-4 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 flex-shrink-0">
           <button
             type="submit"
             onClick={handleSubmit}
             disabled={isLoading}
-            className="flex-1 px-4 py-2.5 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="order-1 sm:order-2 flex-1 px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? "Updating..." : "Update Password"}
+          </button>
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={isLoading}
+            className="order-2 sm:order-1 flex-1 px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-semibold hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors disabled:opacity-50"
+          >
+            Cancel
           </button>
         </div>
       </div>

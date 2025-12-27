@@ -56,6 +56,9 @@ const Passwords = () => {
     setCurrentPage(1);
   }, [searchQuery, selectedCategory, showOnlyFavorites]);
 
+  const baseBtn =
+    "flex items-center gap-2 h-[44px] px-4 rounded-xl transition-all";
+
   const fetchPasswords = async (isInitialLoad = false) => {
     try {
       // Only show full loading on initial load, use filtering state for filter changes
@@ -221,8 +224,8 @@ const Passwords = () => {
           </p>
           <div className="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl">
             <p className="text-sm text-amber-800 dark:text-amber-200">
-              💡 Tip: Click the "Unlock Vault" button in the sidebar to enter
-              your master password.
+              Tip: Click the "Unlock Vault" button in the sidebar to enter your
+              master password.
             </p>
           </div>
         </motion.div>
@@ -281,7 +284,7 @@ const Passwords = () => {
               <Lock className="w-5 h-5 text-primary-600 dark:text-primary-400 flex-shrink-0 mt-0.5" />
               <div>
                 <h3 className="text-sm font-semibold text-slate-800 dark:text-white mb-1">
-                  🔒 End-to-End Encrypted
+                  End-to-End Encrypted
                 </h3>
                 <p className="text-xs text-slate-600 dark:text-slate-400">
                   All passwords are encrypted with AES-256-GCM using your master
@@ -340,25 +343,25 @@ const Passwords = () => {
           {/* Favorites Filter */}
           <button
             onClick={() => setShowOnlyFavorites(!showOnlyFavorites)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all ${
+            className={`${baseBtn} font-semibold ${
               showOnlyFavorites
                 ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800"
                 : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
             }`}
           >
             <Star
-              className={`w-4 h-4 ${
+              className={`w-5 h-5 ${
                 showOnlyFavorites ? "fill-yellow-500 text-yellow-500" : ""
               }`}
             />
-            Favorites
+            <span className="hidden sm:inline">Favorites</span>
           </button>
 
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={openCreateModal}
-            className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
+            className={`${baseBtn} bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold shadow-lg hover:shadow-xl`}
           >
             <Plus className="w-5 h-5" />
             <span className="hidden sm:inline">Add Password</span>
@@ -439,7 +442,7 @@ const Passwords = () => {
               disabled={currentPage === 1}
               className="px-3 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              <ChevronLeft className="w-4 h-4" />
+              <ChevronLeft className="w-5 h-5" />
             </button>
 
             <div className="flex items-center gap-1">

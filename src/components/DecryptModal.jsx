@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from "react";
 import {
   X,
   Eye,
@@ -8,22 +8,22 @@ import {
   Unlock,
   Clock,
   AlertCircle,
-} from 'lucide-react';
-import toast from 'react-hot-toast';
-import { vaultAPI } from '../utils/api';
-import { useAuth } from '../contexts/AuthContext';
-import { getCategoryIcon, getCategoryGradient } from '../utils/categoryIcons';
+} from "lucide-react";
+import toast from "react-hot-toast";
+import { vaultAPI } from "../utils/api";
+import { useAuth } from "../contexts/AuthContext";
+import { getCategoryIcon, getCategoryGradient } from "../utils/categoryIcons";
 
 const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
   const { masterPassword } = useAuth();
 
-  const [decryptedPassword, setDecryptedPassword] = useState('');
+  const [decryptedPassword, setDecryptedPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isRateLimited, setIsRateLimited] = useState(false);
   const [countdown, setCountdown] = useState(0);
   const [timeRemaining, setTimeRemaining] = useState(30);
-  const [inputMasterPassword, setInputMasterPassword] = useState('');
+  const [inputMasterPassword, setInputMasterPassword] = useState("");
   const [showMasterPasswordInput, setShowMasterPasswordInput] = useState(false);
 
   const countdownRef = useRef(null);
@@ -35,7 +35,7 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
       setShowMasterPasswordInput(true);
     } else {
       setShowMasterPasswordInput(false);
-      setInputMasterPassword('');
+      setInputMasterPassword("");
     }
   }, [isOpen, masterPassword]);
 
@@ -115,22 +115,23 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
 
       if (!decrypted) {
         if (result.data) {
+          // Try to extract from nested data
         }
-        toast.error('Failed to extract decrypted password from response');
+        toast.error("Failed to extract decrypted password from response");
         return;
       }
 
       setDecryptedPassword(decrypted);
-      toast.success('Password decrypted!');
+      toast.success("Password decrypted!");
     } catch (error) {
-
       if (error.response?.status === 429) {
         const retryAfter = error.response?.data?.retry_after || 60;
         setIsRateLimited(true);
         setCountdown(retryAfter);
         toast.error(`Too many requests. Please wait ${retryAfter} seconds.`);
       } else {
-        const errorMsg = error.response?.data?.message || 'Failed to decrypt password';
+        const errorMsg =
+          error.response?.data?.message || "Failed to decrypt password";
         toast.error(errorMsg);
       }
     } finally {
@@ -149,12 +150,12 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
   const handleCopy = () => {
     if (decryptedPassword) {
       navigator.clipboard.writeText(decryptedPassword);
-      toast.success('Password copied to clipboard!');
+      toast.success("Password copied to clipboard!");
     }
   };
 
   const handleClearPassword = () => {
-    setDecryptedPassword('');
+    setDecryptedPassword("");
     setTimeRemaining(30);
     if (clearTimerRef.current) {
       clearInterval(clearTimerRef.current);
@@ -167,56 +168,64 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
     setShowPassword(false);
     setIsRateLimited(false);
     setCountdown(0);
-    setInputMasterPassword('');
+    setInputMasterPassword("");
     setShowMasterPasswordInput(false);
     onClose();
   };
 
   // Get category icon and gradient
-  const CategoryIcon = getCategoryIcon(vaultItem?.category || vaultItem?.category_name);
-  const categoryGradient = getCategoryGradient(vaultItem?.category || vaultItem?.category_name);
+  const CategoryIcon = getCategoryIcon(
+    vaultItem?.category || vaultItem?.category_name
+  );
+  const categoryGradient = getCategoryGradient(
+    vaultItem?.category || vaultItem?.category_name
+  );
 
   if (!isOpen || !vaultItem) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm overflow-y-auto">
-      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg my-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/50 backdrop-blur-sm overflow-y-auto">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg my-4 sm:my-8">
         {/* Header */}
-        <div className="border-b border-slate-200 dark:border-slate-700 p-6 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className={`w-10 h-10 bg-gradient-to-br ${categoryGradient} rounded-xl flex items-center justify-center`}>
+        <div className="border-b border-slate-200 dark:border-slate-700 p-4 sm:p-6 flex items-center justify-between">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div
+              className={`w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br ${categoryGradient} rounded-xl flex items-center justify-center`}
+            >
               {decryptedPassword ? (
-                <Unlock className="w-5 h-5 text-white" />
+                <Unlock className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               ) : (
-                <CategoryIcon className="w-5 h-5 text-white" />
+                <CategoryIcon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               )}
             </div>
             <div>
-              <h2 className="text-xl font-bold text-slate-800 dark:text-white">
+              <h2 className="text-lg sm:text-xl font-bold text-slate-800 dark:text-white truncate max-w-[200px] sm:max-w-none">
                 {vaultItem.name}
               </h2>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
-                {decryptedPassword ? 'Password Decrypted' : 'Decrypt Password'}
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+                {decryptedPassword ? "Password Decrypted" : "Decrypt Password"}
               </p>
             </div>
           </div>
           <button
             onClick={handleClose}
-            className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+            className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors flex-shrink-0"
           >
             <X className="w-5 h-5 text-slate-500" />
           </button>
         </div>
 
         {/* Scrollable Content */}
-        <div className="p-6 space-y-4 max-h-[calc(100vh-12rem)] overflow-y-auto">
+        <div className="p-4 sm:p-6 space-y-3 sm:space-y-4 max-h-[calc(100vh-8rem)] sm:max-h-[calc(100vh-12rem)] overflow-y-auto">
           {/* Username/Email */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
               Username / Email
             </label>
-            <div className="px-4 py-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
-              <p className="text-slate-900 dark:text-white">{vaultItem.username}</p>
+            <div className="px-3 sm:px-4 py-2.5 sm:py-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
+              <p className="text-sm sm:text-base text-slate-900 dark:text-white truncate">
+                {vaultItem.username}
+              </p>
             </div>
           </div>
 
@@ -224,17 +233,18 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
           {showMasterPasswordInput && !decryptedPassword && (
             <form
               onSubmit={handleSubmitMasterPassword}
-              className="space-y-4"
+              className="space-y-3 sm:space-y-4"
             >
-              <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl flex items-start gap-3">
-                <AlertCircle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
-                <p className="text-sm text-yellow-800 dark:text-yellow-300">
-                  Master password is not in memory. Please re-enter it to decrypt.
+              <div className="p-3 sm:p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl flex items-start gap-2 sm:gap-3">
+                <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
+                <p className="text-xs sm:text-sm text-yellow-800 dark:text-yellow-300">
+                  Master password is not in memory. Please re-enter it to
+                  decrypt.
                 </p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                   Master Password
                 </label>
                 <input
@@ -242,7 +252,7 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
                   value={inputMasterPassword}
                   onChange={(e) => setInputMasterPassword(e.target.value)}
                   placeholder="Enter your master password"
-                  className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none"
+                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none"
                   autoFocus
                 />
               </div>
@@ -250,61 +260,61 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
               <button
                 type="submit"
                 disabled={!inputMasterPassword || isLoading}
-                className="w-full px-4 py-3 bg-gradient-to-r from-primary-500 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gradient-to-r from-primary-500 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isLoading ? 'Decrypting...' : 'Decrypt Password'}
+                {isLoading ? "Decrypting..." : "Decrypt Password"}
               </button>
             </form>
           )}
 
           {/* Decrypted Password Display */}
           {decryptedPassword && (
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                   Password
                 </label>
                 <div className="relative">
                   <input
-                    type={showPassword ? 'text' : 'password'}
+                    type={showPassword ? "text" : "password"}
                     value={decryptedPassword}
                     readOnly
-                    className="w-full px-4 py-3 pr-24 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white font-mono focus:outline-none"
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-20 sm:pr-24 text-sm sm:text-base rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white font-mono focus:outline-none"
                   />
-                  <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                  <div className="absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 flex items-center gap-0.5 sm:gap-1">
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                      className="p-1.5 sm:p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
                     >
                       {showPassword ? (
-                        <EyeOff className="w-4 h-4 text-slate-500" />
+                        <EyeOff className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500" />
                       ) : (
-                        <Eye className="w-4 h-4 text-slate-500" />
+                        <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500" />
                       )}
                     </button>
                     <button
                       type="button"
                       onClick={handleCopy}
-                      className="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                      className="p-1.5 sm:p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
                     >
-                      <Copy className="w-4 h-4 text-slate-500" />
+                      <Copy className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500" />
                     </button>
                   </div>
                 </div>
               </div>
 
               {/* Auto-clear Timer */}
-              <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
-                <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                  <span className="text-sm text-blue-800 dark:text-blue-300">
+              <div className="flex items-center justify-between p-2.5 sm:p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600 dark:text-blue-400" />
+                  <span className="text-xs sm:text-sm text-blue-800 dark:text-blue-300">
                     Auto-clear in {timeRemaining}s
                   </span>
                 </div>
                 <button
                   onClick={handleClearPassword}
-                  className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
+                  className="text-xs sm:text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
                 >
                   Clear Now
                 </button>
@@ -314,13 +324,13 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
 
           {/* Rate Limit Warning */}
           {isRateLimited && (
-            <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+            <div className="p-3 sm:p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-start gap-2 sm:gap-3">
+              <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
               <div className="flex-1">
-                <h4 className="font-semibold text-red-800 dark:text-red-300 mb-1">
+                <h4 className="font-semibold text-sm sm:text-base text-red-800 dark:text-red-300 mb-1">
                   Too Many Requests
                 </h4>
-                <p className="text-sm text-red-700 dark:text-red-400">
+                <p className="text-xs sm:text-sm text-red-700 dark:text-red-400">
                   Please wait {countdown} seconds before trying again.
                 </p>
               </div>
@@ -330,12 +340,12 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
           {/* Note */}
           {vaultItem.note && (
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                 Note
               </label>
               <div className="relative">
-                <div className="px-4 py-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 max-h-48 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent">
-                  <p className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap break-words">
+                <div className="px-3 sm:px-4 py-2.5 sm:py-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 max-h-40 sm:max-h-48 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent">
+                  <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap break-words">
                     {vaultItem.note}
                   </p>
                 </div>
@@ -347,20 +357,21 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
             </div>
           )}
 
-
           {/* Metadata */}
-          <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
-            <div className="grid grid-cols-2 gap-4 text-sm">
+          <div className="pt-3 sm:pt-4 border-t border-slate-200 dark:border-slate-700">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 text-xs sm:text-sm">
               <div>
                 <p className="text-slate-500 dark:text-slate-400">Category</p>
-                <p className="font-medium text-slate-800 dark:text-white">
-                  {vaultItem.category_name || 'Uncategorized'}
+                <p className="font-medium text-slate-800 dark:text-white mt-0.5">
+                  {vaultItem.category_name || "Uncategorized"}
                 </p>
               </div>
               <div>
-                <p className="text-slate-500 dark:text-slate-400">Last Updated</p>
-                <p className="font-medium text-slate-800 dark:text-white">
-                  {vaultItem.updated_at || 'N/A'}
+                <p className="text-slate-500 dark:text-slate-400">
+                  Last Updated
+                </p>
+                <p className="font-medium text-slate-800 dark:text-white mt-0.5 truncate">
+                  {vaultItem.updated_at || "N/A"}
                 </p>
               </div>
             </div>
@@ -369,7 +380,7 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
           {/* Close Button */}
           <button
             onClick={handleClose}
-            className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-semibold hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+            className="w-full px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-semibold hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
           >
             Close
           </button>

@@ -153,6 +153,7 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
           });
         }
       } catch (error) {
+        // Silent fail - don't show error to user
       } finally {
         setIsCheckingBreach(false);
       }
@@ -267,52 +268,55 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/50 backdrop-blur-sm">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto my-4 sm:my-8">
         {/* Header */}
-        <div className="sticky top-0 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 p-6 flex items-center justify-between z-10">
-          <div className="flex items-center gap-3">
+        <div className="sticky top-0 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 p-4 sm:p-6 flex items-center justify-between z-10">
+          <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
             <div
-              className={`w-10 h-10 bg-gradient-to-br ${categoryGradient} rounded-xl flex items-center justify-center`}
+              className={`w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br ${categoryGradient} rounded-xl flex items-center justify-center flex-shrink-0`}
             >
-              <CategoryIcon className="w-5 h-5 text-white" />
+              <CategoryIcon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
-            <div>
-              <h2 className="text-xl font-bold text-slate-800 dark:text-white">
+            <div className="flex-1 min-w-0">
+              <h2 className="text-base sm:text-xl font-bold text-slate-800 dark:text-white truncate">
                 Add New Password
               </h2>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 truncate">
                 Securely store your credentials
               </p>
             </div>
           </div>
           <button
             onClick={handleClose}
-            className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+            className="p-1.5 sm:p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors flex-shrink-0 ml-2"
           >
-            <X className="w-5 h-5 text-slate-500" />
+            <X className="w-4 h-4 sm:w-5 sm:h-5 text-slate-500" />
           </button>
         </div>
 
         {/* Breach Warning */}
         {breachWarning && (
-          <div className="mx-6 mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+          <div className="mx-4 sm:mx-6 mt-3 sm:mt-4 p-3 sm:p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-start gap-2 sm:gap-3">
+            <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
             <div className="flex-1">
-              <h4 className="font-semibold text-red-800 dark:text-red-300 mb-1">
+              <h4 className="font-semibold text-sm sm:text-base text-red-800 dark:text-red-300 mb-0.5 sm:mb-1">
                 ⚠️ Security Warning
               </h4>
-              <p className="text-sm text-red-700 dark:text-red-400">
+              <p className="text-xs sm:text-sm text-red-700 dark:text-red-400">
                 {breachWarning}
               </p>
             </div>
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+        <form
+          onSubmit={handleSubmit}
+          className="p-4 sm:p-6 space-y-3 sm:space-y-5"
+        >
           {/* Name Field */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
               Name <span className="text-red-500">*</span>
             </label>
             <input
@@ -321,20 +325,22 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
               value={formData.name}
               onChange={handleChange}
               placeholder="e.g., Gmail Account"
-              className={`w-full px-4 py-3 rounded-xl border ${
+              className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base rounded-xl border ${
                 errors.name
                   ? "border-red-500 focus:ring-red-500"
                   : "border-slate-300 dark:border-slate-600 focus:ring-primary-500"
               } bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:border-transparent transition-all outline-none`}
             />
             {errors.name && (
-              <p className="mt-1 text-sm text-red-500">{errors.name}</p>
+              <p className="mt-1 text-xs sm:text-sm text-red-500">
+                {errors.name}
+              </p>
             )}
           </div>
 
           {/* Username Field */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
               Username / Email <span className="text-red-500">*</span>
             </label>
             <input
@@ -343,27 +349,29 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
               value={formData.username}
               onChange={handleChange}
               placeholder="you@example.com"
-              className={`w-full px-4 py-3 rounded-xl border ${
+              className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base rounded-xl border ${
                 errors.username
                   ? "border-red-500 focus:ring-red-500"
                   : "border-slate-300 dark:border-slate-600 focus:ring-primary-500"
               } bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:border-transparent transition-all outline-none`}
             />
             {errors.username && (
-              <p className="mt-1 text-sm text-red-500">{errors.username}</p>
+              <p className="mt-1 text-xs sm:text-sm text-red-500">
+                {errors.username}
+              </p>
             )}
           </div>
 
           {/* Password Field with Generator */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+              <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
                 Password <span className="text-red-500">*</span>
               </label>
               <button
                 type="button"
                 onClick={() => setShowGenerator(!showGenerator)}
-                className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium"
+                className="text-xs sm:text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium"
               >
                 {showGenerator ? "Hide Generator" : "Generate Password"}
               </button>
@@ -376,36 +384,38 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Enter a strong password"
-                className={`w-full px-4 py-3 pr-24 rounded-xl border ${
+                className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-20 sm:pr-24 text-sm sm:text-base rounded-xl border ${
                   errors.password
                     ? "border-red-500 focus:ring-red-500"
                     : "border-slate-300 dark:border-slate-600 focus:ring-primary-500"
                 } bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:border-transparent transition-all outline-none font-mono`}
               />
-              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+              <div className="absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 flex items-center gap-0.5 sm:gap-1">
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                  className="p-1.5 sm:p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
                 >
                   {showPassword ? (
-                    <EyeOff className="w-4 h-4 text-slate-500" />
+                    <EyeOff className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500" />
                   ) : (
-                    <Eye className="w-4 h-4 text-slate-500" />
+                    <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500" />
                   )}
                 </button>
                 <button
                   type="button"
                   onClick={handleCopyPassword}
-                  className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                  className="p-1.5 sm:p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
                 >
-                  <Copy className="w-4 h-4 text-slate-500" />
+                  <Copy className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500" />
                 </button>
               </div>
             </div>
 
             {errors.password && (
-              <p className="mt-1 text-sm text-red-500">{errors.password}</p>
+              <p className="mt-1 text-xs sm:text-sm text-red-500">
+                {errors.password}
+              </p>
             )}
 
             {/* Password Strength Indicator */}
@@ -429,7 +439,7 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
                     {passwordStrength.label}
                   </span>
                 </div>
-                <div className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                <div className="w-full h-1.5 sm:h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
                   <div
                     className={`h-full transition-all duration-300 ${
                       passwordStrength.color === "red"
@@ -448,15 +458,15 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
 
             {/* Breach Check Notification */}
             {isCheckingBreach && formData.password && (
-              <div className="mt-2 flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
-                <div className="w-4 h-4 border-2 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
+              <div className="mt-2 flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+                <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 border-2 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
                 <span>Checking password breach database...</span>
               </div>
             )}
 
             {breachInfo && !isCheckingBreach && formData.password && (
               <div
-                className={`mt-2 p-3 rounded-lg flex items-start gap-3 ${
+                className={`mt-2 p-2.5 sm:p-3 rounded-lg flex items-start gap-2 sm:gap-3 ${
                   breachInfo.isPwned
                     ? breachInfo.severity === "critical"
                       ? "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800"
@@ -469,7 +479,7 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
                 {breachInfo.isPwned ? (
                   <>
                     <AlertCircle
-                      className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
+                      className={`w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 mt-0.5 ${
                         breachInfo.severity === "critical"
                           ? "text-red-600 dark:text-red-400"
                           : breachInfo.severity === "high"
@@ -479,7 +489,7 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
                     />
                     <div className="flex-1">
                       <p
-                        className={`text-sm font-semibold ${
+                        className={`text-xs sm:text-sm font-semibold ${
                           breachInfo.severity === "critical"
                             ? "text-red-800 dark:text-red-300"
                             : breachInfo.severity === "high"
@@ -508,9 +518,9 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
                   </>
                 ) : (
                   <>
-                    <Shield className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
+                    <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
                     <div className="flex-1">
-                      <p className="text-sm font-semibold text-green-800 dark:text-green-300">
+                      <p className="text-xs sm:text-sm font-semibold text-green-800 dark:text-green-300">
                         ✓ Password is Secure
                       </p>
                       <p className="text-xs text-green-700 dark:text-green-400 mt-1">
@@ -525,15 +535,15 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
 
             {/* Password Generator */}
             {showGenerator && (
-              <div className="mt-4 p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
-                <div className="space-y-3">
+              <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
+                <div className="space-y-2.5 sm:space-y-3">
                   {/* Length Slider */}
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                      <label className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
                         Length
                       </label>
-                      <span className="text-sm font-semibold text-primary-600 dark:text-primary-400">
+                      <span className="text-xs sm:text-sm font-semibold text-primary-600 dark:text-primary-400">
                         {generatorOptions.length}
                       </span>
                     </div>
@@ -553,7 +563,7 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
                   </div>
 
                   {/* Options Checkboxes */}
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 gap-2 sm:gap-3">
                     {[
                       { key: "uppercase", label: "Uppercase (A-Z)" },
                       { key: "lowercase", label: "Lowercase (a-z)" },
@@ -562,7 +572,7 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
                     ].map((option) => (
                       <label
                         key={option.key}
-                        className="flex items-center gap-2 cursor-pointer"
+                        className="flex items-center gap-1.5 sm:gap-2 cursor-pointer"
                       >
                         <input
                           type="checkbox"
@@ -573,9 +583,9 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
                               [option.key]: e.target.checked,
                             }))
                           }
-                          className="w-4 h-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500"
+                          className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500"
                         />
-                        <span className="text-sm text-slate-700 dark:text-slate-300">
+                        <span className="text-xs sm:text-sm text-slate-700 dark:text-slate-300">
                           {option.label}
                         </span>
                       </label>
@@ -586,9 +596,9 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
                   <button
                     type="button"
                     onClick={handleGeneratePassword}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors"
+                    className="w-full flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors"
                   >
-                    <RefreshCw className="w-4 h-4" />
+                    <RefreshCw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     Generate Password
                   </button>
                 </div>
@@ -598,14 +608,14 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
 
           {/* Category Dropdown */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
               Category <span className="text-red-500">*</span>
             </label>
             <select
               name="category_id"
               value={formData.category_id}
               onChange={handleChange}
-              className={`w-full px-4 py-3 rounded-xl border ${
+              className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base rounded-xl border ${
                 errors.category_id
                   ? "border-red-500 focus:ring-red-500"
                   : "border-slate-300 dark:border-slate-600 focus:ring-primary-500"
@@ -619,13 +629,15 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
               ))}
             </select>
             {errors.category_id && (
-              <p className="mt-1 text-sm text-red-500">{errors.category_id}</p>
+              <p className="mt-1 text-xs sm:text-sm text-red-500">
+                {errors.category_id}
+              </p>
             )}
           </div>
 
           {/* Note Field */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
               Note <span className="text-slate-400">(Optional)</span>
             </label>
             <textarea
@@ -634,35 +646,35 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
               onChange={handleChange}
               placeholder="Add any additional notes..."
               rows={3}
-              className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none resize-none"
+              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none resize-none"
             />
           </div>
 
           {/* Footer Buttons */}
-          <div className="flex gap-3 pt-4">
-            <button
-              type="button"
-              onClick={handleClose}
-              className="flex-1 px-4 py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-semibold hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
-            >
-              Cancel
-            </button>
+          <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 pt-3 sm:pt-4">
             <button
               type="submit"
               disabled={isLoading}
-              className="flex-1 px-4 py-3 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="order-1 sm:order-2 flex-1 px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 sm:gap-2"
             >
               {isLoading ? (
                 <>
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   Saving...
                 </>
               ) : (
                 <>
-                  <CheckCircle2 className="w-5 h-5" />
+                  <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5" />
                   Save
                 </>
               )}
+            </button>
+            <button
+              type="button"
+              onClick={handleClose}
+              className="order-2 sm:order-1 flex-1 px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-semibold hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+            >
+              Cancel
             </button>
           </div>
         </form>

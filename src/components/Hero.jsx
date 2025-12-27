@@ -19,7 +19,7 @@ const Hero = () => {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-28">
           <div className="max-w-3xl">
             {/* Main Title */}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
+            <h1 className="text-5xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
               Secure your secrets,{" "}
               <span className="text-blue-200">everywhere</span>
             </h1>
@@ -49,140 +49,6 @@ const Hero = () => {
                 <Github className="w-5 h-5" />
                 View on GitHub
               </a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Feature Cards Section */}
-      <div className="relative bg-gray-50 dark:bg-gray-900 py-12 sm:py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Feature Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Card 1 - Password Manager */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
-              <div className="flex items-start gap-4">
-                <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                  <Key className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                    Password Vault
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">
-                    Store and manage your passwords securely with military-grade
-                    encryption and breach monitoring.
-                  </p>
-                  <Link
-                    to="/register"
-                    className="inline-flex items-center text-blue-600 dark:text-blue-400 font-medium text-sm hover:underline"
-                  >
-                    Get started <ArrowRight className="w-4 h-4 ml-1" />
-                  </Link>
-                </div>
-              </div>
-            </div>
-
-            {/* Card 2 - Encrypted Notes */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
-              <div className="flex items-start gap-4">
-                <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-                  <FileText className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                    Secure Notes
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">
-                    Keep your sensitive information safe with encrypted notes
-                    that only you can access.
-                  </p>
-                  <Link
-                    to="/register"
-                    className="inline-flex items-center text-purple-600 dark:text-purple-400 font-medium text-sm hover:underline"
-                  >
-                    Learn more <ArrowRight className="w-4 h-4 ml-1" />
-                  </Link>
-                </div>
-              </div>
-            </div>
-
-            {/* Card 3 - Zero Knowledge */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
-              <div className="flex items-start gap-4">
-                <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
-                  <Shield className="w-6 h-6 text-green-600 dark:text-green-400" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                    Zero-Knowledge Architecture
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">
-                    Your master password never leaves your device. We can't see
-                    your data, ever.
-                  </p>
-                  <a
-                    href="#features"
-                    className="inline-flex items-center text-green-600 dark:text-green-400 font-medium text-sm hover:underline"
-                  >
-                    How it works <ArrowRight className="w-4 h-4 ml-1" />
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            {/* Card 4 - Open Source */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
-              <div className="flex items-start gap-4">
-                <div className="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
-                  <Lock className="w-6 h-6 text-orange-600 dark:text-orange-400" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                    100% Open Source
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">
-                    Fully transparent codebase. Audit the security yourself or
-                    self-host your instance.
-                  </p>
-                  <a
-                    href="https://github.com/rayhanzz772/password-vault-backend"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center text-orange-600 dark:text-orange-400 font-medium text-sm hover:underline"
-                  >
-                    View source <ArrowRight className="w-4 h-4 ml-1" />
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Stats Row */}
-          <div className="mt-12 grid grid-cols-3 gap-4 sm:gap-8 max-w-2xl mx-auto text-center">
-            <div>
-              <div className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-                256-bit
-              </div>
-              <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                AES Encryption
-              </div>
-            </div>
-            <div>
-              <div className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-                100%
-              </div>
-              <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                Open Source
-              </div>
-            </div>
-            <div>
-              <div className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-                Zero
-              </div>
-              <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                Knowledge
-              </div>
             </div>
           </div>
         </div>

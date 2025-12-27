@@ -188,64 +188,64 @@ const ViewNoteModal = ({
   const categoryGradient = getCategoryGradient(categoryData?.name);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm overflow-y-auto">
-      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-4xl my-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/50 backdrop-blur-sm overflow-y-auto">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-4xl my-4 sm:my-8">
         {/* Header */}
-        <div className="border-b border-slate-200 dark:border-slate-700 p-6 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <div className="border-b border-slate-200 dark:border-slate-700 p-4 sm:p-6 flex items-center justify-between">
+          <div className="flex items-center gap-2 sm:gap-3">
             <div
-              className={`w-10 h-10 bg-gradient-to-br ${categoryGradient} rounded-xl flex items-center justify-center`}
+              className={`w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br ${categoryGradient} rounded-xl flex items-center justify-center`}
             >
               {decryptedContent ? (
-                <Unlock className="w-5 h-5 text-white" />
+                <Unlock className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               ) : (
-                <CategoryIcon className="w-5 h-5 text-white" />
+                <CategoryIcon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               )}
             </div>
             <div>
-              <h2 className="text-xl font-bold text-slate-800 dark:text-white">
+              <h2 className="text-lg sm:text-xl font-bold text-slate-800 dark:text-white truncate max-w-[200px] sm:max-w-none">
                 {note.title}
               </h2>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
                 {decryptedContent ? "Note Decrypted" : "Decrypt Note"}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+            className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors flex-shrink-0"
           >
             <X className="w-5 h-5 text-slate-500" />
           </button>
         </div>
 
         {/* Scrollable Content */}
-        <div className="p-6 space-y-4 max-h-[calc(100vh-12rem)] overflow-y-auto">
+        <div className="p-4 sm:p-6 space-y-3 sm:space-y-4 max-h-[calc(100vh-8rem)] sm:max-h-[calc(100vh-12rem)] overflow-y-auto">
           {/* Metadata Grid - 3 Columns */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
             {/* Tags */}
             <div>
-              <div className="flex items-center gap-2 mb-3">
-                <Tag className="w-4 h-4 text-slate-600 dark:text-slate-400" />
-                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              <div className="flex items-center gap-2 mb-2 sm:mb-3">
+                <Tag className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-600 dark:text-slate-400" />
+                <span className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
                   Tags
                 </span>
               </div>
               {(() => {
                 const tags = normalizeTags(note.tags);
                 return tags.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-1.5 sm:gap-2">
                     {tags.map((tag, index) => (
                       <span
                         key={index}
-                        className="px-3 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 text-sm rounded-lg"
+                        className="px-2 sm:px-3 py-0.5 sm:py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 text-xs sm:text-sm rounded-lg"
                       >
                         #{tag}
                       </span>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                  <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
                     No tags
                   </p>
                 );
@@ -254,26 +254,26 @@ const ViewNoteModal = ({
 
             {/* Category */}
             <div>
-              <div className="flex items-center gap-2 mb-3">
-                <LayoutGrid className="w-4 h-4 text-slate-600 dark:text-slate-400" />
-                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              <div className="flex items-center gap-2 mb-2 sm:mb-3">
+                <LayoutGrid className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-600 dark:text-slate-400" />
+                <span className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
                   Category
                 </span>
               </div>
-              <p className="text-sm font-medium text-slate-800 dark:text-white">
+              <p className="text-xs sm:text-sm font-medium text-slate-800 dark:text-white">
                 {categoryData?.name || "Uncategorized"}
               </p>
             </div>
 
             {/* Last Updated */}
             <div>
-              <div className="flex items-center gap-2 mb-3">
-                <Calendar className="w-4 h-4 text-slate-600 dark:text-slate-400" />
-                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              <div className="flex items-center gap-2 mb-2 sm:mb-3">
+                <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-600 dark:text-slate-400" />
+                <span className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
                   Last Updated
                 </span>
               </div>
-              <p className="text-sm font-medium text-slate-800 dark:text-white">
+              <p className="text-xs sm:text-sm font-medium text-slate-800 dark:text-white">
                 {formatDate(note.updated_at || note.created_at)}
               </p>
             </div>
@@ -281,47 +281,47 @@ const ViewNoteModal = ({
 
           {/* Decrypted Content */}
           <div>
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between mb-2 sm:mb-3">
               <div className="flex items-center gap-2">
-                <FileText className="w-4 h-4 text-slate-600 dark:text-slate-400" />
-                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-600 dark:text-slate-400" />
+                <span className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
                   Content
                 </span>
               </div>
               {decryptedContent && (
                 <button
                   onClick={handleCopy}
-                  className="px-3 py-1.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-all flex items-center gap-2 text-sm"
+                  className="px-2 sm:px-3 py-1 sm:py-1.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-all flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm"
                 >
-                  <Copy className="w-4 h-4" />
+                  <Copy className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   Copy
                 </button>
               )}
             </div>
 
-            <div className="min-h-[200px] p-4 bg-slate-50 dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-xl">
+            <div className="min-h-[150px] sm:min-h-[200px] p-3 sm:p-4 bg-slate-50 dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-xl">
               {isDecrypting ? (
-                <div className="flex items-center justify-center py-12">
+                <div className="flex items-center justify-center py-8 sm:py-12">
                   <div className="text-center">
-                    <div className="w-12 h-12 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                    <p className="text-slate-600 dark:text-slate-400">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto mb-3 sm:mb-4"></div>
+                    <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400">
                       Decrypting note...
                     </p>
                   </div>
                 </div>
               ) : decryptError ? (
-                <div className="flex items-center justify-center py-12">
-                  <div className="text-center max-w-md">
-                    <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-                    <p className="text-red-600 dark:text-red-400 mb-4">
+                <div className="flex items-center justify-center py-8 sm:py-12">
+                  <div className="text-center max-w-md px-4">
+                    <AlertCircle className="w-10 h-10 sm:w-12 sm:h-12 text-red-500 mx-auto mb-3 sm:mb-4" />
+                    <p className="text-sm sm:text-base text-red-600 dark:text-red-400 mb-3 sm:mb-4">
                       {decryptError}
                     </p>
 
                     {!canRetry && retryCountdown > 0 ? (
                       <div className="space-y-2">
                         <div className="flex items-center justify-center gap-2 text-slate-600 dark:text-slate-400">
-                          <Lock className="w-4 h-4" />
-                          <span className="text-sm font-medium">
+                          <Lock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                          <span className="text-xs sm:text-sm font-medium">
                             Please wait {retryCountdown}s before retrying
                           </span>
                         </div>
@@ -330,7 +330,7 @@ const ViewNoteModal = ({
                       <button
                         onClick={decryptNote}
                         disabled={!canRetry}
-                        className="text-sm text-primary-600 dark:text-primary-400 hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="text-xs sm:text-sm text-primary-600 dark:text-primary-400 hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         Try Again
                       </button>
@@ -338,12 +338,12 @@ const ViewNoteModal = ({
                   </div>
                 </div>
               ) : decryptedContent ? (
-                <pre className="whitespace-pre-wrap break-words text-slate-800 dark:text-white font-mono text-sm">
+                <pre className="whitespace-pre-wrap break-words text-slate-800 dark:text-white font-mono text-xs sm:text-sm">
                   {decryptedContent}
                 </pre>
               ) : (
-                <div className="flex items-center justify-center py-12">
-                  <p className="text-slate-500 dark:text-slate-400">
+                <div className="flex items-center justify-center py-8 sm:py-12">
+                  <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400">
                     The content was encrypted
                   </p>
                 </div>
@@ -352,10 +352,10 @@ const ViewNoteModal = ({
           </div>
 
           {/* Actions */}
-          <div className="flex flex-col sm:flex-row gap-3 pt-4">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-3 sm:pt-4">
             <button
               onClick={onClose}
-              className="w-full sm:flex-1 px-4 py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-semibold hover:bg-slate-200 dark:hover:bg-slate-600 transition-all order-3 sm:order-1"
+              className="w-full sm:flex-1 px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-semibold hover:bg-slate-200 dark:hover:bg-slate-600 transition-all order-3 sm:order-1"
             >
               Close
             </button>
@@ -364,9 +364,9 @@ const ViewNoteModal = ({
                 onClose();
                 onEdit(note);
               }}
-              className="w-full sm:flex-1 px-4 py-3 bg-primary-500 text-white rounded-xl font-semibold hover:bg-primary-600 transition-all flex items-center justify-center gap-2 order-1 sm:order-2"
+              className="w-full sm:flex-1 px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-primary-500 text-white rounded-xl font-semibold hover:bg-primary-600 transition-all flex items-center justify-center gap-2 order-1 sm:order-2"
             >
-              <Edit className="w-5 h-5" />
+              <Edit className="w-4 h-4 sm:w-5 sm:h-5" />
               Edit Note
             </button>
             <button
@@ -374,9 +374,9 @@ const ViewNoteModal = ({
                 onClose();
                 onDelete(note);
               }}
-              className="w-full sm:w-auto px-4 py-3 bg-red-500 text-white rounded-xl font-semibold hover:bg-red-600 transition-all flex items-center justify-center gap-2 order-2 sm:order-3"
+              className="w-full sm:w-auto px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-red-500 text-white rounded-xl font-semibold hover:bg-red-600 transition-all flex items-center justify-center gap-2 order-2 sm:order-3"
             >
-              <Trash2 className="w-5 h-5" />
+              <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
               Delete
             </button>
           </div>

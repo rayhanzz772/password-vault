@@ -15,6 +15,8 @@ import { useAuth } from "../contexts/AuthContext";
 import { useTheme } from "../contexts/ThemeContext";
 import toast from "react-hot-toast";
 
+const headerBtn = "h-11 flex items-center rounded-lg transition-colors";
+
 const Topbar = ({ searchQuery = "", onSearchChange, onMenuToggle }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -90,7 +92,7 @@ const Topbar = ({ searchQuery = "", onSearchChange, onMenuToggle }) => {
           {/* Theme Toggle */}
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+            className={`${headerBtn} w-11 justify-center bg-slate-100 dark:bg-slate-800`}
             aria-label="Toggle theme"
           >
             {theme === "light" ? (
@@ -104,9 +106,9 @@ const Topbar = ({ searchQuery = "", onSearchChange, onMenuToggle }) => {
           <div className="relative">
             <button
               onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+              className={`${headerBtn} px-3 bg-slate-100 dark:bg-slate-800 gap-2`}
             >
-              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center">
+              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center">
                 <User className="w-4 h-4 text-white" />
               </div>
               <span className="text-sm font-medium text-slate-700 dark:text-slate-300 hidden sm:block max-w-[100px] truncate">
