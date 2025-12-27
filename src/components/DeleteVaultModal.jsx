@@ -1,14 +1,7 @@
 import { useState, useEffect } from "react";
-import {
-  X,
-  AlertTriangle,
-  Trash2,
-  Lock,
-  Eye,
-  EyeOff,
-  XCircle,
-} from "lucide-react";
+import { X, AlertTriangle, Trash2 } from "lucide-react";
 import { getCategoryIcon, getCategoryGradient } from "../utils/categoryIcons";
+import { useAuth } from "../contexts/AuthContext";
 
 const DeleteVaultModal = ({
   isOpen,
@@ -17,15 +10,12 @@ const DeleteVaultModal = ({
   onDelete,
   isDeleting,
 }) => {
-  const [masterPassword, setMasterPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  const { masterPassword } = useAuth();
   const [confirmText, setConfirmText] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => {
     if (isOpen) {
-      setMasterPassword("");
-      setShowPassword(false);
       setConfirmText("");
       setError("");
     }
@@ -34,11 +24,6 @@ const DeleteVaultModal = ({
   const handleDelete = async () => {
     if (confirmText.toLowerCase() !== "delete") {
       setError('Please type "DELETE" to confirm');
-      return;
-    }
-
-    if (!masterPassword) {
-      setError("Master password is required");
       return;
     }
 
@@ -160,9 +145,7 @@ const DeleteVaultModal = ({
               onKeyPress={handleKeyPress}
               placeholder="Type DELETE"
               className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base rounded-xl border-2 ${
-                error && !masterPassword
-                  ? "border-red-500 focus:ring-red-500"
-                  : confirmText.toLowerCase() === "delete"
+                confirmText.toLowerCase() === "delete"
                   ? "border-green-500 focus:ring-green-500"
                   : "border-slate-300 dark:border-slate-600 focus:ring-blue-500"
               } bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:border-transparent transition-all outline-none`}
@@ -170,10 +153,23 @@ const DeleteVaultModal = ({
             />
           </div>
 
+          {/* Error Message */}
+          {error && (
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-3">
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 text-red-600 dark:text-red-400" />
+                <p className="text-xs sm:text-sm text-red-600 dark:text-red-400 font-medium">
+                  {error}
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* Security Notice */}
           <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-3">
             <p className="text-xs sm:text-sm text-blue-800 dark:text-blue-200 text-center">
-              Your master password is required to authorize this deletion
+              Your master password from vault unlock will be used to authorize
+              this deletion
             </p>
           </div>
 
